@@ -1,0 +1,11 @@
+# If not using an isolated StorageMgmt network, the following regitry mapping
+# should be commented.
+resource_registry:
+  OS::TripleO::Compute::Ports::StorageMgmtPort: ../network/ports/storage_mgmt.yaml
+
+parameter_defaults:
+  ComputeServices:
+    - OS::TripleO::Services::CephOSD
+
+parameter_merge_strategies:
+  ComputeServices: merge

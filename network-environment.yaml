@@ -1,0 +1,50 @@
+resource_registry:
+  OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/compute.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/controller.yaml
+  OS::TripleO::NodeUserData: /home/stack/templates/first-boot.yaml
+  OS::TripleO::NodeExtraConfigPost: /home/stack/templates/post-install.yaml
+
+  OS::TripleO::Services::ComputeNeutronOvsDpdkAgent: /home/stack/templates/openstack-tripleo-heat-templates/puppet/services/neutron-ovs-dpdk-agent.yaml
+  OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: /home/stack/templates/nic-configs/computeovsdpdk.yaml
+
+parameter_defaults:
+  ControlPlaneDefaultRoute: "172.18.10.1"
+  ControlPlaneSubnetCidr: "24"
+  DnsServers: ['8.8.8.8','8.8.4.4']
+  EC2MetadataIp: "172.18.10.1"
+  ExternalAllocationPools: [{'start': '172.18.10.150', 'end': '172.18.10.200'}]
+  ExternalNetCidr: "172.18.10.0/24"
+  #ExternalNetworkVlanID: 10
+  NeutronExternalNetworkBridge: ""
+  ExternalInterfaceDefaultRoute: "172.18.10.1"
+
+  InternalApiNetCidr: 10.10.100.0/24
+  StorageNetCidr: 10.10.101.0/24
+  StorageMgmtNetCidr: 10.10.102.0/24
+  TenantNetCidr: 10.10.103.0/24
+  InternalApiNetworkVlanID: 100
+  StorageNetworkVlanID: 101
+  StorageMgmtNetworkVlanID: 102
+  TenantNetworkVlanID: 103
+  InternalApiAllocationPools: [{'start': '10.10.100.10', 'end': '10.10.100.200'}]
+  StorageAllocationPools: [{'start': '10.10.101.10', 'end': '10.10.101.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.10.102.10', 'end': '10.10.102.200'}]
+  TenantAllocationPools: [{'start': '10.10.103.10', 'end': '10.10.103.200'}]
+
+  NeutronBridgeMappings: "datacentre:br-ex,dpdk_net:br-link,internal:br-isol"
+  NeutronFlatNetworks: "datacentre,dpdk_net,internal"
+  NeutronNetworkType: "vxlan"
+  NeutronTunnelTypes: "vxlan"
+
+  NeutronDpdkCoreList: "'1,2,18,19'"
+  NeutronDpdkMemoryChannels: "4"
+
+  NeutronDatapathType: "netdev"
+  NeutronVhostuserSocketDir: "/var/run/openvswitch"
+  NeutronDpdkSocketMemory: "'1024,1024'"
+  NeutronDpdkDriverType: "vfio-pci"
+  NovaReservedHostMemory: 4096
+  NovaVcpuPinSet: ['8-17','20-71']
+  NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter,AggregateInstanceExtraSpecsFilter"
+  ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on isolcpus=1,8-17,20-71"
+

@@ -1,0 +1,31 @@
+heat_template_version: 2014-10-16
+
+description: >
+  Example extra config for post-deployment
+
+parameters:
+  servers:
+    type: json
+
+resources:
+  ExtraDeployments:
+    type: OS::Heat::StructuredDeployments
+    properties:
+      servers:  {get_param: servers}
+      config: {get_resource: ExtraConfig}
+      actions: ['CREATE'] # Only do this on CREATE
+
+  ExtraConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        hostname=$(hostname)
+        if [[ $hostname =~ 'compute' ]];
+        then
+          systemctl daemon-reload
+          systemctl restart openvswitch-nonetwork
+        fi
+
+
