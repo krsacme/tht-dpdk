@@ -92,7 +92,7 @@ resources:
                   default: true
                   next_hop: {get_param: ControlPlaneDefaultRoute}
             -
-              type: linux_bridge
+              type: ovs_bridge
               name: br-isol 
               use_dhcp: false
               members:

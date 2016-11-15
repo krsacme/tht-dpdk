@@ -107,7 +107,7 @@ resources:
                   name: ens801f1
 
             -
-              type: linux_bridge
+              type: ovs_bridge
               name: br-isol
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
