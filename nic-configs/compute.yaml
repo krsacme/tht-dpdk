@@ -98,7 +98,7 @@ resources:
               members:
                 -
                   type: interface
-                  name: ens801f0 
+                  name: ens802f0 
                 -
                   type: vlan
                   device: ens801f0
@@ -138,7 +138,7 @@ resources:
               defroute: false
             -
               type: interface
-              name: ens801f1
+              name: ens802f1
               use_dhcp: false
               defroute: false
 
