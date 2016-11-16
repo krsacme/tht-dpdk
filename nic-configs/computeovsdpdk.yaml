@@ -74,7 +74,7 @@ resources:
           network_config:
             -
               type: interface
-              name: ens20f1
+              name: nic1
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -92,30 +92,13 @@ resources:
                   default: true
                   next_hop: {get_param: ControlPlaneDefaultRoute}
             -
-              type: ovs_user_bridge
-              name: br-link
-              use_dhcp: false
-              members:
-                -
-                  type: ovs_dpdk_port
-                  name: dpdk0
-                  members:
-                    -
-                      type: interface
-                      name: ens20f3
-            -
               type: interface
-              name: ens20f0
+              name: nic2
               use_dhcp: false
               defroute: false
             -
               type: interface
-              name: ens2f1
-              use_dhcp: false
-              defroute: false
-            -
-              type: interface
-              name: ens20f2
+              name: nic3
               use_dhcp: false
               defroute: false
             -
@@ -125,25 +108,40 @@ resources:
               members:
                 -
                   type: interface
-                  name: ens2f0
+                  name: nic4 
                 -
                   type: vlan
+                  device: nic4
                   vlan_id: {get_param: InternalApiNetworkVlanID}
                   addresses:
                     -
                       ip_netmask: {get_param: InternalApiIpSubnet}
                 -
                   type: vlan
+                  device: nic4
                   vlan_id: {get_param: StorageNetworkVlanID}
                   addresses:
                     -
                       ip_netmask: {get_param: StorageIpSubnet}
                 -
                   type: vlan
+                  device: nic4
                   vlan_id: {get_param: TenantNetworkVlanID}
                   addresses:
                     -
                       ip_netmask: {get_param: TenantIpSubnet}
+
+            -
+              type: ovs_user_bridge
+              name: br-link
+              members:
+                -
+                  type: ovs_dpdk_port
+                  name: dpdk0
+                  members:
+                    -
+                      type: interface
+                      name: nic5
 
 
 outputs:
