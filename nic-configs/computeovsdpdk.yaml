@@ -134,6 +134,7 @@ resources:
             -
               type: ovs_user_bridge
               name: br-link
+              use_dhcp: false
               members:
                 -
                   type: ovs_dpdk_port

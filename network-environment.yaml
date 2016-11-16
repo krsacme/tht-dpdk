@@ -34,9 +34,11 @@ parameter_defaults:
 
   OvercloudComputeFlavor: "compute"
   OvercloudControlFlavor: "control"
+  ComputeCount: 1
 
-  NeutronBridgeMappings: "dpdknet:br-link"
-  NeutronFlatNetworks: "dpdknet"
+  NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
+  NeutronFlatNetworks: "datacentre"
+  NeutronNetworkVLANRanges: "dpdknet:100:103"
   NeutronNetworkType: "vxlan"
   NeutronTunnelTypes: "vxlan"
 
