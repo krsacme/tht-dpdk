@@ -103,7 +103,7 @@ resources:
               use_dhcp: false
               defroute: false
             -
-              type: ovs_bridge
+              type: linux_bridge
               name: br-isol 
               use_dhcp: false
               members:

@@ -91,7 +91,6 @@ resources:
                 -
                   default: true
                   next_hop: {get_param: ControlPlaneDefaultRoute}
-
             -
               type: interface
               name: nic2
@@ -103,7 +102,7 @@ resources:
               use_dhcp: false
               defroute: false
             -
-              type: ovs_bridge
+              type: linux_bridge
               name: br-isol 
               use_dhcp: false
               members:
@@ -131,11 +130,19 @@ resources:
                   addresses:
                     -
                       ip_netmask: {get_param: TenantIpSubnet}
+
             -
-              type: interface
-              name: nic5
+              type: ovs_user_bridge
+              name: br-link
               use_dhcp: false
-              defroute: false
+              members:
+                -
+                  type: ovs_dpdk_port
+                  name: dpdk0
+                  members:
+                    -
+                      type: interface
+                      name: nic5
 
 
 outputs:
