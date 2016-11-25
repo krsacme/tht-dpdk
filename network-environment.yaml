@@ -26,7 +26,7 @@ parameter_defaults:
   InternalApiNetworkVlanID: 81
   StorageNetworkVlanID: 82
   StorageMgmtNetworkVlanID: 83
-  TenantNetworkVlanID: 84
+  TenantNetworkVlanID: 100
   InternalApiAllocationPools: [{'start': '10.10.100.10', 'end': '10.10.100.200'}]
   StorageAllocationPools: [{'start': '10.10.101.10', 'end': '10.10.101.200'}]
   StorageMgmtAllocationPools: [{'start': '10.10.102.10', 'end': '10.10.102.200'}]
@@ -34,11 +34,13 @@ parameter_defaults:
 
   OvercloudComputeFlavor: "compute"
   OvercloudControlFlavor: "control"
-  ComputeCount: 1
+  ComputeCount: 2
+
+  NetworkDeploymentActions: ['CREATE', 'UPDATE']
 
   NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
   NeutronFlatNetworks: "datacentre"
-  NeutronNetworkVLANRanges: "dpdknet:100:103"
+  NeutronNetworkVLANRanges: "dpdknet:101:103"
   NeutronNetworkType: "vxlan"
   NeutronTunnelTypes: "vxlan"
 

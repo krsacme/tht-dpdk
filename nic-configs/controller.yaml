@@ -98,21 +98,15 @@ resources:
                   ip_netmask: 169.254.169.254/32
                   next_hop: {get_param: EC2MetadataIp}
             -
-              type: interface
-              name: nic2
-              use_dhcp: false
-              defroute: false
-            -
               type: ovs_bridge
               name: br-ex
               use_dhcp: false
               members:
                 - 
                   type: interface
-                  name: nic3
+                  name: nic2
                 -
                   type: vlan
-                  device: nic3
                   vlan_id: {get_param: ExternalNetworkVlanID}
                   addresses:
                     -
@@ -121,54 +115,30 @@ resources:
                     -
                       default: true
                       next_hop: {get_param: ExternalInterfaceDefaultRoute}
-
-
             -
-              type: ovs_bridge
-              name: br-isol
+              type: interface
+              name: nic3
               use_dhcp: false
-              dns_servers: {get_param: DnsServers}
-              members:
-                -
-                  type: interface
-                  name: nic4
-                -
-                  type: vlan
-                  device: nic4
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: InternalApiIpSubnet}
-                -
-                  type: vlan
-                  device: nic4
-                  vlan_id: {get_param: StorageNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageIpSubnet}
-                -
-                  type: vlan
-                  device: nic4
-                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageMgmtIpSubnet}
-                -
-                  type: vlan
-                  device: nic4
-                  vlan_id: {get_param: TenantNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: TenantIpSubnet}
+              defroute: false
+            -
+              type: interface
+              name: nic4
+              use_dhcp: false
+              defroute: false
 
             -
               type: ovs_bridge
               name: br-link
               use_dhcp: false
-              members:
+              addresses:
                 -
+                  ip_netmask: {get_param: TenantIpSubnet}
+              members:
+                - 
                   type: interface
                   name: nic5
+                  use_dhcp: false
+                  primary: true
 
 outputs:
   OS::stack_id:
