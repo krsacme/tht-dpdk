@@ -130,15 +130,16 @@ resources:
               type: ovs_bridge
               name: br-link
               use_dhcp: false
-              addresses:
-                -
-                  ip_netmask: {get_param: TenantIpSubnet}
               members:
                 - 
                   type: interface
                   name: nic5
-                  use_dhcp: false
-                  primary: true
+                -
+                  type: vlan
+                  vlan_id: {get_param: TenantNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: TenantIpSubnet}
 
 outputs:
   OS::stack_id:

@@ -36,8 +36,6 @@ parameter_defaults:
   OvercloudControlFlavor: "control"
   ComputeCount: 2
 
-  NetworkDeploymentActions: ['CREATE', 'UPDATE']
-
   NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
   NeutronFlatNetworks: "datacentre"
   NeutronNetworkVLANRanges: "dpdknet:101:103"
