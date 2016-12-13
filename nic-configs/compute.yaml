@@ -74,7 +74,7 @@ resources:
           network_config:
             -
               type: interface
-              name: nic1
+             name: nic2
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -94,7 +94,7 @@ resources:
 
             -
               type: interface
-              name: nic2
+              name: nic1
               use_dhcp: false
               defroute: false
             -

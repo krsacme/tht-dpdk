@@ -1,0 +1,17 @@
+heat_template_version: 2015-04-30
+parameters:
+  PingTestIps:
+    default: ''
+    type: string
+resources:
+  AllNodesValidationsImpl:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        echo "skip" > /tmp/validation.script
+
+outputs:
+  OS::stack_id:
+    value: {get_resource: AllNodesValidationsImpl}
