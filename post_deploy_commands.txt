@@ -1,0 +1,20 @@
+
+. overcloudrc
+glance image-create --name rhel  --disk-format qcow2 --container-format bare --file  /home/stack/rhel-guest-image-7.3-35.x86_64.qcow2 --progress
+nova keypair-add test > test.pem
+chmod 600 test.pem
+nova secgroup-add-rule default tcp 22 22 0.0.0.0/0
+nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0
+
+openstack flavor create --vcpus 6 --ram 4096 --disk 40 m1.nano
+openstack flavor set m1.nano --property hw:mem_page_size=large
+neutron net-create --provider:network_type flat --provider:physical_network datacentre public --router:external
+neutron subnet-create --name public --allocation-pool start=172.18.0.210,end=172.18.0.230  --dns-nameserver 8.8.8.8 --disable-dhcp public 172.18.0.0/24
+
+neutron net-create internal
+neutron subnet-create internal 192.1.1.0/24 --name internal_subnet
+neutron router-create router0
+neutron router-gateway-set router0 public
+neutron router-interface-add router0 internal_subnet
+dpdk0_net=$(neutron net-list | awk ' /internal/ {print $2;}')
+nova boot --flavor m1.nano --nic net-id=$dpdk0_net --image rhel --key-name test  dpdk1

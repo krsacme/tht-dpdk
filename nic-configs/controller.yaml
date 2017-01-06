@@ -134,6 +134,37 @@ resources:
                 -
                   type: interface
                   name: nic4
+            -
+              type: ovs_bridge
+              name: br-isol
+              use_dhcp: false
+              dns_servers: {get_param: DnsServers}
+              members:
+                -
+                  type: interface
+                  name: nic5
+                -
+                  type: vlan
+                  vlan_id: {get_param: InternalApiNetworkVlanID}
+                  device: nic5
+                  addresses:
+                    -
+                      ip_netmask: {get_param: InternalApiIpSubnet}
+                -
+                  type: vlan
+                  vlan_id: {get_param: StorageNetworkVlanID}
+                  device: nic5
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageIpSubnet}
+                -
+                  type: vlan
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  device: nic5
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
+
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
