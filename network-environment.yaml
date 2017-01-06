@@ -1,14 +1,9 @@
 resource_registry:
-  #OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/compute.yaml
   OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/computeovsdpdk.yaml
   OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/controller.yaml
   OS::TripleO::NodeUserData: /home/stack/templates/first-boot.yaml
   OS::TripleO::NodeExtraConfigPost: /home/stack/templates/post-install.yaml
-  #OS::TripleO::AllNodes::Validation: /usr/share/openstack-tripleo-heat-templates/firstboot/userdata_default.yaml
   OS::TripleO::AllNodes::Validation: /home/stack/templates/dummy_all_nodes-validation.yaml
-
-  #OS::TripleO::Services::ComputeNeutronOvsDpdkAgent: /home/stack/templates/openstack-tripleo-heat-templates/puppet/services/neutron-ovs-dpdk-agent.yaml
-  #OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: /home/stack/templates/nic-configs/computeovsdpdk.yaml
 
 parameter_defaults:
   PingTestIps: ''
@@ -22,32 +17,28 @@ parameter_defaults:
   #NeutronExternalNetworkBridge: ""
   #ExternalInterfaceDefaultRoute: "172.18.1.1"
 
-  #InternalApiNetCidr: 10.10.100.0/24
-  #StorageNetCidr: 10.10.101.0/24
-  #StorageMgmtNetCidr: 10.10.102.0/24
+  InternalApiNetCidr: 10.10.100.0/24
+  StorageNetCidr: 10.10.101.0/24
+  StorageMgmtNetCidr: 10.10.102.0/24
   TenantNetCidr: 10.10.103.0/24
-  #InternalApiNetworkVlanID: 81
-  #StorageNetworkVlanID: 82
-  #StorageMgmtNetworkVlanID: 83
-  #TenantNetworkVlanID: 100
-  #InternalApiAllocationPools: [{'start': '10.10.100.10', 'end': '10.10.100.200'}]
-  #StorageAllocationPools: [{'start': '10.10.101.10', 'end': '10.10.101.200'}]
-  #StorageMgmtAllocationPools: [{'start': '10.10.102.10', 'end': '10.10.102.200'}]
+  InternalApiNetworkVlanID: 100
+  StorageNetworkVlanID: 101
+  StorageMgmtNetworkVlanID: 102
+  InternalApiAllocationPools: [{'start': '10.10.100.10', 'end': '10.10.100.200'}]
+  StorageAllocationPools: [{'start': '10.10.101.10', 'end': '10.10.101.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.10.102.10', 'end': '10.10.102.200'}]
   TenantAllocationPools: [{'start': '10.10.103.10', 'end': '10.10.103.200'}]
 
   OvercloudComputeFlavor: "compute"
   OvercloudControlFlavor: "control"
-  ComputeCount: 1
+  ComputeCount: 2
 
   NeutronBridgeMappings: "datacentre:br-ex"
   NeutronFlatNetworks: "datacentre"
-  #NeutronNetworkVLANRanges: "dpdknet:102:103"
-  NeutronNetworkType: "vxlan"
-  NeutronTunnelTypes: "vxlan"
-
+  NeutronNetworkType: "gre"
+  NeutronTunnelTypes: "gre"
   NeutronDpdkCoreList: "'2,3,22,23'"
   NeutronDpdkMemoryChannels: "4"
-
   NeutronDatapathType: "netdev"
   NeutronVhostuserSocketDir: "/var/run/openvswitch"
   NeutronDpdkSocketMemory: "'2048,2048'"
