@@ -35,8 +35,8 @@ parameter_defaults:
 
   NeutronBridgeMappings: "datacentre:br-ex"
   NeutronFlatNetworks: "datacentre"
-  NeutronNetworkType: "gre"
-  NeutronTunnelTypes: "gre"
+  NeutronNetworkType: "vxlan"
+  NeutronTunnelTypes: "vxlan"
   NeutronDpdkCoreList: "'2,3,22,23'"
   NeutronDpdkMemoryChannels: "4"
   NeutronDatapathType: "netdev"
