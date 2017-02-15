@@ -73,12 +73,12 @@
     - OS::TripleO::Services::GnocchiApi
     - OS::TripleO::Services::GnocchiMetricd
     - OS::TripleO::Services::GnocchiStatsd
-    - OS::Tripleo::Services::ManilaApi
-    - OS::Tripleo::Services::ManilaScheduler
-    - OS::Tripleo::Services::ManilaBackendGeneric
-    - OS::Tripleo::Services::ManilaBackendNetapp
-    - OS::Tripleo::Services::ManilaBackendCephFs
-    - OS::Tripleo::Services::ManilaShare
+    - OS::TripleO::Services::ManilaApi
+    - OS::TripleO::Services::ManilaScheduler
+    - OS::TripleO::Services::ManilaBackendGeneric
+    - OS::TripleO::Services::ManilaBackendNetapp
+    - OS::TripleO::Services::ManilaBackendCephFs
+    - OS::TripleO::Services::ManilaShare
     - OS::TripleO::Services::AodhApi
     - OS::TripleO::Services::AodhEvaluator
     - OS::TripleO::Services::AodhNotifier
@@ -90,7 +90,8 @@
     - OS::TripleO::Services::NovaIronic
     - OS::TripleO::Services::TripleoPackages
     - OS::TripleO::Services::TripleoFirewall
-    - OS::TripleO::Services::OpenDaylight
+    - OS::TripleO::Services::OpenDaylightApi
+    - OS::TripleO::Services::OpenDaylightOvs
     - OS::TripleO::Services::SensuClient
     - OS::TripleO::Services::FluentdClient
     - OS::TripleO::Services::VipHosts
@@ -109,7 +110,7 @@
     - OS::TripleO::Services::NovaLibvirt
     - OS::TripleO::Services::Kernel
     - OS::TripleO::Services::ComputeNeutronCorePlugin
-    - OS::TripleO::Services::ComputeNeutronOvsAgent
+    - OS::TripleO::Services::ComputeNeutronOvsDpdkAgent
     - OS::TripleO::Services::ComputeCeilometerAgent
     - OS::TripleO::Services::ComputeNeutronL3Agent
     - OS::TripleO::Services::ComputeNeutronMetadataAgent
@@ -122,10 +123,9 @@
     - OS::TripleO::Services::VipHosts
 
 - name: ComputeOvsDpdk
-  CountDefault: 1
   HostnameFormatDefault: '%stackname%-computeovsdpdk-%index%'
   ServicesDefault:
-    - OS::TripleO::Services::CACerts
+    - OS::TripleO::Services::CACerts  
     - OS::TripleO::Services::CephClient
     - OS::TripleO::Services::CephExternal
     - OS::TripleO::Services::Timezone
@@ -182,6 +182,7 @@
     - OS::TripleO::Services::CephOSD
     - OS::TripleO::Services::Kernel
     - OS::TripleO::Services::Ntp
+    - OS::TripleO::Services::Snmp
     - OS::TripleO::Services::Timezone
     - OS::TripleO::Services::TripleoPackages
     - OS::TripleO::Services::TripleoFirewall
