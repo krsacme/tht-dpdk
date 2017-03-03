@@ -13,19 +13,15 @@ resources:
     properties:
       servers:  {get_param: servers}
       config: {get_resource: ExtraConfig}
-      actions: ['CREATE'] # Only do this on CREATE
+      # Do this on CREATE/UPDATE (which is actually the default)
+      actions: ['CREATE', 'UPDATE']
 
   ExtraConfig:
     type: OS::Heat::SoftwareConfig
     properties:
       group: script
-      config: |
-        #!/bin/bash
-        hostname=$(hostname)
-        if [[ $hostname =~ 'compute' ]];
-        then
-          systemctl daemon-reload
-          systemctl restart openvswitch-nonetwork
-        fi
-
-
+      config:
+        list_join:
+        - ''
+        - - get_file: update_ovs26_script.sh
+          - get_file: ovs_permission_patch.sh
