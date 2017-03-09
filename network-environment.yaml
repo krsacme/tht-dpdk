@@ -1,13 +1,10 @@
 resource_registry:
-  #OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/compute.yaml
-  #OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: /home/stack/templates/nic-configs/computeovsdpdk.yaml
-  OS::TripleO::Compute::Net::SoftwareConfig: /home/stack/templates/nic-configs/computeovsdpdk.yaml
-  OS::TripleO::Controller::Net::SoftwareConfig: /home/stack/templates/nic-configs/controller.yaml
-  OS::TripleO::NodeUserData: /home/stack/templates/first-boot.yaml
-  OS::TripleO::NodeExtraConfigPost: /home/stack/templates/post-install.yaml
+  OS::TripleO::Compute::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::NodeUserData: first-boot.yaml
+  OS::TripleO::NodeExtraConfigPost: post-install.yaml
 
   OS::TripleO::Services::ComputeNeutronOvsDpdkAgent: /usr/share/openstack-tripleo-heat-templates/puppet/services/neutron-ovs-dpdk-agent.yaml
-  #OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: /home/stack/templates/nic-configs/computeovsdpdk.yaml
 
 parameter_defaults:
   ControlPlaneDefaultRoute: "172.18.0.1"
