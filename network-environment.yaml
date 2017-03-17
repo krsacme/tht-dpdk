@@ -61,6 +61,7 @@ parameter_defaults:
   NovaVcpuPinSet: ['12-21','24-87']
   NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter,AggregateInstanceExtraSpecsFilter"
   ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on isolcpus=2,3,12-87"
+  HostCpusList: "0,1,4,5,6,7,8,9,10,11"
 
   ServiceNetMap:
     NeutronTenantNetwork: tenant
