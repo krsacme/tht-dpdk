@@ -37,8 +37,8 @@ resources:
     type: OS::Heat::MultipartMime
     properties:
       parts:
-      - config: {get_resource: compute_kernel_args}
       - config: {get_resource: set_dpdk_params}
+      - config: {get_resource: compute_kernel_args}
 
   # Verify the logs on /var/log/cloud-init.log on the overcloud node
   compute_kernel_args:
