@@ -50,12 +50,6 @@ resources:
             #!/bin/bash
             set -x
 
-            #################################################################
-            # Disable selinux on all nodes because of ovs2.6 version issue
-            # https://bugzilla.redhat.com/show_bug.cgi?id=1417164
-            sed 's/SELINUX=enforcing/SELINUX=permissive/g' -i /etc/selinux/config
-            setenforce 0
-
             FORMAT=$COMPUTE_HOSTNAME_FORMAT
             if [[ -z $FORMAT ]] ; then
               FORMAT="compute" ;
