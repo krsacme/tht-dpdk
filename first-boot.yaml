@@ -18,6 +18,13 @@ parameters:
     default: ""
   HostCpusList:
     description: >
+      A list or range of physical CPU cores for the host OS.
+      The given args will be used for DPDK LCore.
+      Ex. HostCpusList: '4-12' will tune cores from 4-12
+    type: string
+    default: ""
+  IsolateCpusList:
+    description: >
       A list or range of physical CPU cores to be tuned.
       The given args will be appended to the tuned cpu-partitioning profile.
       Ex. HostCpusList: '4-12' will tune cores from 4-12
@@ -134,7 +141,7 @@ resources:
           params:
             $KERNEL_ARGS: {get_param: ComputeKernelArgs}
             $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
-            $TUNED_CORES: {get_param: HostCpusList}
+            $TUNED_CORES: {get_param: IsolateCpusList}
 
   set_dpdk_params:
     type: OS::Heat::SoftwareConfig
@@ -146,35 +153,54 @@ resources:
             set -x
             get_mask()
             {
-              local list=$1
-              local mask=0
-              declare -a bm
-              max_idx=0
-              for core in $(echo $list | sed 's/,/ /g')
+              core_mask=$1
+              IFS_BCK=$IFS
+              IFS=','
+              for core_mask_seq in $core_mask
               do
-                  index=$(($core/32))
-                  bm[$index]=0
-                  if [ $max_idx -lt $index ]; then
-                     max_idx=$index
-                  fi
+                      if [[ "$(echo $core_mask_seq|grep "-")" != "" ]]
+                      then
+                              seq_start=$(echo $core_mask_seq|awk -F "-" '{print $1}')
+                              seq_end=$(echo $core_mask_seq|awk -F "-" '{print $2}')
+                              for (( num=$seq_start; num<=$seq_end; num++ ))
+                              do
+                                      core_mask_new_seq=$(echo -n $core_mask_new_seq $num)
+                              done
+                      else
+                              core_mask_new_seq=$(echo -n $core_mask_new_seq $core_mask_seq)
+                      fi
               done
-              for ((i=$max_idx;i>=0;i--));
+              IFS=$IFS_BCK
+              core_mask_new_seq=$(echo $core_mask_new_seq|sed "s/ /,/g")
+
+              maximum_core=0
+              for core in $(echo $core_mask_new_seq|sed "s/,/ /g")
               do
-                  bm[$i]=0
+                      if (( "$core" > "$maximum_core" ))
+                      then
+                              maximum_core=$core
+                      fi
               done
-              for core in $(echo $list | sed 's/,/ /g')
+
+              i=0
+              for core in $(echo $core_mask_new_seq|sed "s/,/ /g")
               do
-                  index=$(($core/32))
-                  temp=$((1<<$core))
-                  bm[$index]=$((${bm[$index]} | $temp))
+                      core_array_mask[$i]=$core
+                      i=$(($i+1))
               done
-              printf -v mask "%x" "${bm[$max_idx]}"
-              for ((i=$max_idx-1;i>=0;i--));
+
+              j=0
+              for (( i=0; i<=$maximum_core; i++ ))
               do
-                  printf -v hex "%08x" "${bm[$i]}"
-                  mask+=$hex
+                      if (( "$i" == "${core_array_mask[$j]}" ))
+                      then
+                              cpu_bit_mask=$(echo 1$cpu_bit_mask)
+                              j=$(($j+1))
+                      else
+                              cpu_bit_mask=$(echo 0$cpu_bit_mask)
+                      fi
               done
-              printf "%s" "$mask"
+              echo $(printf '%x\n' "$((2#$cpu_bit_mask))")
             }
             FORMAT=$COMPUTE_HOSTNAME_FORMAT
             if [[ -z $FORMAT ]] ; then
@@ -185,7 +211,7 @@ resources:
             fi
             if [[ $(hostname) == *$FORMAT* ]] ; then
               pmd_cpu_mask=$( get_mask $PMD_CORES )
-              host_cpu_mask=$( get_mask $TUNED_CORES )
+              host_cpu_mask=$( get_mask $HOST_CORES )
               ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
               ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem=$SOCKET_MEMORY
               ovs-vsctl --no-wait set Open_vSwitch . other_config:pmd-cpu-mask=$pmd_cpu_mask
@@ -193,7 +219,7 @@ resources:
             fi
           params:
             $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
-            $TUNED_CORES: {get_param: HostCpusList}
+            $HOST_CORES: {get_param: HostCpusList}
             $PMD_CORES: {get_param: NeutronDpdkCoreList}
             $SOCKET_MEMORY: {get_param: NeutronDpdkSocketMemory}
 
