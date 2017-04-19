@@ -18,6 +18,13 @@ parameters:
     default: ""
   HostCpusList:
     description: >
+      A list or range of physical CPU cores for the host OS.
+      The given args will be used for DPDK LCore.
+      Ex. HostCpusList: '4-12' will tune cores from 4-12
+    type: string
+    default: ""
+  IsolateCpusList:
+    description: >
       A list or range of physical CPU cores to be tuned.
       The given args will be appended to the tuned cpu-partitioning profile.
       Ex. HostCpusList: '4-12' will tune cores from 4-12
@@ -134,7 +141,7 @@ resources:
           params:
             $KERNEL_ARGS: {get_param: ComputeKernelArgs}
             $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
-            $TUNED_CORES: {get_param: HostCpusList}
+            $TUNED_CORES: {get_param: IsolateCpusList}
 
   set_dpdk_params:
     type: OS::Heat::SoftwareConfig
@@ -204,7 +211,7 @@ resources:
             fi
             if [[ $(hostname) == *$FORMAT* ]] ; then
               pmd_cpu_mask=$( get_mask $PMD_CORES )
-              host_cpu_mask=$( get_mask $TUNED_CORES )
+              host_cpu_mask=$( get_mask $HOST_CORES )
               ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
               ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem=$SOCKET_MEMORY
               ovs-vsctl --no-wait set Open_vSwitch . other_config:pmd-cpu-mask=$pmd_cpu_mask
@@ -212,7 +219,7 @@ resources:
             fi
           params:
             $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
-            $TUNED_CORES: {get_param: HostCpusList}
+            $HOST_CORES: {get_param: HostCpusList}
             $PMD_CORES: {get_param: NeutronDpdkCoreList}
             $SOCKET_MEMORY: {get_param: NeutronDpdkSocketMemory}
 
