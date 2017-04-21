@@ -1,0 +1,13 @@
+parameter_defaults:
+  SkipUpgradeConfigTags: [validation]
+  UpgradeInitCommand: |
+    set -x
+    subscription-manager repos --disable="rhel-7-server-openstack-10-rpms"
+    cat <<EOF>/etc/yum.repos.d/redhat-local.repo
+    [redhat-local]
+    name=Red Hat Local (Proxy Server)
+    baseurl=http://10.60.19.51/rhos-11-repo/latest
+    enabled=1
+    gpgcheck=0
+    EOF
+    yum clean all

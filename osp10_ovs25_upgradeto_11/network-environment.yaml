@@ -1,0 +1,97 @@
+resource_registry:
+  OS::TripleO::Compute::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::NodeUserData: first-boot.yaml
+  OS::TripleO::NodeExtraConfigPost: post-install.yaml
+
+  OS::TripleO::Services::ComputeNeutronOvsDpdkAgent: /usr/share/openstack-tripleo-heat-templates/puppet/services/neutron-ovs-dpdk-agent.yaml
+
+parameter_defaults:
+  ControlPlaneDefaultRoute: "172.18.0.1"
+  ControlPlaneSubnetCidr: "24"
+  DnsServers: ['8.8.8.8','8.8.4.4']
+  EC2MetadataIp: "172.18.0.1"
+
+  ExternalAllocationPools: [{'start': '10.60.19.200', 'end': '10.60.19.251'}]
+  ExternalNetCidr: "10.60.19.0/24"
+  #ExternalNetworkVlanID: 10
+  NeutronExternalNetworkBridge: "''"
+  ExternalInterfaceDefaultRoute: "10.60.19.1"
+
+  InternalApiNetCidr: 10.10.81.0/24
+  StorageNetCidr: 10.10.82.0/24
+  StorageMgmtNetCidr: 10.10.83.0/24
+  TenantNetCidr: 10.10.84.0/24
+  InternalApiNetworkVlanID: 81
+  StorageNetworkVlanID: 82
+  StorageMgmtNetworkVlanID: 83
+  TenantNetworkVlanID: 84
+  InternalApiAllocationPools: [{'start': '10.10.81.10', 'end': '10.10.81.200'}]
+  StorageAllocationPools: [{'start': '10.10.82.10', 'end': '10.10.82.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.10.83.10', 'end': '10.10.83.200'}]
+  TenantAllocationPools: [{'start': '10.10.84.10', 'end': '10.10.84.200'}]
+
+
+  OvercloudControlFlavor: "baremetal"
+  OvercloudComputeFlavor: "baremetal"
+  # OvercloudComputeOvsDpdkFlavor: "baremetal"
+  # Number of nodes to deploy.
+  ControllerCount: 1
+  ComputeCount: 2
+
+  # NeutronBridgeMappings translates to neutron::agents::ml2::ovs::bridge_mappings
+  NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
+  # NeutronFlatNetworks translates to neutron::plugins::ml2::flat_networks
+  NeutronFlatNetworks: "datacentre"
+  # NeutronNetworkVLANRanges translates to neutron::plugins::ml2::network_vlan_ranges
+  NeutronNetworkVLANRanges: "dpdknet:100:103"
+  # NeutronNetworkType translates to neutron::plugins::ml2::tenant_network_types
+  NeutronNetworkType: ['vlan','vxlan']
+  # NeutronTunnelTypes translates to neutron::agents::ml2::ovs::tunnel_types
+  NeutronTunnelTypes: "vxlan"
+
+  NeutronDpdkCoreList: "'2,3,22,23'"
+  NeutronDpdkMemoryChannels: "4"
+
+  HostCpusList: "0,1,4,5,6,7,8,9,10,11"
+  NeutronDatapathType: "netdev"
+  NeutronVhostuserSocketDir: "/var/run/openvswitch"
+  NeutronDpdkSocketMemory: "'1024,1024'"
+  NeutronDpdkDriverType: "vfio-pci"
+  NovaReservedHostMemory: 4096
+  NovaVcpuPinSet: ['12-21','24-87']
+  NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter,AggregateInstanceExtraSpecsFilter"
+  ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on isolcpus=2,3,12-87"
+
+  NtpServer: "pool.ntp.org"
+
+  ServiceNetMap:
+    NeutronTenantNetwork: tenant
+    CeilometerApiNetwork: internal_api
+    MongoDbNetwork: internal_api
+    CinderApiNetwork: internal_api
+    CinderIscsiNetwork: storage
+    GlanceApiNetwork: storage
+    GlanceRegistryNetwork: internal_api
+    KeystoneAdminApiNetwork: internal_api
+    KeystonePublicApiNetwork: internal_api
+    NeutronApiNetwork: internal_api
+    HeatApiNetwork: internal_api
+    NovaApiNetwork: internal_api
+    NovaMetadataNetwork: internal_api
+    NovaVncProxyNetwork: internal_api
+    SwiftMgmtNetwork: storage_mgmt
+    SwiftProxyNetwork: storage
+    HorizonNetwork: internal_api
+    MemcachedNetwork: internal_api
+    RabbitMqNetwork: internal_api
+    RedisNetwork: internal_api
+    MysqlNetwork: internal_api
+    CephClusterNetwork: storage_mgmt
+    CephPublicNetwork: storage
+    # Define which network will be used for hostname resolution
+    ControllerHostnameResolveNetwork: internal_api
+    ComputeHostnameResolveNetwork: internal_api
+    BlockStorageHostnameResolveNetwork: internal_api
+    ObjectStorageHostnameResolveNetwork: internal_api
+    CephStorageHostnameResolveNetwork: storage

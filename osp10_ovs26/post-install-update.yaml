@@ -1,0 +1,139 @@
+heat_template_version: 2014-10-16
+
+description: >
+  Example extra config for post-deployment
+
+parameters:
+  servers:
+    type: json
+
+resources:
+
+  ExtraDeployments:
+    type: OS::Heat::StructuredDeployments
+    properties:
+      servers:  {get_param: servers}
+      config: {get_resource: ExtraConfig}
+      actions: ['CREATE','UPDATE']
+
+  ExtraConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        set -x
+        function tuned_service_dependency() {
+          tuned_service=/usr/lib/systemd/system/tuned.service
+          grep -q "network.target" $tuned_service
+          if [ "$?" -eq 0 ]; then
+              sed -i '/After=.*/s/network.target//g' $tuned_service
+          fi
+          grep -q "Before=.*network.target" $tuned_service
+          if [ ! "$?" -eq 0 ]; then
+              grep -q "Before=.*" $tuned_service
+              if [ "$?" -eq 0 ]; then
+                  sed -i 's/^\(Before=.*\)/\1 network.target openvswitch.service/g' $tuned_service
+              else
+                  sed -i '/After/i Before=network.target openvswitch.service' $tuned_service
+              fi
+          fi
+        }
+
+        function get_core_mask() {
+            local list=$1
+            local mask=0
+            declare -a bm
+            max_idx=0
+            for core in $(echo $list | sed 's/,/ /g')
+            do
+                index=$(($core/32))
+                bm[$index]=0
+                if [ $max_idx -lt $index ]; then
+                   max_idx=$index
+                fi
+            done
+            for ((i=$max_idx;i>=0;i--));
+            do
+                bm[$i]=0
+            done
+            for core in $(echo $list | sed 's/,/ /g')
+            do
+                index=$(($core/32))
+                temp=$((1<<$core))
+                bm[$index]=$((${bm[$index]} | $temp))
+            done
+            printf -v mask "%x" "${bm[$max_idx]}"
+            for ((i=$max_idx-1;i>=0;i--));
+            do
+                printf -v hex "%08x" "${bm[$i]}"
+                mask+=$hex
+            done
+            printf "%s" "$mask"
+        }
+
+        function ovs_update_with_dpdk_special_case() {
+            # Read the /etc/sysconfig/openvswitch file for DPDK_OPTIONS
+            DPDK_OPTIONS=""
+            while read line; do
+                if [[  $line == "DPDK_OPTIONS"* ]]; then
+                    DPDK_OPTIONS=$line
+                fi
+            done < /etc/sysconfig/openvswitch
+            if [[ -n $DPDK_OPTIONS ]]; then
+                # Parse -l and --socket-mem parameter and set it accordingly
+                DPDK_OPTIONS=$(echo $DPDK_OPTIONS | cut -d '"' -f 2)
+                #echo $DPDK_OPTIONS
+                PARAM_ARR=($DPDK_OPTIONS)
+                if [[ ${#PARAM_ARR[@]} -ge 6 ]]; then
+                    if [[ ${PARAM_ARR[0]} == "-l" ]]; then
+                        LCORE_LIST=${PARAM_ARR[1]}
+                    fi
+                    if [[ ${PARAM_ARR[4]} == "--socket-mem" ]]; then
+                        SOCKET_MEMORY='"'${PARAM_ARR[5]}'"'
+                    fi
+                fi
+                LCORE_MASK='"'$(get_core_mask $LCORE_LIST)'"'
+                #echo "LCORE_LIST=$LCORE_LIST"
+                echo "SOCKET_MEMORY=$SOCKET_MEMORY"
+                echo "LCORE_MASK=$LCORE_MASK"
+                if [[ $(ovs-vsctl get Open_vSwitch . other_config:dpdk-init) != '"true"' ]]; then
+                  ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
+                fi
+                if [[ $(ovs-vsctl get Open_vSwitch . other_config:dpdk-socket-mem) != $SOCKET_MEMORY ]]; then
+                  ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem=$SOCKET_MEMORY
+                fi
+                if [[ $(ovs-vsctl get Open_vSwitch . other_config:dpdk-lcore-mask) != $LCORE_MASK ]]; then
+                  ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-lcore-mask=$LCORE_MASK
+                fi
+            fi
+        }
+
+        function ovs_permission_fix() {
+            ovs_service_path="/usr/lib/systemd/system/ovs-vswitchd.service"
+            grep -q "RuntimeDirectoryMode=.*" $ovs_service_path
+            if [ "$?" -eq 0 ]; then
+              sed -i 's/RuntimeDirectoryMode=.*/RuntimeDirectoryMode=0775/' $ovs_service_path
+            else
+              echo "RuntimeDirectoryMode=0775" >> $ovs_service_path
+            fi
+              grep -Fxq "Group=qemu" $ovs_service_path
+            if [ ! "$?" -eq 0 ]; then
+              echo "Group=qemu" >> $ovs_service_path
+            fi
+            grep -Fxq "UMask=0002" $ovs_service_path
+            if [ ! "$?" -eq 0 ]; then
+              echo "UMask=0002" >> $ovs_service_path
+            fi
+            ovs_ctl_path='/usr/share/openvswitch/scripts/ovs-ctl'
+            grep -q "umask 0002 \&\& start_daemon \"\$OVS_VSWITCHD_PRIORITY\"" $ovs_ctl_path
+            if [ ! "$?" -eq 0 ]; then
+              sed -i 's/start_daemon \"\$OVS_VSWITCHD_PRIORITY.*/umask 0002 \&\& start_daemon \"$OVS_VSWITCHD_PRIORITY\" \"$OVS_VSWITCHD_WRAPPER\" \"$@\"/' $ovs_ctl_path
+            fi
+        }
+
+        if hiera -c /etc/puppet/hiera.yaml service_names | grep -q neutron_ovs_dpdk_agent; then
+            ovs_update_with_dpdk_special_case
+            tuned_service_dependency
+            ovs_permission_fix
+        fi
