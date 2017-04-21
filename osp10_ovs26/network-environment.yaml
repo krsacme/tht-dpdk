@@ -54,7 +54,7 @@ parameter_defaults:
   ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on"
 
   NeutronDpdkCoreList: "'10,11,22,23'"
-  HostCpusList: "0,1,2,3,4,5,6,7,8,9"
+  HostCpusList: "'0,1,2,3,4,5,6,7,8,9'"
   NovaVcpuPinSet: ['12-21','24-87']
 
   # TODO: Check if this configuration can be avoided
