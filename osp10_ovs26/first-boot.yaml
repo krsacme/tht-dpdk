@@ -154,12 +154,35 @@ resources:
             set -x
             get_mask()
             {
-                list=$1
-                value=0
-                for core in $(echo $list | sed 's/,/ /g'); do
-                    value=`echo "$value + 2^$core" | bc`
-                done
-                printf "%x" $value
+              local list=$1
+              local mask=0
+              declare -a bm
+              max_idx=0
+              for core in $(echo $list | sed 's/,/ /g')
+              do
+                index=$(($core/32))
+                bm[$index]=0
+                if [ $max_idx -lt $index ]; then
+                   max_idx=$(($index))
+                fi
+              done
+              for ((i=$max_idx;i>=0;i--));
+              do
+                bm[$i]=0
+              done
+              for core in $(echo $list | sed 's/,/ /g')
+              do
+                index=$(($core/32))
+                temp=$((1<<$(($core % 32))))
+                bm[$index]=$((${bm[$index]} | $temp))
+              done
+              printf -v mask "%x" "${bm[$max_idx]}"
+              for ((i=$max_idx-1;i>=0;i--));
+              do
+                printf -v hex "%08x" "${bm[$i]}"
+                mask+=$hex
+              done
+              printf "%s" "$mask"
             }
 
             FORMAT=$COMPUTE_HOSTNAME_FORMAT
