@@ -56,6 +56,7 @@ resources:
     properties:
       parts:
       - config: {get_resource: set_ovs_socket_config}
+      - config: {get_resource: set_ovs_config}
       - config: {get_resource: set_dpdk_params}
       - config: {get_resource: install_tuned}
       - config: {get_resource: compute_kernel_args}
@@ -83,6 +84,49 @@ resources:
           params:
             $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
             $NEUTRON_VHOSTUSER_SOCKET_DIR: {get_param: NeutronVhostuserSocketDir}
+
+  set_ovs_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            if [[ -z $FORMAT ]] ; then
+              FORMAT="compute" ;
+            else
+              # Assumption: only %index% and %stackname% are the variables in Host name format
+              FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
+            fi
+            if [[ $(hostname) == *$FORMAT* ]] ; then
+              if [ -f /usr/lib/systemd/system/openvswitch-nonetwork.service ]; then
+                ovs_service_path="/usr/lib/systemd/system/openvswitch-nonetwork.service"
+              elif [ -f /usr/lib/systemd/system/ovs-vswitchd.service ]; then
+                ovs_service_path="/usr/lib/systemd/system/ovs-vswitchd.service"
+              fi
+              grep -q "RuntimeDirectoryMode=.*" $ovs_service_path
+              if [ "$?" -eq 0 ]; then
+                sed -i 's/RuntimeDirectoryMode=.*/RuntimeDirectoryMode=0775/' $ovs_service_path
+              else
+                echo "RuntimeDirectoryMode=0775" >> $ovs_service_path
+              fi
+              grep -Fxq "Group=qemu" $ovs_service_path
+              if [ ! "$?" -eq 0 ]; then
+                echo "Group=qemu" >> $ovs_service_path
+              fi
+              grep -Fxq "UMask=0002" $ovs_service_path
+              if [ ! "$?" -eq 0 ]; then
+                echo "UMask=0002" >> $ovs_service_path
+              fi
+              ovs_ctl_path='/usr/share/openvswitch/scripts/ovs-ctl'
+              grep -q "umask 0002 \&\& start_daemon \"\$OVS_VSWITCHD_PRIORITY\"" $ovs_ctl_path
+              if [ ! "$?" -eq 0 ]; then
+                sed -i 's/start_daemon \"\$OVS_VSWITCHD_PRIORITY.*/umask 0002 \&\& start_daemon \"$OVS_VSWITCHD_PRIORITY\" \"$OVS_VSWITCHD_WRAPPER\" \"$@\"/' $ovs_ctl_path
+              fi
+            fi
+          params:
+            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
 
   # Verify the logs on /var/log/cloud-init.log on the overcloud node
   set_dpdk_params:
@@ -163,9 +207,10 @@ resources:
               FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
             fi
             if [[ $(hostname) == *$FORMAT* ]] ; then
-              PMD=$PMD_CORES
-              VCPU='$VCPU_CORES'
-              TUNED_CORES="$PMD,$VCPU"
+              #PMD=$PMD_CORES
+              #VCPU='$VCPU_CORES'
+              #TUNED_CORES="$PMD,$VCPU"
+
               tuned_conf_path="/etc/tuned/cpu-partitioning-variables.conf"
               if [ -n "$TUNED_CORES" ]; then
                 grep -q "^isolated_cores" $tuned_conf_path
@@ -179,9 +224,7 @@ resources:
             fi
           params:
             $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
-            $PMD_CORES: {get_param: NeutronDpdkCoreList}
-            $VCPU_CORES:
-                list_join: [',', {get_param: NovaVcpuPinSet}]
+            $TUNED_CORES: {get_param: HostIsolatedCoreList}
 
   compute_kernel_args:
     type: OS::Heat::SoftwareConfig
