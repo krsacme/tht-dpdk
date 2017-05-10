@@ -195,8 +195,9 @@ resources:
             if [[ $(hostname) == *$FORMAT* ]] ; then
               pmd_cpu_mask=$( get_mask $PMD_CORES )
               host_cpu_mask=$( get_mask $LCORE_LIST )
+              socket_mem=$(echo $SOCKET_MEMORY | sed s/\'//g )
               ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
-              ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem=$SOCKET_MEMORY
+              ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem=$socket_mem
               ovs-vsctl --no-wait set Open_vSwitch . other_config:pmd-cpu-mask=$pmd_cpu_mask
               ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-lcore-mask=$host_cpu_mask
             fi
