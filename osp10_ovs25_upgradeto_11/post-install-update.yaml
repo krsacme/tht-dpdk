@@ -132,8 +132,17 @@ resources:
             fi
         }
 
+        function set_ovs_socket_dir {
+            # TODO: Hardcoding it here as this directory is fixed, because it requires SELinux permissions
+            NEUTRON_VHOSTUSER_SOCKET_DIR="/var/lib/vhost_sockets"
+            mkdir -p $NEUTRON_VHOSTUSER_SOCKET_DIR
+            chown -R qemu:qemu $NEUTRON_VHOSTUSER_SOCKET_DIR
+            restorecon $NEUTRON_VHOSTUSER_SOCKET_DIR
+        }
+
         if hiera -c /etc/puppet/hiera.yaml service_names | grep -q neutron_ovs_dpdk_agent; then
             ovs_update_with_dpdk_special_case
             tuned_service_dependency
             ovs_permission_fix
+            set_ovs_socket_dir
         fi
