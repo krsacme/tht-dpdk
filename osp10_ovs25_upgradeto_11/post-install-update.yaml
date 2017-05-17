@@ -142,7 +142,6 @@ resources:
         }
 
         if hiera -c /etc/puppet/hiera.yaml service_names | grep -q neutron_ovs_dpdk_agent; then
-            ovs_update_with_dpdk_special_case
             tuned_service_dependency
             ovs_permission_fix
             set_ovs_socket_dir
