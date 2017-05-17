@@ -57,7 +57,7 @@ parameter_defaults:
   HostCpusList: "'0,1,4,5,6,7,8,9,10,11'"
   NeutronDatapathType: "netdev"
   NeutronVhostuserSocketDir: "/var/run/openvswitch"
-  NeutronDpdkSocketMemory: "'1024,1024'"
+  NeutronDpdkSocketMemory: "1024,1024"
   NeutronDpdkDriverType: "vfio-pci"
   NovaReservedHostMemory: 4096
   NovaVcpuPinSet: ['12-21','24-87']
@@ -65,34 +65,6 @@ parameter_defaults:
   ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on isolcpus=2,3,12-87"
 
   NtpServer: "pool.ntp.org"
-  
-  ServiceNetMap:
-    NeutronTenantNetwork: tenant
-    CeilometerApiNetwork: internal_api
-    MongoDbNetwork: internal_api
-    CinderApiNetwork: internal_api
-    CinderIscsiNetwork: storage
-    GlanceApiNetwork: storage
-    GlanceRegistryNetwork: internal_api
-    KeystoneAdminApiNetwork: internal_api
-    KeystonePublicApiNetwork: internal_api
-    NeutronApiNetwork: internal_api
-    HeatApiNetwork: internal_api
-    NovaApiNetwork: internal_api
-    NovaMetadataNetwork: internal_api
-    NovaVncProxyNetwork: internal_api
-    SwiftMgmtNetwork: storage_mgmt
-    SwiftProxyNetwork: storage
-    HorizonNetwork: internal_api
-    MemcachedNetwork: internal_api
-    RabbitMqNetwork: internal_api
-    RedisNetwork: internal_api
-    MysqlNetwork: internal_api
-    CephClusterNetwork: storage_mgmt
-    CephPublicNetwork: storage
-    # Define which network will be used for hostname resolution
-    ControllerHostnameResolveNetwork: internal_api
-    ComputeHostnameResolveNetwork: internal_api
-    BlockStorageHostnameResolveNetwork: internal_api
-    ObjectStorageHostnameResolveNetwork: internal_api
-    CephStorageHostnameResolveNetwork: storage
+  #HostIsolatedCoreList 
+
+
