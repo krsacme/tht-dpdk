@@ -1,0 +1,259 @@
+heat_template_version: 2014-10-16
+
+description: >
+  This is an example showing how you can do firstboot configuration
+  of the nodes via cloud-init.  To enable this, replace the default
+  mapping of OS::TripleO::NodeUserData in ../overcloud_resource_registry*
+
+parameters:
+  ComputeKernelArgs:
+    description: >
+      Space seprated list of Kernel args to be update to grub.
+      The given args will be appended to existing args of GRUB_CMDLINE_LINUX in file /etc/default/grub
+      Example: "intel_iommu=on default_hugepagesz=1GB hugepagesz=1G hugepages=1"
+    type: string
+    default: ""
+  ComputeHostnameFormat:
+    type: string
+    default: ""
+  HostIsolatedCoreList:
+    description: >
+      A list or range of physical CPU cores to be tuned as isolated_cores.
+      The given args will be appended to the tuned cpu-partitioning profile.
+      Ex. HostIsolatedCoreList: '4-12' will tune cores from 4-12
+    type: string
+    default: ""
+  HostCpusList:
+    description: >
+      A list or range of physical CPU cores to be tuned.
+      The given args will be appended to the tuned cpu-partitioning profile.
+      Ex. HostCpusList: '4-12' will tune cores from 4-12
+    type: string
+    default: ""
+  NeutronDpdkCoreList:
+    description: >
+      List of logical cores for PMD threads. Its mandatory parameter.
+    type: string
+  NeutronDpdkSocketMemory:
+    description: Memory allocated for each socket
+    default: ""
+    type: string
+  NeutronVhostuserSocketDir:
+    description: The vhost-user socket directory for OVS.
+    default: ""
+    type: string
+  NovaVcpuPinSet:
+    description: >
+      A list or range of physical CPU cores to reserve for virtual machine
+      processes.
+      Ex. NovaVcpuPinSet: ['4-12','^8'] will reserve cores from 4-12 excluding 8
+    type: comma_delimited_list
+    default: []
+
+resources:
+  userdata:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: set_ovs_socket_config}
+      - config: {get_resource: set_ovs_config}
+      - config: {get_resource: set_dpdk_params}
+      - config: {get_resource: install_tuned}
+      - config: {get_resource: compute_kernel_args}
+
+  set_ovs_socket_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -x
+            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            if [[ -z $FORMAT ]] ; then
+              FORMAT="compute" ;
+            else
+              # Assumption: only %index% and %stackname% are the variables in Host name format
+              FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
+            fi
+            if [[ $(hostname) == *$FORMAT* ]] ; then
+              mkdir -p $NEUTRON_VHOSTUSER_SOCKET_DIR
+              chown -R qemu:qemu $NEUTRON_VHOSTUSER_SOCKET_DIR
+              restorecon $NEUTRON_VHOSTUSER_SOCKET_DIR
+            fi
+          params:
+            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
+            $NEUTRON_VHOSTUSER_SOCKET_DIR: {get_param: NeutronVhostuserSocketDir}
+
+  set_ovs_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            if [[ -z $FORMAT ]] ; then
+              FORMAT="compute" ;
+            else
+              # Assumption: only %index% and %stackname% are the variables in Host name format
+              FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
+            fi
+            if [[ $(hostname) == *$FORMAT* ]] ; then
+              if [ -f /usr/lib/systemd/system/openvswitch-nonetwork.service ]; then
+                ovs_service_path="/usr/lib/systemd/system/openvswitch-nonetwork.service"
+              elif [ -f /usr/lib/systemd/system/ovs-vswitchd.service ]; then
+                ovs_service_path="/usr/lib/systemd/system/ovs-vswitchd.service"
+              fi
+              grep -q "RuntimeDirectoryMode=.*" $ovs_service_path
+              if [ "$?" -eq 0 ]; then
+                sed -i 's/RuntimeDirectoryMode=.*/RuntimeDirectoryMode=0775/' $ovs_service_path
+              else
+                echo "RuntimeDirectoryMode=0775" >> $ovs_service_path
+              fi
+              grep -Fxq "Group=qemu" $ovs_service_path
+              if [ ! "$?" -eq 0 ]; then
+                echo "Group=qemu" >> $ovs_service_path
+              fi
+              grep -Fxq "UMask=0002" $ovs_service_path
+              if [ ! "$?" -eq 0 ]; then
+                echo "UMask=0002" >> $ovs_service_path
+              fi
+              ovs_ctl_path='/usr/share/openvswitch/scripts/ovs-ctl'
+              grep -q "umask 0002 \&\& start_daemon \"\$OVS_VSWITCHD_PRIORITY\"" $ovs_ctl_path
+              if [ ! "$?" -eq 0 ]; then
+                sed -i 's/start_daemon \"\$OVS_VSWITCHD_PRIORITY.*/umask 0002 \&\& start_daemon \"$OVS_VSWITCHD_PRIORITY\" \"$OVS_VSWITCHD_WRAPPER\" \"$@\"/' $ovs_ctl_path
+              fi
+            fi
+          params:
+            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
+
+  # Verify the logs on /var/log/cloud-init.log on the overcloud node
+  set_dpdk_params:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -x
+            get_mask()
+            {
+              local list=$1
+              local mask=0
+              declare -a bm
+              max_idx=0
+              for core in $(echo $list | sed 's/,/ /g')
+              do
+                index=$(($core/32))
+                bm[$index]=0
+                if [ $max_idx -lt $index ]; then
+                   max_idx=$(($index))
+                fi
+              done
+              for ((i=$max_idx;i>=0;i--));
+              do
+                bm[$i]=0
+              done
+              for core in $(echo $list | sed 's/,/ /g')
+              do
+                index=$(($core/32))
+                temp=$((1<<$(($core % 32))))
+                bm[$index]=$((${bm[$index]} | $temp))
+              done
+              printf -v mask "%x" "${bm[$max_idx]}"
+              for ((i=$max_idx-1;i>=0;i--));
+              do
+                printf -v hex "%08x" "${bm[$i]}"
+                mask+=$hex
+              done
+              printf "%s" "$mask"
+            }
+
+            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            if [[ -z $FORMAT ]] ; then
+              FORMAT="compute" ;
+            else
+              # Assumption: only %index% and %stackname% are the variables in Host name format
+              FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
+            fi
+            if [[ $(hostname) == *$FORMAT* ]] ; then
+              pmd_cpu_mask=$( get_mask $PMD_CORES )
+              host_cpu_mask=$( get_mask $TUNED_CORES )
+              ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-init=true
+              ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-socket-mem=$SOCKET_MEMORY
+              ovs-vsctl --no-wait set Open_vSwitch . other_config:pmd-cpu-mask=$pmd_cpu_mask
+              ovs-vsctl --no-wait set Open_vSwitch . other_config:dpdk-lcore-mask=$host_cpu_mask
+            fi
+          params:
+            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
+            $TUNED_CORES: {get_param: HostCpusList}
+            $PMD_CORES: {get_param: NeutronDpdkCoreList}
+            $SOCKET_MEMORY: {get_param: NeutronDpdkSocketMemory}
+
+  install_tuned:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -x
+            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            if [[ -z $FORMAT ]] ; then
+              FORMAT="compute" ;
+            else
+              # Assumption: only %index% and %stackname% are the variables in Host name format
+              FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
+            fi
+            if [[ $(hostname) == *$FORMAT* ]] ; then
+              #PMD=$PMD_CORES
+              #VCPU='$VCPU_CORES'
+              #TUNED_CORES="$PMD,$VCPU"
+
+              tuned_conf_path="/etc/tuned/cpu-partitioning-variables.conf"
+              if [ -n "$TUNED_CORES" ]; then
+                grep -q "^isolated_cores" $tuned_conf_path
+                if [ "$?" -eq 0 ]; then
+                  sed -i 's/^isolated_cores=.*/isolated_cores=$TUNED_CORES/' $tuned_conf_path
+                else
+                  echo "isolated_cores=$TUNED_CORES" >> $tuned_conf_path
+                fi
+                tuned-adm profile cpu-partitioning
+              fi
+            fi
+          params:
+            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
+            $TUNED_CORES: {get_param: HostIsolatedCoreList}
+
+  compute_kernel_args:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -x
+            FORMAT=$COMPUTE_HOSTNAME_FORMAT
+            if [[ -z $FORMAT ]] ; then
+              FORMAT="compute" ;
+            else
+              # Assumption: only %index% and %stackname% are the variables in Host name format
+              FORMAT=$(echo $FORMAT | sed  's/\%index\%//g' | sed 's/\%stackname\%//g') ;
+            fi
+            if [[ $(hostname) == *$FORMAT* ]] ; then
+              sed 's/^\(GRUB_CMDLINE_LINUX=".*\)"/\1 $KERNEL_ARGS"/g' -i /etc/default/grub ;
+              grub2-mkconfig -o /etc/grub2.cfg
+              reboot
+            fi
+          params:
+            $KERNEL_ARGS: {get_param: ComputeKernelArgs}
+            $COMPUTE_HOSTNAME_FORMAT: {get_param: ComputeHostnameFormat}
+
+outputs:
+  # This means get_resource from the parent template will get the userdata, see:
+  # http://docs.openstack.org/developer/heat/template_guide/composition.html#making-your-template-resource-more-transparent
+  # Note this is new-for-kilo, an alternative is returning a value then using
+  # get_attr in the parent template instead.
+  OS::stack_id:
+    value: {get_resource: userdata}
