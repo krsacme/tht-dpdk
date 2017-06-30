@@ -1,6 +1,10 @@
-openstack overcloud deploy --templates \
+openstack overcloud deploy \
+    --templates /home/stack/templates/openstack-tripleo-heat-templates \
+    -r roles_data.yaml \
+    --no-cleanup \
     --timeout 90 \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
+    -e /home/stack/templates/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
+    -e /home/stack/templates/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
+    -e /home/stack/templates/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
     -e network-environment.yaml
 

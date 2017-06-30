@@ -55,11 +55,25 @@ resources:
     type: OS::Heat::MultipartMime
     properties:
       parts:
-      - config: {get_resource: set_ovs_socket_config}
-      - config: {get_resource: set_ovs_config}
-      - config: {get_resource: set_dpdk_params}
-      - config: {get_resource: install_tuned}
-      - config: {get_resource: compute_kernel_args}
+      - config: {get_resource: downgrade_ovs}
+
+  downgrade_ovs:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: |
+        #!/bin/bash
+        set -x
+        rpm -e --nodeps openvswitch openvswitch-ovn-central openvswitch-ovn-common openvswitch-ovn-host
+        cat <<EOF>/etc/yum.repos.d/redhat-release1.repo
+        [rhelosp-12-rhel7.4]
+        name=rhelosp-12-rhel7.4
+        baseurl=http://10.60.19.71/puddle
+        enabled=1
+        gpgcheck=0
+        EOF
+        yum install -y openvswitch
+        systemctl start openvswitch
+        systemctl enable openvswitch
 
   set_ovs_socket_config:
     type: OS::Heat::SoftwareConfig
