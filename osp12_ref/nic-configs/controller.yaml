@@ -116,12 +116,17 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: ExternalIpSubnet
-                - ip_netmask:
-                    get_param: InternalApiIpSubnet
               - type: interface
                 name: nic4
                 use_dhcp: false
                 defroute: false
+              - type: vlan
+                vlan_id:
+                  get_param: InternalApiNetworkVlanID
+                device: nic4
+                addresses:
+                - ip_netmask:
+                    get_param: InternalApiIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: TenantNetworkVlanID
