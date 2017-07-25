@@ -48,7 +48,7 @@ parameter_defaults:
   ComputeOvsDpdkParameters:
     #KernelArgs: "intel_iommu=on iommu=pt"
     KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on iommu=pt"
-    TunedProfilename: "cpu-partitioning"
+    TunedProfileName: "cpu-partitioning"
     IsolCpusList: "10-87"
     
   OvsDpdkSocketMemory: "1024,1024"
