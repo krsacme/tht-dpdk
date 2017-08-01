@@ -2,5 +2,5 @@
 
 set -eux
 
-. stackrc
+. ~/stackrc
 upgrade-non-controller.sh --upgrade overcloud-compute-0

@@ -1,8 +1,12 @@
-openstack overcloud deploy \
-    --templates /usr/share/openstack-tripleo-heat-templates \
+#!/bin/bash
+
+source base.sh
+
+openstack overcloud deploy --templates \
     --timeout 90 \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
-    -e network-environment.yaml
-
+    -e registry.yaml \
+    -e dpdk-environment.yaml \
+    -e common-environment.yaml \
+    -e $ENV_FILE

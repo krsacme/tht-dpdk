@@ -76,6 +76,13 @@ parameters:
   EC2MetadataIp: # Override this via parameter_defaults
     description: The IP address of the EC2 metadata server.
     type: string
+
+  # Local parameter used for internal lab easy template management
+  LocalProvisioningNicName:
+    type: string
+  LocalUnusedNicName:
+    type: string
+
 resources:
   OsNetConfigImpl:
     type: OS::Heat::SoftwareConfig
@@ -89,8 +96,11 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: nic2
+                name:
+                  get_param: LocalProvisioningNicName
                 use_dhcp: false
+                dns_servers:
+                  get_param: DnsServers
                 addresses:
                 - ip_netmask:
                     list_join:
@@ -102,20 +112,20 @@ resources:
                   next_hop:
                     get_param: EC2MetadataIp
               - type: interface
-                name: nic1
+                name:
+                  get_param: LocalUnusedNicName
                 use_dhcp: false
                 defroute: false
               - type: interface
                 name: nic3
                 use_dhcp: false
-                defroute: false
-              - type: vlan
-                vlan_id:
-                  get_param: ExternalNetworkVlanID
-                device: nic3
                 addresses:
                 - ip_netmask:
                     get_param: ExternalIpSubnet
+                routes:
+                - default: true
+                  next_hop:
+                    get_param: ExternalInterfaceDefaultRoute
               - type: interface
                 name: nic4
                 use_dhcp: false
@@ -158,5 +168,6 @@ resources:
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
-    value: {get_resource: OsNetConfigImpl}
+    value:
+      get_resource: OsNetConfigImpl
 

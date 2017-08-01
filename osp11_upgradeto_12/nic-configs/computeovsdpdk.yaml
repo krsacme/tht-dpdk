@@ -85,6 +85,13 @@ parameters:
     description: Number of Rx Queues required for DPDK bond or DPDK ports
     default: 1
     type: number
+
+  # Local parameter used for internal lab easy template management
+  LocalProvisioningNicName:
+    type: string
+  LocalUnusedNicName:
+    type: string
+
 resources:
   OsNetConfigImpl:
     type: OS::Heat::SoftwareConfig
@@ -98,7 +105,8 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: nic1
+                name:
+                  get_param: LocalProvisioningNicName
                 use_dhcp: false
                 dns_servers:
                   get_param: DnsServers
@@ -116,7 +124,8 @@ resources:
                   next_hop:
                     get_param: ControlPlaneDefaultRoute
               - type: interface
-                name: nic2
+                name:
+                  get_param: LocalUnusedNicName
                 use_dhcp: false
                 defroute: false
               - type: interface
@@ -161,7 +170,6 @@ resources:
                   members:
                   - type: interface
                     name: nic5
-
 
 outputs:
   OS::stack_id:

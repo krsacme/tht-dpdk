@@ -1,6 +1,8 @@
 parameter_defaults:
   UpgradeInitCommand: |
     set -e
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1466345
+    yum -y remove openstack-dashboard-theme
     rm -rf /etc/yum.repos.d/*
     cat > /etc/yum.repos.d/rhos-release.repo <<EOF
     [rhos12-proxy2]

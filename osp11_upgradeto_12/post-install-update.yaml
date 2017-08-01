@@ -39,7 +39,27 @@ resources:
               fi
           fi
         }
+        # Reboot is not needed as osp11->osp12 upgrades ovs which requires restart
+        function ovs_permission_fix() {
+            ovs_service_path="/usr/lib/systemd/system/ovs-vswitchd.service"
+            if grep -q 'RuntimeDirectoryMode' $ovs_service_path; then
+                sed -i 's/RuntimeDirectoryMode=.*/RuntimeDirectoryMode=0775/' $ovs_service_path
+            else
+                echo "RuntimeDirectoryMode=0775" >> $ovs_service_path
+            fi
+            if ! grep -Fxq "Group=qemu" $ovs_service_path ; then
+              echo "Group=qemu" >> $ovs_service_path
+            fi
+            if ! grep -Fxq "UMask=0002" $ovs_service_path ; then
+              echo "UMask=0002" >> $ovs_service_path
+            fi
+            ovs_ctl_path='/usr/share/openvswitch/scripts/ovs-ctl'
+            if ! grep -q "umask 0002 \&\& start_daemon \"\$OVS_VSWITCHD_PRIORITY\"" $ovs_ctl_path ; then
+              sed -i 's/start_daemon \"\$OVS_VSWITCHD_PRIORITY\"/umask 0002 \&\& start_daemon \"$OVS_VSWITCHD_PRIORITY\"/' $ovs_ctl_path
+            fi
+         }
 
         if hiera -c /etc/puppet/hiera.yaml service_names | grep -q neutron_ovs_dpdk_agent; then
             tuned_service_dependency
+            ovs_permission_fix
         fi
