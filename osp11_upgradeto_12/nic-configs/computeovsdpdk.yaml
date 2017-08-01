@@ -154,6 +154,8 @@ resources:
                 members:
                 - type: ovs_dpdk_port
                   name: dpdk0
+                  ovs_extra:
+                  - set Interface $DEVICE options:dpdk-devargs=0000:81:00.1
                   rx_queue:
                     get_param: NumDpdkInterfaceRxQueues
                   members:

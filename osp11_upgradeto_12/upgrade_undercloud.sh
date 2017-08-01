@@ -20,4 +20,3 @@ echo "Starting Undercloud upgrade.."
 mkdir ~/logs
 openstack undercloud upgrade 2>&1 | tee ~/logs/openstack_upgrade.log
 
-
