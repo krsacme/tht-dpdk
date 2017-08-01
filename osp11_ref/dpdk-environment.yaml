@@ -1,0 +1,18 @@
+parameter_defaults:
+  NeutronDpdkMemoryChannels: "4"
+
+  NeutronDatapathType: "netdev"
+  NeutronVhostuserSocketDir: "/var/lib/vhost_sockets"
+  NeutronDpdkSocketMemory: "1024,1024"
+  NeutronDpdkDriverType: "vfio-pci"
+  NovaReservedHostMemory: 4096
+  NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter,AggregateInstanceExtraSpecsFilter"
+  ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on"
+
+  NeutronDpdkCoreList: "10,11,22,23"
+  HostCpusList: "0,1,2,3,4,5,6,7,8,9"
+  NovaVcpuPinSet: ['12-21','24-87']
+
+  # TODO: Check if this configuration can be avoided
+  # HostIsolatedCoreList = NeutronDpdkCoreList + NovaVcpuPinSet
+  HostIsolatedCoreList: "10-87"
