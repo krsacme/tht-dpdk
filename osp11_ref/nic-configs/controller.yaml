@@ -1,9 +1,6 @@
-heat_template_version: 2015-04-30
-
+heat_template_version: ocata
 description: >
-  Software Config to drive os-net-config to configure VLANs for the
-  controller role.
-
+  Software Config to drive os-net-config to configure multiple interfaces for the controller role.
 parameters:
   ControlPlaneIp:
     default: ''
@@ -57,13 +54,20 @@ parameters:
     default: 60
     description: Vlan ID for the management network traffic.
     type: number
-  ExternalInterfaceDefaultRoute:
-    default: '10.0.0.1'
-    description: default route for the external network
-    type: string
   ControlPlaneSubnetCidr: # Override this via parameter_defaults
     default: '24'
     description: The subnet CIDR of the control plane network.
+    type: string
+  ControlPlaneDefaultRoute: # Override this via parameter_defaults
+    description: The default route of the control plane network.
+    type: string
+  ExternalInterfaceDefaultRoute:
+    default: 10.0.0.1
+    description: default route for the external network
+    type: string
+  ManagementInterfaceDefaultRoute: # Commented out by default in this template
+    default: unset
+    description: The default route of the management network.
     type: string
   DnsServers: # Override this via parameter_defaults
     default: []
@@ -73,92 +77,98 @@ parameters:
     description: The IP address of the EC2 metadata server.
     type: string
 
+  # Local parameter used for internal lab easy template management
+  LocalProvisioningNicName:
+    type: string
+  LocalUnusedNicName:
+    type: string
+
 resources:
   OsNetConfigImpl:
-    type: OS::Heat::StructuredConfig
+    type: OS::Heat::SoftwareConfig
     properties:
-      group: os-apply-config
+      group: script
       config:
-        os_net_config:
-          network_config:
-            -
-              type: interface
-              name: nic2
-              use_dhcp: false
-              dns_servers: {get_param: DnsServers}
-              addresses:
-                -
-                  ip_netmask:
+        str_replace:
+          template:
+            get_file: /usr/share/openstack-tripleo-heat-templates/network/scripts/run-os-net-config.sh
+          params:
+            $network_config:
+              network_config:
+              - type: interface
+                name:
+                  get_param: LocalProvisioningNicName
+                use_dhcp: false
+                dns_servers:
+                  get_param: DnsServers
+                addresses:
+                - ip_netmask:
                     list_join:
-                      - '/'
-                      - - {get_param: ControlPlaneIp}
-                        - {get_param: ControlPlaneSubnetCidr}
-              routes:
-                -
-                  default: false
-                  ip_netmask: 169.254.169.254/32
-                  next_hop: {get_param: EC2MetadataIp}
-            -
-              type: interface
-              name: nic1
-              use_dhcp: false
-              defroute: false
-            -
-              type: interface
-              name: nic3
-              use_dhcp: false
-              defroute: false
-            -
-              type: vlan
-              vlan_id: {get_param: ExternalNetworkVlanID}
-              device: nic3
-              addresses:
-                -
-                  ip_netmask: {get_param: ExternalIpSubnet}
-            -
-              type: interface
-              name: nic4
-              use_dhcp: false
-              defroute: false
-            -
-              type: vlan
-              vlan_id: {get_param: InternalApiNetworkVlanID}
-              device: nic4
-              addresses:
-                -
-                  ip_netmask: {get_param: InternalApiIpSubnet}
-            -
-              type: vlan
-              vlan_id: {get_param: TenantNetworkVlanID}
-              device: nic4
-              addresses:
-                -
-                  ip_netmask: {get_param: TenantIpSubnet}
-            -
-              type: vlan
-              vlan_id: {get_param: StorageNetworkVlanID}
-              device: nic4
-              addresses:
-                -
-                  ip_netmask: {get_param: StorageIpSubnet}
-            -
-              type: vlan
-              vlan_id: {get_param: StorageMgmtNetworkVlanID}
-              device: nic4
-              addresses:
-                -
-                  ip_netmask: {get_param: StorageMgmtIpSubnet}
-            -
-              type: ovs_bridge
-              name: br-link
-              use_dhcp: false
-              members:
-                -
-                  type: interface
+                    - /
+                    - - get_param: ControlPlaneIp
+                      - get_param: ControlPlaneSubnetCidr
+                routes:
+                - ip_netmask: 169.254.169.254/32
+                  next_hop:
+                    get_param: EC2MetadataIp
+              - type: interface
+                name:
+                  get_param: LocalUnusedNicName
+                use_dhcp: false
+                defroute: false
+              - type: interface
+                name: nic3
+                use_dhcp: false
+                defroute: false
+              - type: vlan
+                vlan_id:
+                  get_param: ExternalNetworkVlanID
+                device: nic3
+                addresses:
+                - ip_netmask:
+                    get_param: ExternalIpSubnet
+              - type: interface
+                name: nic4
+                use_dhcp: false
+                defroute: false
+              - type: vlan
+                vlan_id:
+                  get_param: InternalApiNetworkVlanID
+                device: nic4
+                addresses:
+                - ip_netmask:
+                    get_param: InternalApiIpSubnet
+              - type: vlan
+                vlan_id:
+                  get_param: TenantNetworkVlanID
+                device: nic4
+                addresses:
+                - ip_netmask:
+                    get_param: TenantIpSubnet
+              - type: vlan
+                vlan_id:
+                  get_param: StorageNetworkVlanID
+                device: nic4
+                addresses:
+                - ip_netmask:
+                    get_param: StorageIpSubnet
+              - type: vlan
+                vlan_id:
+                  get_param: StorageMgmtNetworkVlanID
+                device: nic4
+                addresses:
+                - ip_netmask:
+                    get_param: StorageMgmtIpSubnet
+              - type: ovs_bridge
+                name: br-link
+                use_dhcp: false
+                members:
+                - type: interface
                   name: nic5
 
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
-    value: {get_resource: OsNetConfigImpl}
+    value:
+      get_resource: OsNetConfigImpl
 

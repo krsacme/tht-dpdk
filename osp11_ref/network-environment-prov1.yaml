@@ -1,0 +1,27 @@
+parameter_defaults:
+  ControlPlaneDefaultRoute: "172.16.0.1"
+  ControlPlaneSubnetCidr: "24"
+  DnsServers: ['8.8.8.8','8.8.4.4']
+  EC2MetadataIp: "172.16.0.1"
+
+  ExternalAllocationPools: [{'start': '10.60.19.200', 'end': '10.60.19.251'}]
+  ExternalNetCidr: "10.60.19.0/24"
+  #ExternalNetworkVlanID: 10
+  NeutronExternalNetworkBridge: "''"
+  ExternalInterfaceDefaultRoute: "10.60.19.1"
+
+  InternalApiNetCidr: 10.12.81.0/24
+  StorageNetCidr: 10.12.82.0/24
+  StorageMgmtNetCidr: 10.12.83.0/24
+  TenantNetCidr: 10.12.84.0/24
+  InternalApiNetworkVlanID: 81
+  StorageNetworkVlanID: 82
+  StorageMgmtNetworkVlanID: 83
+  TenantNetworkVlanID: 84
+  InternalApiAllocationPools: [{'start': '10.12.81.20', 'end': '10.12.81.200'}]
+  StorageAllocationPools: [{'start': '10.12.82.20', 'end': '10.12.82.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.12.83.20', 'end': '10.12.83.200'}]
+  TenantAllocationPools: [{'start': '10.12.84.20', 'end': '10.12.84.200'}]
+
+  LocalProvisioningNicName: nic1
+  LocalUnusedNicName: nic2
