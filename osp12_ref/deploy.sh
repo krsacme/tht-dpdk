@@ -17,10 +17,16 @@ ENV_FILE="network-environment-prov$PROV.yaml"
 echo "Using provisioning environment file as $ENV_FILE ..."
 
 openstack overcloud deploy \
-    --templates /home/stack/templates/openstack-tripleo-heat-templates \
+    --templates \
     -r roles_data.yaml \
     --timeout 90 \
-    -e /home/stack/templates/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
-    -e /home/stack/templates/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
-    -e /home/stack/templates/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
-    -e $ENV_FILE
+    -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/docker.yaml \
+    -e registry.yaml \
+    -e dpdk-environment.yaml \
+    -e common-environment.yaml \
+    -e $ENV_FILE \
+    -e docker_registry.yaml \
+    -e temp-env.yaml
