@@ -16,3 +16,5 @@ parameter_defaults:
   NeutronNetworkType: ['vlan']
   # NeutronTunnelTypes translates to neutron::agents::ml2::ovs::tunnel_types
   NeutronTunnelTypes: ""
+
+  #TimeZone: Kolkata

@@ -273,7 +273,8 @@ def get_actual_parameters():
     host = get_hiera('vswitch::dpdk::host_core_list')
     mem_channel = get_hiera('vswitch::dpdk::memory_channels')
     socket_mem = get_hiera('vswitch::dpdk::socket_mem')
-    vcpu = get_hiera('nova::compute::vcpu_pin_set')
+    vcpu = json.loads(get_hiera('nova::compute::vcpu_pin_set'))
+    vcpu = str(','.join(vcpu))
     isol = get_host_isol_cpus()
     reserved_host_mem = get_hiera('nova::compute::reserved_host_memory')
     actual_kernel_args = get_related_kernel_args()
@@ -359,8 +360,9 @@ def validate_host_configuration():
 
 def validate_service_status():
     stdout = check_output(['ovs-vsctl', 'get', 'Open_vSwitch', '.', 'iface_types'])
-    if 'dpdk' not in stdout:
+    if 'dpdk' in stdout:
         print("ERROR: OpenvSwitch iface_types does NOT have DPDK: %s" % iface_types)
+
 
 def validate(args, expected_params):
     actual_params = get_actual_parameters()
