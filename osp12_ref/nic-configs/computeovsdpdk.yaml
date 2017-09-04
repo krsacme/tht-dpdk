@@ -81,8 +81,11 @@ parameters:
   EC2MetadataIp: # Override this via parameter_defaults
     description: The IP address of the EC2 metadata server.
     type: string
+  NumDpdkInterfaceRxQueues:
+    description: Number of Rx Queues required for DPDK bond or DPDK ports
+    default: 1
+    type: number
 
-  # Local parameter used for internal lab easy template management
   LocalProvisioningNicName:
     type: string
   LocalUnusedNicName:

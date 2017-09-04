@@ -61,17 +61,19 @@ def verify_network_config_file():
             if item['type'] == 'ovs_user_bridge':
                 dpdk_configs.extend(item['members'])
 
-    dpdk_iface = []
+    dpdk_iface = {}
     for item in dpdk_configs:
         if item['type'] == 'ovs_dpdk_port':
             dpdk_iface.append(item['members'][0]['name'])
         elif item['type'] == 'ovs_dpdk_bond':
             for bitems in item['members']:
                 dpdk_iface.append(bitems['members'][0]['name'])
+
     if dpdk_ifaces:
         print("Interfaces assigned for dpdk: %s" % dpdk_ifaces)
     else:
         print("Network Config(%s) does not have dpdk porsts or dpdk bonds" % net_config)
+    return dpdk_iface
 
 def get_dpdk_nic():
     global pci_list
@@ -183,7 +185,21 @@ def get_memory_channels(args, cpu_layout):
     return str(mem_channel)
 
 def get_socket_memory():
-    pass
+    dpdk_pci_list = get_dpdk_nic()
+    if dpdk_pci_list:
+        numa_list = [int(item.get('numa')) for item in dpdk_pci_list]
+        dpdk_enabled_numa = list(set(numa_list))
+    else:
+        dpdk_enabled_numa = [0]\
+    socket_memory = []
+    for numa in range(len(cpu_layout)):
+        if numa in dpdk_enabled_numa:
+            # DPDK enabled
+            mem =
+            socket_memory.append(mem)
+        else:
+            socket_memory.append(1024)
+    return ','.join(socket_memory)
 
 def get_huge_page_count():
     stdout = check_output(['cat', '/proc/meminfo']).split('\n')

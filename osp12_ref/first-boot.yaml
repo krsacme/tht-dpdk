@@ -20,7 +20,7 @@ resources:
         #!/bin/bash
         set -x
         setenforce 0
-        sed -i 's/SELINUX=.*/SELINUX=permissive/g' /etc/sysconfig/selinux
+        sed -i 's/SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
 
 outputs:
   OS::stack_id:

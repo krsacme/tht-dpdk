@@ -31,3 +31,7 @@ openstack overcloud deploy \
     -e $ENV_FILE \
     -e docker_registry.yaml \
     -e temp-env.yaml
+
+# Post Deploy Workarounds
+# systemctl start virtlogd.socket
+
