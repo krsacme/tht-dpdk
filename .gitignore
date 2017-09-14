@@ -1,3 +1,6 @@
 overcloudrc
 tempest-deployer-input.conf
+*/docker_registry.yaml
+*/overcloud_containers.yaml
+overcloudrc.v3
 

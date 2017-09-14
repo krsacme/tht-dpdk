@@ -1,0 +1,15 @@
+parameter_defaults:
+  UpgradeInitCommand: |
+    set -e
+    # https://bugzilla.redhat.com/show_bug.cgi?id=1466345
+    yum -y remove openstack-dashboard-theme
+    rm -rf /etc/yum.repos.d/*
+    cat > /etc/yum.repos.d/rhos-release.repo <<EOF
+    [rhos12-proxy2]
+    name = RHOS Proxy2 Repo for OSP12
+    baseurl = http://10.60.19.71/rhosp-12-repo
+    enabled = 1
+    gpgcheck = 0
+    EOF
+    yum clean all
+

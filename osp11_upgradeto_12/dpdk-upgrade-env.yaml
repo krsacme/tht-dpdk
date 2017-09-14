@@ -1,0 +1,12 @@
+parameter_defaults:
+  # Run os-net-config only on DPDK compute nodes during the upgrade
+  # to ensure PCI address is updated to the existing DPDK port.
+  # NOTE: No changes in the nic-config templates.
+  ComputeParameters:
+    NetworkDeploymentActions: ['CREATE', 'UPDATE']
+
+  # https://bugzilla.redhat.com/show_bug.cgi?id=1475764
+  ControllerExtraConfig:
+    tripleo::profile::base::docker::docker_options: '--log-driver=journald --signature-verification=false --iptables=false'
+  ComputeExtraConfig:
+    tripleo::profile::base::docker::docker_options: '--log-driver=journald --signature-verification=false --iptables=false'

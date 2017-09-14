@@ -86,6 +86,7 @@ parameters:
     default: 1
     type: number
 
+  # Local parameter used for internal lab easy template management
   LocalProvisioningNicName:
     type: string
   LocalUnusedNicName:
@@ -162,9 +163,10 @@ resources:
                 members:
                 - type: ovs_dpdk_port
                   name: dpdk0
+                  ovs_extra:
+                  - set Interface $DEVICE options:dpdk-devargs=0000:81:00.1
                   rx_queue:
                     get_param: NumDpdkInterfaceRxQueues
-                  mtu: 2000
                   members:
                   - type: interface
                     name: nic5

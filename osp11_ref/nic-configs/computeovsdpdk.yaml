@@ -123,13 +123,6 @@ resources:
                 name: nic3
                 use_dhcp: false
                 defroute: false
-              - type: vlan
-                vlan_id:
-                  get_param: ExternalNetworkVlanID
-                device: nic3
-                addresses:
-                - ip_netmask:
-                    get_param: ExternalIpSubnet
               - type: interface
                 name: nic4
                 use_dhcp: false
@@ -155,13 +148,6 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-              - type: vlan
-                vlan_id:
-                  get_param: StorageMgmtNetworkVlanID
-                device: nic4
-                addresses:
-                - ip_netmask:
-                    get_param: StorageMgmtIpSubnet
               - type: ovs_user_bridge
                 name: br-link
                 use_dhcp: false

@@ -1,12 +1,15 @@
 #!/bin/bash
 
+echo "ERROR - Upgrade only scripts"
+exit
+
 source base.sh
 
-openstack overcloud deploy \
-    --templates \
-    -r roles_data.yaml \
+# NOTE:
+# host-config-and-reboot.yaml should not be used during upgrade
+
+openstack overcloud deploy --templates \
     --timeout 90 \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/docker.yaml \
@@ -15,9 +18,4 @@ openstack overcloud deploy \
     -e dpdk-environment.yaml \
     -e common-environment.yaml \
     -e $ENV_FILE \
-    -e docker_registry.yaml \
-    -e temp-env.yaml
-
-# Post Deploy Workarounds
-# systemctl start virtlogd.socket
-
+    -e docker_registry.yaml

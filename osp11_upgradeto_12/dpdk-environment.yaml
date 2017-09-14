@@ -1,0 +1,15 @@
+parameter_defaults:
+  ComputeParameters:
+    #KernelArgs: "intel_iommu=on iommu=pt"
+    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on iommu=pt"
+    TunedProfileName: "cpu-partitioning"
+    IsolCpusList: "10-87"
+
+  OvsDpdkSocketMemory: "1024,1024"
+  OvsDpdkMemoryChannels: "4"
+  NovaReservedHostMemory: 4096
+
+  OvsPmdCoreList: "10,11,22,23"
+  OvsDpdkCoreList: "0,1,2,3,4,5,6,7,8,9"
+  NovaVcpuPinSet: ['12-21','24-87']
+

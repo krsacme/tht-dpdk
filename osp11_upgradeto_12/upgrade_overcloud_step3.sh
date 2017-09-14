@@ -2,11 +2,7 @@
 
 source base.sh
 
-openstack overcloud deploy \
-    --templates \
-    -r roles_data.yaml \
-    --timeout 90 \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
+openstack overcloud deploy --templates \
     -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/docker.yaml \
@@ -16,8 +12,5 @@ openstack overcloud deploy \
     -e common-environment.yaml \
     -e $ENV_FILE \
     -e docker_registry.yaml \
-    -e temp-env.yaml
-
-# Post Deploy Workarounds
-# systemctl start virtlogd.socket
+    -e /usr/share/openstack-tripleo-heat-templates/environments/major-upgrade-converge.yaml
 

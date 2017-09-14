@@ -1,0 +1,9 @@
+resource_registry:
+  OS::TripleO::Compute::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::NodeExtraConfigPost: post-install-update.yaml
+  # With OSP12, the environment file will have a new service
+  # OS::TripleO::Services::ComputeNeutronOvsDpdk to support the addition
+  # of new role ComputeOvsDpdk. For upgrade, this need to be mapped externally.
+  OS::TripleO::Services::ComputeNeutronOvsAgent: /usr/share/openstack-tripleo-heat-templates/puppet/services/neutron-ovs-dpdk-agent.yaml
+
