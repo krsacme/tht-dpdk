@@ -24,5 +24,5 @@ echo "Patching role-specific NetworkDeploymentActions patch..."
 curl http://chunk.io/f/a75e8cb024f4463bbec91e262a19600d | sudo patch -d /usr/share/openstack-tripleo-heat-templates/ -p1
 
 echo "Starting Undercloud upgrade.."
-mkdir ~/logs
+mkdir -p ~/logs
 openstack undercloud upgrade 2>&1 | tee ~/logs/openstack_upgrade.log
