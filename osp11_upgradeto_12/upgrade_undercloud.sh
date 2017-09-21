@@ -20,9 +20,8 @@ sudo systemctl stop httpd
 echo "Updating packages.."
 sudo yum -y update instack-undercloud openstack-puppet-modules openstack-tripleo-common python-tripleoclient
 
-echo "Patching role-specific NetworkDeploymentActions patch..."
-curl http://chunk.io/f/a75e8cb024f4463bbec91e262a19600d | sudo patch -d /usr/share/openstack-tripleo-heat-templates/ -p1
-
 echo "Starting Undercloud upgrade.."
 mkdir -p ~/logs
 openstack undercloud upgrade 2>&1 | tee ~/logs/openstack_upgrade.log
+
+curl https://review.openstack.org/changes/503484/revisions/5624e75de374742175bab870ae12248e7a39e8cd/patch?download | base64 -d | sudo patch -d /usr/share/openstack-tripleo-heat-templates/ -p1

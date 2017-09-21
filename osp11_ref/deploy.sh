@@ -23,4 +23,5 @@ openstack overcloud deploy --templates \
     -e registry.yaml \
     -e dpdk-environment.yaml \
     -e common-environment.yaml \
-    -e $ENV_FILE
+    -e $ENV_FILE \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml
