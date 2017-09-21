@@ -11,6 +11,7 @@ openstack overcloud deploy --templates \
     -e dpdk-environment.yaml \
     -e common-environment.yaml \
     -e $ENV_FILE \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
     -e docker_registry.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/major-upgrade-converge.yaml
 
