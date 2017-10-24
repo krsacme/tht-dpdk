@@ -2,7 +2,7 @@ heat_template_version: 2015-04-30
 
 description: >
   Software Config to drive os-net-config to configure VLANs for the
-  compute role.
+  controller role.
 
 parameters:
   ControlPlaneIp:
@@ -33,6 +33,10 @@ parameters:
     default: ''
     description: IP address/subnet on the management network
     type: string
+  ExternalNetworkVlanID:
+    default: 10
+    description: Vlan ID for the external network traffic.
+    type: number
   InternalApiNetworkVlanID:
     default: 20
     description: Vlan ID for the internal_api network traffic.
@@ -40,6 +44,10 @@ parameters:
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
+    type: number
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
     type: number
   TenantNetworkVlanID:
     default: 50
@@ -49,12 +57,13 @@ parameters:
     default: 60
     description: Vlan ID for the management network traffic.
     type: number
+  ExternalInterfaceDefaultRoute:
+    default: '10.0.0.1'
+    description: default route for the external network
+    type: string
   ControlPlaneSubnetCidr: # Override this via parameter_defaults
     default: '24'
     description: The subnet CIDR of the control plane network.
-    type: string
-  ControlPlaneDefaultRoute: # Override this via parameter_defaults
-    description: The default route of the control plane network.
     type: string
   DnsServers: # Override this via parameter_defaults
     default: []
@@ -74,7 +83,11 @@ resources:
           network_config:
             -
               type: interface
+<<<<<<< Updated upstream:backup/nic-configs/controller.yaml
               name: nic2
+=======
+              name: nic1
+>>>>>>> Stashed changes:nic-configs/controller.yaml
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -86,29 +99,56 @@ resources:
                         - {get_param: ControlPlaneSubnetCidr}
               routes:
                 -
+                  default: false
                   ip_netmask: 169.254.169.254/32
                   next_hop: {get_param: EC2MetadataIp}
-                -
-                  default: true
-                  next_hop: {get_param: ControlPlaneDefaultRoute}
             -
+<<<<<<< Updated upstream:backup/nic-configs/controller.yaml
               type: interface
               name: nic1
               use_dhcp: false
               defroute: false
             -
-              type: interface
-              name: nic3
-              use_dhcp: false
-              defroute: false
-            -
               type: ovs_bridge
-              name: br-isol 
+              name: {get_input: bridge_name}
+              use_dhcp: false
+              dns_servers: {get_param: DnsServers}
+              addresses:
+                -
+                  ip_netmask: {get_param: ExternalIpSubnet}
+              routes:
+                -
+                  default: true
+                  next_hop: {get_param: ExternalInterfaceDefaultRoute}
+              members:
+                - 
+                  type: interface
+                  name: nic3
+                  primary: true
+            -
+=======
+>>>>>>> Stashed changes:nic-configs/controller.yaml
+              type: ovs_bridge
+              name: br-isol
               use_dhcp: false
               members:
                 -
                   type: interface
-                  name: nic4 
+<<<<<<< Updated upstream:backup/nic-configs/controller.yaml
+                  name: nic4
+=======
+                  name: nic2
+                -
+                  type: vlan
+                  vlan_id: {get_param: ExternalNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: ExternalIpSubnet}
+                  routes:
+                    -
+                      default: true
+                      next_hop: {get_param: ExternalInterfaceDefaultRoute}
+>>>>>>> Stashed changes:nic-configs/controller.yaml
                 -
                   type: vlan
                   vlan_id: {get_param: InternalApiNetworkVlanID}
@@ -123,24 +163,32 @@ resources:
                       ip_netmask: {get_param: StorageIpSubnet}
                 -
                   type: vlan
+                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
+                  addresses:
+                    -
+                      ip_netmask: {get_param: StorageMgmtIpSubnet}
+                -
+                  type: vlan
                   vlan_id: {get_param: TenantNetworkVlanID}
                   addresses:
                     -
                       ip_netmask: {get_param: TenantIpSubnet}
+<<<<<<< Updated upstream:backup/nic-configs/controller.yaml
 
             -
-              type: ovs_user_bridge
+              type: ovs_bridge
               name: br-link
               use_dhcp: false
               members:
                 -
-                  type: ovs_dpdk_port
-                  name: dpdk0
-                  members:
-                    -
-                      type: interface
-                      name: nic5
-
+                  type: interface
+                  name: nic5
+=======
+              - type: interface
+                name: nic3
+                use_dhcp: false
+                defroute: false
+>>>>>>> Stashed changes:nic-configs/controller.yaml
 
 outputs:
   OS::stack_id:

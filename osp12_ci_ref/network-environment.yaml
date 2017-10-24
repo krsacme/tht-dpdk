@@ -1,0 +1,29 @@
+parameter_defaults:
+  ControlPlaneDefaultRoute: "192.168.24.1"
+  ControlPlaneSubnetCidr: "24"
+  DnsServers: ['8.8.8.8','8.8.4.4']
+  EC2MetadataIp: "192.168.24.1"
+
+  ExternalAllocationPools: [{'start': '192.168.24.200', 'end': '192.168.24.251'}]
+  ExternalNetCidr: "192.168.24.0/24"
+  #ExternalNetworkVlanID: 10
+  NeutronExternalNetworkBridge: ""
+  ExternalInterfaceDefaultRoute: "192.168.24.1"
+
+  InternalApiNetCidr: 10.10.100.0/24
+  StorageNetCidr: 10.10.101.0/24
+  StorageMgmtNetCidr: 10.10.102.0/24
+  TenantNetCidr: 10.10.103.0/24
+  InternalApiNetworkVlanID: 100
+  StorageNetworkVlanID: 101
+  StorageMgmtNetworkVlanID: 102
+  TenantNetworkVlanID: 103
+  InternalApiAllocationPools: [{'start': '10.10.100.10', 'end': '10.10.100.200'}]
+  StorageAllocationPools: [{'start': '10.10.101.10', 'end': '10.10.101.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.10.102.10', 'end': '10.10.102.200'}]
+  TenantAllocationPools: [{'start': '10.10.103.10', 'end': '10.10.103.200'}]
+
+  NeutronBridgeMappings: "datacentre:br-ex,dpdk_net:br-link,internal:br-isol"
+  NeutronFlatNetworks: "datacentre,dpdk_net,internal"
+  NeutronNetworkType: "vxlan"
+  NeutronTunnelTypes: "vxlan"

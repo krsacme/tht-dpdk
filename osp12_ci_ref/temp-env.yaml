@@ -1,0 +1,6 @@
+parameter_defaults:
+  # https://bugzilla.redhat.com/show_bug.cgi?id=1475764
+  ControllerExtraConfig:
+    tripleo::profile::base::docker::docker_options: '--log-driver=journald --signature-verification=false --iptables=false'
+  ComputeExtraConfig:
+    tripleo::profile::base::docker::docker_options: '--log-driver=journald --signature-verification=false --iptables=false'

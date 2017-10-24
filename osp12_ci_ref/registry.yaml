@@ -1,0 +1,5 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::NodeExtraConfigPost: post-install.yaml
+  OS::TripleO::NodeUserData: first-boot.yaml
