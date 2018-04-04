@@ -3,6 +3,7 @@ parameter_defaults:
     KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on iommu=pt isolcpus=10-87"
     TunedProfileName: "cpu-partitioning"
     IsolCpusList: "10-87"
+    VhostuserSocketGroup: hugetlbfs
 
   OvsDpdkSocketMemory: "1024,1024"
   OvsDpdkMemoryChannels: "4"
@@ -13,3 +14,7 @@ parameter_defaults:
   NovaVcpuPinSet: ['12-21','24-87']
   NumDpdkInterfaceRxQueues: 2
   NeutronGlobalPhysnetMtu: 2000
+  DockerPuppetDebug: True
+  Debug: True
+  ConfigDebug: True
+

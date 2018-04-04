@@ -11,5 +11,10 @@ if [[ $PROV != 1 && $PROV != 2 ]] ; then
   exit 1
 fi
 
-ENV_FILE="network-environment-prov$PROV.yaml"
+LAB=''
+if [ ! $(ip a | grep -q 10.9.88) ] ; then
+  LAB='dsal'
+fi
+
+ENV_FILE="network-environment-prov-$LAB$PROV.yaml"
 echo "Using provisioning environment file as $ENV_FILE ..."

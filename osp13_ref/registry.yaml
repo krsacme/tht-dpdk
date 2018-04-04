@@ -1,6 +1,6 @@
 resource_registry:
-  OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
-  OS::TripleO::ComputeSriov::Net::SoftwareConfig: nic-configs/computesriov.yaml
-  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
   OS::TripleO::NodeExtraConfigPost: common/post-install.yaml
-  OS::TripleO::NodeUserData: common/first-boot.yaml
+  #OS::TripleO::NodeUserData: common/first-boot.yaml
+  #OS::TripleO::Services::ContainersLogrotateCrond: OS::Heat::None
+  #OS::TripleO::PostDeploySteps: OS::Heat::None
+

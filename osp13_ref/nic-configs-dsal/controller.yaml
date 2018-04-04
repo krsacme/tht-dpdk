@@ -1,6 +1,6 @@
 heat_template_version: pike
 description: >
-  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the compute role.
+  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the controller role.
 parameters:
   ControlPlaneIp:
     default: ''
@@ -30,11 +30,6 @@ parameters:
     default: ''
     description: IP address/subnet on the management network
     type: string
-  BondInterfaceOvsOptions:
-    default: ''
-    description: The ovs_options string for the bond interface. Set things like lacp=active and/or bond_mode=balance-slb using
-      this option.
-    type: string
   ExternalNetworkVlanID:
     default: 10
     description: Vlan ID for the external network traffic.
@@ -59,20 +54,20 @@ parameters:
     default: 60
     description: Vlan ID for the management network traffic.
     type: number
-  ControlPlaneSubnetCidr: # Override this via parameter_defaults
-    default: '24'
-    description: The subnet CIDR of the control plane network.
-    type: string
   ControlPlaneDefaultRoute: # Override this via parameter_defaults
     description: The default route of the control plane network.
     type: string
-  ExternalInterfaceDefaultRoute: # Not used by default in this template
+  ExternalInterfaceDefaultRoute:
     default: 10.0.0.1
-    description: The default route of the external network.
+    description: default route for the external network
     type: string
   ManagementInterfaceDefaultRoute: # Commented out by default in this template
     default: unset
     description: The default route of the management network.
+    type: string
+  ControlPlaneSubnetCidr: # Override this via parameter_defaults
+    default: '24'
+    description: The subnet CIDR of the control plane network.
     type: string
   DnsServers: # Override this via parameter_defaults
     default: []
@@ -81,11 +76,8 @@ parameters:
   EC2MetadataIp: # Override this via parameter_defaults
     description: The IP address of the EC2 metadata server.
     type: string
-  NumDpdkInterfaceRxQueues:
-    description: Number of Rx Queues required for DPDK bond or DPDK ports
-    default: 1
-    type: number
 
+  # Local parameter used for internal lab easy template management
   LocalProvisioningNicName:
     type: string
   LocalUnusedNicName:
@@ -119,55 +111,75 @@ resources:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
                     get_param: EC2MetadataIp
-                - default: true
-                  next_hop:
-                    get_param: ControlPlaneDefaultRoute
               - type: interface
                 name:
                   get_param: LocalUnusedNicName
                 use_dhcp: false
                 defroute: false
+                onboot: false
               - type: interface
-                name: nic3
+                name: em3
+                use_dhcp: false
+                addresses:
+                - ip_netmask:
+                    get_param: ExternalIpSubnet
+                routes:
+                - default: true
+                  next_hop:
+                    get_param: ExternalInterfaceDefaultRoute
+              - type: interface
+                name: p2p1
                 use_dhcp: false
                 defroute: false
+                onboot: false
               - type: interface
-                name: nic4
+                name: p1p2
+                use_dhcp: false
+                defroute: false
+                onboot: false
+              - type: interface
+                name: p5p1
+                use_dhcp: false
+                defroute: false
+                onboot: false
+              - type: interface
+                name: p5p3
                 use_dhcp: false
                 defroute: false
               - type: vlan
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
-                device: nic4
+                device: p5p3
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: TenantNetworkVlanID
-                device: nic4
+                device: p5p3
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: StorageNetworkVlanID
-                device: nic4
+                device: p5p3
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-              - type: ovs_user_bridge
+              - type: vlan
+                vlan_id:
+                  get_param: StorageMgmtNetworkVlanID
+                device: p5p3
+                addresses:
+                - ip_netmask:
+                    get_param: StorageMgmtIpSubnet
+              - type: ovs_bridge
                 name: br-link
                 use_dhcp: false
                 members:
-                - type: ovs_dpdk_port
-                  name: dpdk0
-                  rx_queue:
-                    get_param: NumDpdkInterfaceRxQueues
-                  mtu: 2000
-                  members:
-                  - type: interface
-                    name: nic5
+                - type: interface
+                  name: p1p1
 
 outputs:
   OS::stack_id:

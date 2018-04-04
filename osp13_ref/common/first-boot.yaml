@@ -21,6 +21,7 @@ resources:
         set -x
         setenforce 0
         sed -i 's/SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+        sudo yum update -y
         #sed -i 's/net.ifnames=0 //g' /etc/default/grub
         #Should be modified in the image itself, net.ifnames=0 biosdevname=1
 
