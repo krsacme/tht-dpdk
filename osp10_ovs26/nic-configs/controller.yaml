@@ -83,7 +83,7 @@ resources:
           network_config:
             -
               type: interface
-              name: nic2
+              name: p5p1
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -100,12 +100,12 @@ resources:
                   next_hop: {get_param: EC2MetadataIp}
             -
               type: interface
-              name: nic1
+              name: p5p2
               use_dhcp: false
               defroute: false
             -
-              type: ovs_bridge
-              name: {get_input: bridge_name}
+              type: interface
+              name: em3
               use_dhcp: false
               dns_servers: {get_param: DnsServers}
               addresses:
@@ -115,43 +115,39 @@ resources:
                 -
                   default: true
                   next_hop: {get_param: ExternalInterfaceDefaultRoute}
-              members:
-                - 
-                  type: interface
-                  name: nic3
-                  primary: true
             -
-              type: ovs_bridge
-              name: br-isol
+              type: interface
+              name: p5p3
               use_dhcp: false
-              members:
-                -
-                  type: interface
-                  name: nic4
-                -
-                  type: vlan
-                  vlan_id: {get_param: InternalApiNetworkVlanID}
-                  addresses:
+              defroute: false
+            -
+              type: vlan
+              device: p5p3
+              vlan_id: {get_param: InternalApiNetworkVlanID}
+              addresses:
                     -
                       ip_netmask: {get_param: InternalApiIpSubnet}
+            -
+              type: vlan
+              device: p5p3
+              vlan_id: {get_param: StorageNetworkVlanID}
+              addresses:
                 -
-                  type: vlan
-                  vlan_id: {get_param: StorageNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageIpSubnet}
+                  ip_netmask: {get_param: StorageIpSubnet}
+            -
+              type: vlan
+              device: p5p3
+              vlan_id: {get_param: StorageMgmtNetworkVlanID}
+              addresses:
                 -
-                  type: vlan
-                  vlan_id: {get_param: StorageMgmtNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: StorageMgmtIpSubnet}
+                  ip_netmask: {get_param: StorageMgmtIpSubnet}
+            -
+              type: vlan
+              device: p5p3
+              vlan_id: {get_param: TenantNetworkVlanID}
+              addresses:
                 -
-                  type: vlan
-                  vlan_id: {get_param: TenantNetworkVlanID}
-                  addresses:
-                    -
-                      ip_netmask: {get_param: TenantIpSubnet}
+                  ip_netmask: {get_param: TenantIpSubnet}
 
             -
               type: ovs_bridge
@@ -160,7 +156,7 @@ resources:
               members:
                 -
                   type: interface
-                  name: nic5
+                  name: p1p1
 
 outputs:
   OS::stack_id:
