@@ -1,0 +1,5 @@
+parameter_defaults:
+  NeutronVhostuserSocketDir: '/var/lib/vhost_sockets'
+  ComputeExtraConfig:
+    vhostuser_socket_group: "hugetlbfs"
+
