@@ -1,0 +1,5 @@
+parameter_defaults:
+  NovaComputeExtraConfig:
+    vhostuser_socket_group: "hugetlbfs"
+    nova::compute::libvirt::qemu::group: "hugetlbfs"
+  NeutronVhostuserSocketDir: '/var/lib/vhost_sockets'
