@@ -22,7 +22,7 @@ parameter_defaults:
   TenantNetCidr: 10.150.84.0/24
   InternalApiNetworkVlanID: 131
   StorageNetworkVlanID: 132
-  StorageMgmtNetworkVlanID: 1333
+  StorageMgmtNetworkVlanID: 133
   TenantNetworkVlanID: 134
   InternalApiAllocationPools: [{'start': '10.150.81.20', 'end': '10.150.81.200'}]
   StorageAllocationPools: [{'start': '10.150.82.20', 'end': '10.150.82.200'}]
