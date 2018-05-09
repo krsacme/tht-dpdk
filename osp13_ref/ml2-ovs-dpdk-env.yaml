@@ -14,7 +14,4 @@ parameter_defaults:
   NovaVcpuPinSet: ['12-21','24-87']
   NumDpdkInterfaceRxQueues: 2
   NeutronGlobalPhysnetMtu: 2000
-  DockerPuppetDebug: True
-  Debug: True
-  ConfigDebug: True
 
