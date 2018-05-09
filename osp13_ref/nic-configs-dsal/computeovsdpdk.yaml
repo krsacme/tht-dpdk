@@ -143,11 +143,6 @@ resources:
                 defroute: false
                 onboot: false
               - type: interface
-                name: p5p1
-                use_dhcp: false
-                defroute: false
-                onboot: false
-              - type: interface
                 name: p5p3
                 use_dhcp: false
                 defroute: false

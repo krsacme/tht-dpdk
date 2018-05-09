@@ -2,8 +2,8 @@
 
 source base.sh
 
-if [[ -f 'common/roles_data.yaml' ]]; then
-  openstack overcloud role generate -o common/roles_data.yaml Controller ComputeOvsDpdk
+if [[ ! -f 'common/roles_data.yaml' ]]; then
+  openstack overcloud roles generate -o common/roles_data.yaml Controller ComputeOvsDpdk
 fi
 
 openstack overcloud deploy \
