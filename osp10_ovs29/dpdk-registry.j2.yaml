@@ -1,0 +1,7 @@
+resource_registry:
+  OS::TripleO::Services::ComputeNeutronOvsDpdk: /usr/share/openstack-tripleo-heat-templates/puppet/services/neutron-ovs-dpdk-agent.yaml
+{%- for role in roles %}
+  {%- if 'Compute' in role.name %}
+  OS::TripleO::{{role.name}}::NodeUserData: {{ role.name.lower() }}-first-boot.yaml
+  {%- endif %}
+{%- endfor %}

@@ -1,7 +1,6 @@
 resource_registry:
-  OS::TripleO::Compute::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
   OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
-  OS::TripleO::NodeUserData: first-boot.yaml
   OS::TripleO::NodeExtraConfigPost: post-install.yaml
 
 parameter_defaults:
@@ -30,35 +29,33 @@ parameter_defaults:
   TenantAllocationPools: [{'start': '10.120.84.20', 'end': '10.120.84.200'}]
 
   ControllerCount: 1
-  ComputeCount: 2
+  ComputeOvsDpdkCount: 1
   OvercloudControlFlavor: control
-  OvercloudComputeFlavor: compute
+  OvercloudComputeOvsDpdkFlavor: compute
 
-  # NeutronBridgeMappings translates to neutron::agents::ml2::ovs::bridge_mappings
   NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
-  # NeutronFlatNetworks translates to neutron::plugins::ml2::flat_networks
   NeutronFlatNetworks: "datacentre"
-  # NeutronNetworkVLANRanges translates to neutron::plugins::ml2::network_vlan_ranges
   NeutronNetworkVLANRanges: "dpdknet:210:214"
-  # NeutronNetworkType translates to neutron::plugins::ml2::tenant_network_types
   NeutronNetworkType: ['vlan']
-  # NeutronTunnelTypes translates to neutron::agents::ml2::ovs::tunnel_types
   NeutronTunnelTypes: ""
 
   NeutronDpdkMemoryChannels: "4"
 
   NeutronDatapathType: "netdev"
-  NeutronVhostuserSocketDir: "/var/run/openvswitch"
-  NeutronDpdkSocketMemory: "'1024,1024'"
   NeutronDpdkDriverType: "vfio-pci"
   NovaReservedHostMemory: 4096
-  NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter,AggregateInstanceExtraSpecsFilter"
-  ComputeKernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on"
+  NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter"
 
-  NeutronDpdkCoreList: "'10,11,22,23'"
-  HostCpusList: "'0,1,2,3,4,5,6,7,8,9'"
-  NovaVcpuPinSet: ['12-21','24-87']
+  ComputeOvsDpdkParameters:
+    KernelArgs: "intel_iommu=on iommu=on default_hugepagesz=1GB hugepagesz=1G hugepages=64 isolcpus=10-87"
+    IsolCpusList: "10-87"
+    OvsPmdCoreList: "10,11,22,23"
+    OvsDpdkCoreList: "0,1,2,3,4,5,6,7,8,9"
+    OvsDpdkSocketMemory: "1024,1024"
 
-  # TODO: Check if this configuration can be avoided
-  # HostIsolatedCoreList = NeutronDpdkCoreList + NovaVcpuPinSet
-  HostIsolatedCoreList: "10-87"
+  NovaVcpuPinSet: "12-21,24-87"
+  NeutronVhostuserSocketDir: '/var/lib/vhost_sockets'
+
+  # Not used, but required
+  NeutronDpdkCoreList: "'0'"
+  NeutronDpdkMemoryChannels: "4"

@@ -1,0 +1,81 @@
+heat_template_version: 2016-10-14
+
+parameters:
+  {{role.name}}Parameters:
+    type: json
+
+conditions:
+  is_host_config_required: {not: {equals: [{get_param: [{{role.name}}Parameters, KernelArgs]}, ""]}}
+  is_dpdk_config_required: {not: {equals: [{get_param: [{{role.name}}Parameters, OvsPmdCoreList]}, ""]}}
+
+resources:
+  RoleParametersValue:
+    type: OS::Heat::Value
+    properties:
+      type: json
+      value:
+        get_param: {{role.name}}Parameters
+
+  userdata:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+        - if:
+            - is_dpdk_config_required
+            - config: {get_resource: set_dpdk_params}
+            - config: ''
+        - if:
+            - is_host_config_required
+            - config: {get_resource: install_tuned}
+            - config: ''
+        - if:
+            - is_host_config_required
+            - config: {get_resource: compute_kernel_args}
+            - config: ''
+
+  set_dpdk_params:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            $DATA
+            set_dpdk_config $PMD_CORES $LCORE_LIST $SOCKET_MEMORY
+          params:
+            $DATA: {get_file: first-boot.sh}
+            $PMD_CORES: {get_attr: [RoleParametersValue, value, OvsPmdCoreList]}
+            $LCORE_LIST: {get_attr: [RoleParametersValue, value, OvsDpdkCoreList]}
+            $SOCKET_MEMORY: {get_attr: [RoleParametersValue, value, OvsDpdkSocketMemory]}
+
+  install_tuned:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            $DATA
+            set_tuned_config "$TUNED_CORES"
+          params:
+            $DATA: {get_file: first-boot.sh}
+            $TUNED_CORES: {get_attr: [RoleParametersValue, value, IsolCpusList]}
+
+  compute_kernel_args:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config:
+        str_replace:
+          template: |
+            $DATA
+            set_kernel_args "$KERNEL_ARGS"
+          params:
+            $DATA: {get_file: first-boot.sh}
+            $KERNEL_ARGS: {get_attr: [RoleParametersValue, value, KernelArgs]}
+
+outputs:
+  # This means get_resource from the parent template will get the userdata, see:
+  # http://docs.openstack.org/developer/heat/template_guide/composition.html#making-your-template-resource-more-transparent
+  # Note this is new-for-kilo, an alternative is returning a value then using
+  # get_attr in the parent template instead.
+  OS::stack_id:
+    value: {get_resource: userdata}
+
