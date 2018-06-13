@@ -1,0 +1,34 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: ../nic-configs-dsal/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: ../nic-configs-dsal/controller.yaml
+
+parameter_defaults:
+  ControlPlaneDefaultRoute: "172.150.0.1"
+  ControlPlaneSubnetCidr: "24"
+  DnsServers: ['10.11.5.19']
+  EC2MetadataIp: "172.150.0.1"
+
+  ExternalAllocationPools: [{'start': '10.9.88.200', 'end': '10.9.88.211'}]
+  ExternalNetCidr: "10.9.88.0/24"
+  #ExternalNetworkVlanID: 135
+  NeutronExternalNetworkBridge: "''"
+  ExternalInterfaceDefaultRoute: "10.9.88.254"
+
+  InternalApiNetCidr: 10.151.81.0/24
+  StorageNetCidr: 10.151.82.0/24
+  StorageMgmtNetCidr: 10.151.83.0/24
+  TenantNetCidr: 10.151.84.0/24
+  InternalApiNetworkVlanID: 131
+  StorageNetworkVlanID: 132
+  StorageMgmtNetworkVlanID: 1333
+  TenantNetworkVlanID: 134
+  InternalApiAllocationPools: [{'start': '10.151.81.20', 'end': '10.151.81.200'}]
+  StorageAllocationPools: [{'start': '10.151.82.20', 'end': '10.151.82.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.151.83.20', 'end': '10.151.83.200'}]
+  TenantAllocationPools: [{'start': '10.151.84.20', 'end': '10.151.84.200'}]
+
+  # NeutronNetworkVLANRanges translates to neutron::plugins::ml2::network_vlan_ranges
+  NeutronNetworkVLANRanges: "dpdknet:210:214"
+
+  LocalProvisioningNicName: p5p2
+  LocalUnusedNicName: p2p2
