@@ -6,6 +6,9 @@ description: >
 parameters:
   servers:
     type: json
+  DeployIdentifier:
+    type: string
+    default: ''
 
 resources:
 
@@ -16,6 +19,8 @@ resources:
       servers:  {get_param: servers}
       config: {get_resource: ExtraConfig}
       actions: ['CREATE','UPDATE']
+      input_values:
+        deploy_identifier: {get_param: DeployIdentifier}
 
   ExtraConfig:
     type: OS::Heat::SoftwareConfig

@@ -6,6 +6,9 @@ description: >
 parameters:
   servers:
     type: json
+  DeployIdentifier:
+    type: string
+    default: ''
 
 resources:
 
@@ -16,6 +19,8 @@ resources:
       servers:  {get_param: servers}
       config: {get_resource: ExtraConfig}
       actions: ['CREATE','UPDATE']
+      input_values:
+        deploy_identifier: {get_param: DeployIdentifier}
 
   ExtraConfig:
     type: OS::Heat::SoftwareConfig
@@ -41,6 +46,6 @@ resources:
           fi
         }
 
-        if hiera -c /etc/puppet/hiera.yaml service_names | grep -q neutron_ovs_dpdk_agent; then
+        if hiera -c /etc/puppet/hiera.yaml service_names | grep -q neutron_ovs_dpdk_agent -e neutron_sriov_host_config -e neutron_sriov_agent ; then
             tuned_service_dependency
         fi
