@@ -3,6 +3,6 @@ openstack overcloud deploy --templates \
     --update-plan-only  \
     -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/ovs-dpdk-permissions.yaml \
     -e network-environment.yaml \
-    -e ovs29.yaml \
-    -e update.yaml
+    -e ovs29.yaml 
