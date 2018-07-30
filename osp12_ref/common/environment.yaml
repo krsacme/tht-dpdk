@@ -2,6 +2,7 @@ parameter_defaults:
   ControllerCount: 1
   ComputeOvsDpdkCount: 1
   OvercloudControlFlavor: control
+  OvercloudControllerFlavor: control
   OvercloudComputeOvsDpdkFlavor: compute
 
   #TODO: br-ex needs to be re-looked as nfv ref nic configs does not have br-ex bridge
