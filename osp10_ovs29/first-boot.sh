@@ -36,6 +36,11 @@ function get_mask()
 
 function set_dpdk_config()
 {
+  # https://bugzilla.redhat.com/show_bug.cgi?id=1559374
+  # 42477 is the kolla hugetlbfs gid value.
+  getent group hugetlbfs >/dev/null || \
+        groupadd hugetlbfs -g 42477 && groupmod -g 42477 hugetlbfs
+
   PMD_CORES=$1
   LCORE_LIST=$2
   SOCKET_MEMORY=$3
