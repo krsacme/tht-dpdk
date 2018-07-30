@@ -1,0 +1,49 @@
+{
+    "nodes":[
+        {
+            "mac":[
+                "18:66:da:6b:8e:8a"
+            ],
+            "name":"compute-0",
+            "cpu":"48",
+            "memory":"12800",
+            "disk":"200",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"root",
+            "pm_password":"caveo123",
+            "pm_addr":"192.168.24.2",
+            "capabilities": "profile:compute,boot_option:local"
+        },
+        {
+            "mac":[
+                "18:66:da:6b:8d:51"
+            ],
+            "name":"compute-1",
+            "cpu":"48",
+            "memory":"12800",
+            "disk":"200",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"root",
+            "pm_password":"caveo123",
+            "pm_addr":"192.168.24.3",
+            "capabilities": "profile:compute,boot_option:local"
+        },
+        {
+            "mac":[
+                "18:66:da:6b:87:91"
+            ],
+            "name":"control-0",
+            "cpu":"48",
+            "memory":"12800",
+            "disk":"200",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"root",
+            "pm_password":"caveo123",
+            "pm_addr":"192.168.24.4",
+            "capabilities": "profile:control,boot_option:local"
+        }
+    ]
+}

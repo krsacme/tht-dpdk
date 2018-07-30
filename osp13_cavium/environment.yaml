@@ -1,0 +1,9 @@
+
+parameter_defaults:
+  ControllerCount: 1
+  ComputeLiquidioCount: 2
+  OvercloudControllerFlavor: control
+  OvercloudComputeLiquidioFlavor: compute
+  NovaSchedulerDefaultFilters: ['RetryFilter', 'AvailabilityZoneFilter', 'RamFilter', 'ComputeFilter', 'ComputeCapabilitiesFilter', 'ImagePropertiesFilter', 'ServerGroupAntiAffinityFilter', 'ServerGroupAffinityFilter', 'PciPassthroughFilter']
+  NovaPCIPassthrough:
+    - address: "*:04:00.*"
