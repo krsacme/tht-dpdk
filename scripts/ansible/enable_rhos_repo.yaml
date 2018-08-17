@@ -1,0 +1,23 @@
+---
+- hosts: overcloud
+  gather_facts: false
+  user: heat-admin
+  become: yes
+  tasks:
+    - name: Install rhos-release
+      become: yes
+      command:
+        yum localinstall -y http://download.lab.bos.redhat.com/rcm-guest/puddles/OpenStack/rhos-release/rhos-release-latest.noarch.rpm
+
+    - name: Enable rhos-release "{{ rhosp_version }}"
+      become: yes
+      command:
+        rhos-release "{{ rhosp_version }}"
+      when: build_version is not defined
+
+    - name: Enable rhos-release "{{ rhosp_version }}" with build "{{ build_version }}"
+      become: yes
+      command:
+        rhos-release "{{ rhosp_version }}" -p "{{ build_version }}"
+      when: build_version is defined
+
