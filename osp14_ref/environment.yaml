@@ -1,13 +1,6 @@
 parameter_defaults:
-  ControllerCount: 1
-  ComputeOvsDpdkCount: 1
-  ComputeSriovCount: 1
-  OvercloudControllerFlavor: control
   OvercloudComputeOvsDpdkFlavor: compute
-  OvercloudComputeSriovFlavor: compute
-
-  #TODO: br-ex needs to be re-looked as nfv ref nic configs does not have br-ex bridge
-
+  
   NeutronBridgeMappings: "dpdknet:br-link"
   NeutronFlatNetworks: "datacentre"
   NeutronNetworkType: ['vlan']
