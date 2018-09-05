@@ -1,11 +1,13 @@
 parameter_defaults:
-  OvercloudComputeOvsDpdkFlavor: compute
-  
+  OvercloudControllerFlavor: "controller"
+  OvercloudComputeOvsDpdkFlavor: "compute"
+
   NeutronBridgeMappings: "dpdknet:br-link"
   NeutronFlatNetworks: "datacentre"
   NeutronNetworkType: ['vlan']
   NeutronTunnelTypes: ""
 
+  NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata
   SshServerOptions:
     UseDns: 'no'
