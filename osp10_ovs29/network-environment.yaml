@@ -1,7 +1,6 @@
 resource_registry:
   OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
-  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller-highend.yaml
-  OS::TripleO::NodeExtraConfigPost: post-install.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
   OS::TripleO::ComputeOvsDpdk::Ports::ExternalPort: /usr/share/openstack-tripleo-heat-templates/network/ports/noop.yaml
   OS::TripleO::ComputeOvsDpdk::Ports::InternalApiPort: /usr/share/openstack-tripleo-heat-templates/network/ports/internal_api.yaml
   OS::TripleO::ComputeOvsDpdk::Ports::ManagementPort: /usr/share/openstack-tripleo-heat-templates/network/ports/noop.yaml
@@ -65,3 +64,7 @@ parameter_defaults:
   # Not used, but required
   NeutronDpdkCoreList: "'0'"
   NeutronDpdkMemoryChannels: "4"
+
+  NovaComputeExtraConfig:
+    nova::compute::libvirt::rx_queue_size: '"1024"'
+    nova::compute::libvirt::tx_queue_size: '"1024"'

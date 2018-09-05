@@ -62,3 +62,7 @@ parameter_defaults:
   # TODO: Check if this configuration can be avoided
   # HostIsolatedCoreList = NeutronDpdkCoreList + NovaVcpuPinSet
   HostIsolatedCoreList: "10-87"
+
+  NovaComputeExtraConfig:
+    nova::compute::libvirt::rx_queue_size: '"1024"'
+    nova::compute::libvirt::tx_queue_size: '"1024"'
