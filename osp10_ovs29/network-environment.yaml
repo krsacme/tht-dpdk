@@ -9,10 +9,10 @@ resource_registry:
   OS::TripleO::ComputeOvsDpdk::Ports::TenantPort: /usr/share/openstack-tripleo-heat-templates/network/ports/tenant.yaml
 
 parameter_defaults:
-  ControlPlaneDefaultRoute: "172.120.0.1"
+  ControlPlaneDefaultRoute: "192.168.24.1"
   ControlPlaneSubnetCidr: "24"
   DnsServers: ['10.11.5.19']
-  EC2MetadataIp: "172.120.0.1"
+  EC2MetadataIp: "192.168.24.1"
 
   ExternalAllocationPools: [{'start': '10.9.88.200', 'end': '10.9.88.211'}]
   ExternalNetCidr: "10.9.88.0/24"
@@ -35,7 +35,7 @@ parameter_defaults:
 
   ControllerCount: 1
   ComputeOvsDpdkCount: 1
-  OvercloudControlFlavor: control
+  OvercloudControlFlavor: controller
   OvercloudComputeOvsDpdkFlavor: compute
 
   NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
