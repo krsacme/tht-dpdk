@@ -1,6 +1,8 @@
 */overcloudrc
 */tempest-deployer-input.conf
 */docker_registry.yaml
+*/docker-images.yaml
 */overcloud_containers.yaml
 */overcloudrc.v3
+*/debug.yaml
 

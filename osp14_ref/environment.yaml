@@ -7,6 +7,10 @@ parameter_defaults:
   NeutronNetworkType: ['vlan']
   NeutronTunnelTypes: ""
 
+  ComputeOvsDpdkParameters:
+    NovaLibvirtRxQueueSize: 1024
+    NovaLibvirtTxQueueSize: 1024
+
   NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata
   SshServerOptions:
