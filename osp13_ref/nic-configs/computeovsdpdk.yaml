@@ -1,18 +1,10 @@
-heat_template_version: pike
+heat_template_version: queens
 description: >
-  Software Config to drive os-net-config with 2 bonded nics on a bridge with VLANs attached for the compute role.
+  Software Config to drive os-net-config to configure multiple interfaces for the Compute role.
 parameters:
   ControlPlaneIp:
     default: ''
     description: IP address/subnet on the ctlplane network
-    type: string
-  ExternalIpSubnet:
-    default: ''
-    description: IP address/subnet on the external network
-    type: string
-  InternalApiIpSubnet:
-    default: ''
-    description: IP address/subnet on the internal API network
     type: string
   StorageIpSubnet:
     default: ''
@@ -20,40 +12,43 @@ parameters:
     type: string
   StorageMgmtIpSubnet:
     default: ''
-    description: IP address/subnet on the storage mgmt network
+    description: IP address/subnet on the storage_mgmt network
+    type: string
+  InternalApiIpSubnet:
+    default: ''
+    description: IP address/subnet on the internal_api network
     type: string
   TenantIpSubnet:
     default: ''
     description: IP address/subnet on the tenant network
     type: string
-  ManagementIpSubnet: # Only populated when including environments/network-management.yaml
+  ExternalIpSubnet:
+    default: ''
+    description: IP address/subnet on the external network
+    type: string
+  ManagementIpSubnet:
     default: ''
     description: IP address/subnet on the management network
     type: string
-  BondInterfaceOvsOptions:
-    default: ''
-    description: The ovs_options string for the bond interface. Set things like lacp=active and/or bond_mode=balance-slb using
-      this option.
-    type: string
-  ExternalNetworkVlanID:
-    default: 10
-    description: Vlan ID for the external network traffic.
-    type: number
-  InternalApiNetworkVlanID:
-    default: 20
-    description: Vlan ID for the internal_api network traffic.
-    type: number
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
     type: number
   StorageMgmtNetworkVlanID:
     default: 40
-    description: Vlan ID for the storage mgmt network traffic.
+    description: Vlan ID for the storage_mgmt network traffic.
+    type: number
+  InternalApiNetworkVlanID:
+    default: 20
+    description: Vlan ID for the internal_api network traffic.
     type: number
   TenantNetworkVlanID:
     default: 50
     description: Vlan ID for the tenant network traffic.
+    type: number
+  ExternalNetworkVlanID:
+    default: 10
+    description: Vlan ID for the external network traffic.
     type: number
   ManagementNetworkVlanID:
     default: 60
@@ -66,13 +61,9 @@ parameters:
   ControlPlaneDefaultRoute: # Override this via parameter_defaults
     description: The default route of the control plane network.
     type: string
-  ExternalInterfaceDefaultRoute: # Not used by default in this template
-    default: 10.0.0.1
-    description: The default route of the external network.
-    type: string
-  ManagementInterfaceDefaultRoute: # Commented out by default in this template
-    default: unset
-    description: The default route of the management network.
+  ExternalInterfaceDefaultRoute:
+    default: '10.0.0.1'
+    description: default route for the external network
     type: string
   DnsServers: # Override this via parameter_defaults
     default: []
@@ -81,16 +72,6 @@ parameters:
   EC2MetadataIp: # Override this via parameter_defaults
     description: The IP address of the EC2 metadata server.
     type: string
-  NumDpdkInterfaceRxQueues:
-    description: Number of Rx Queues required for DPDK bond or DPDK ports
-    default: 1
-    type: number
-
-  LocalProvisioningNicName:
-    type: string
-  LocalUnusedNicName:
-    type: string
-
 resources:
   OsNetConfigImpl:
     type: OS::Heat::SoftwareConfig
@@ -104,8 +85,7 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name:
-                  get_param: LocalProvisioningNicName
+                name: p5p1
                 use_dhcp: false
                 dns_servers:
                   get_param: DnsServers
@@ -123,63 +103,49 @@ resources:
                   next_hop:
                     get_param: ControlPlaneDefaultRoute
               - type: interface
-                name:
-                  get_param: LocalUnusedNicName
+                name: p5p2
                 use_dhcp: false
                 defroute: false
               - type: interface
                 name: em3
                 use_dhcp: false
                 defroute: false
-                onboot: false
-              - type: interface
-                name: p1p2
-                use_dhcp: false
-                defroute: false
-                onboot: false
-              - type: interface
-                name: p2p1
-                use_dhcp: false
-                defroute: false
-                onboot: false
               - type: interface
                 name: p5p3
                 use_dhcp: false
                 defroute: false
               - type: vlan
+                device: p5p3
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
-                device: p5p3
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
               - type: vlan
-                vlan_id:
-                  get_param: TenantNetworkVlanID
                 device: p5p3
-                addresses:
-                - ip_netmask:
-                    get_param: TenantIpSubnet
-              - type: vlan
                 vlan_id:
                   get_param: StorageNetworkVlanID
-                device: p5p3
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
+              - type: vlan
+                device: p5p3
+                vlan_id:
+                  get_param: TenantNetworkVlanID
+                addresses:
+                - ip_netmask:
+                    get_param: TenantIpSubnet
               - type: ovs_user_bridge
                 name: br-link
                 use_dhcp: false
                 members:
                 - type: ovs_dpdk_port
-                  name: dpdk0
+                  name: dpdk-link-port0
                   members:
-                  - type: interface
-                    name: p1p1
-
+                   - type: interface
+                     name: p1p1
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
     value:
       get_resource: OsNetConfigImpl
-
