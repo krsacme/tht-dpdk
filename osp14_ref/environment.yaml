@@ -1,15 +1,7 @@
 parameter_defaults:
   OvercloudControllerFlavor: "controller"
-  OvercloudComputeOvsDpdkFlavor: "compute"
-
-  NeutronBridgeMappings: "dpdknet:br-link"
-  NeutronFlatNetworks: "datacentre"
-  NeutronNetworkType: ['vlan']
-  NeutronTunnelTypes: ""
-
-  ComputeOvsDpdkParameters:
-    NovaLibvirtRxQueueSize: 1024
-    NovaLibvirtTxQueueSize: 1024
+  OvercloudComputeFlavor: "compute"
+  OvercloudComputeOvsDpdkFlavor: "computeovsdpdk"
 
   NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata

@@ -1,19 +1,24 @@
 #!/bin/bash
 
 if [[ ! -f 'roles_data.yaml' ]]; then
-  openstack overcloud roles generate -o ~/roles_data.yaml Controller ComputeOvsDpdk
+  openstack overcloud roles generate -o ~/roles_data.yaml Controller Compute ComputeOvsDpdk
 fi
 
-openstack overcloud deploy \
+PARAMS="$*"
+
+openstack overcloud deploy $PARAMS \
     --templates \
     --timeout 120 \
-    -r ~/roles_data.yaml \
+    -r ~/osp14_ref/roles_data.yaml \
+    -n ~/osp14_ref/network_data_routed_pool3.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
-    -e /home/stack/osp14_ref/environment.yaml \
-    -e /home/stack/osp14_ref/network-environment.yaml \
-    -e /home/stack/osp14_ref/docker-images.yaml \
-    -e /home/stack/osp14_ref/ml2-ovs-dpdk-env.yaml
+    -e ~/osp14_ref/environment.yaml \
+    -e ~/osp14_ref/network-environment.yaml \
+    -e ~/osp14_ref/docker-images.yaml \
+    -e ~/osp14_ref/routed-environment.yaml \
+    -e ~/osp14_ref/ml2-ovs-dpdk-env.yaml
 

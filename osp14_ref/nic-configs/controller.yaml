@@ -23,13 +23,37 @@ parameters:
     description: IP address/subnet on the storage network
     type: string
   StorageNetworkVlanID:
-    default: 30
+    default: 131
     description: Vlan ID for the storage network traffic.
     type: number
+  StorageInterfaceDefaultRoute:
+    default: '172.16.16.1'
+    description: default route for the storage network
+    type: string
   StorageInterfaceRoutes:
     default: []
     description: >
       Routes for the storage network traffic.
+      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
+      Unless the default is changed, the parameter is automatically resolved
+      from the subnet host_routes attribute.
+    type: json
+  StorageLeaf1IpSubnet:
+    default: ''
+    description: IP address/subnet on the storage1 network
+    type: string
+  StorageLeaf1NetworkVlanID:
+    default: 131
+    description: Vlan ID for the storage1 network traffic.
+    type: number
+  StorageLeaf1InterfaceDefaultRoute:
+    default: '172.16.17.1'
+    description: default route for the storage1 network
+    type: string
+  StorageLeaf1InterfaceRoutes:
+    default: []
+    description: >
+      Routes for the storage1 network traffic.
       JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
       Unless the default is changed, the parameter is automatically resolved
       from the subnet host_routes attribute.
@@ -39,13 +63,37 @@ parameters:
     description: IP address/subnet on the storage_mgmt network
     type: string
   StorageMgmtNetworkVlanID:
-    default: 40
+    default: 132
     description: Vlan ID for the storage_mgmt network traffic.
     type: number
+  StorageMgmtInterfaceDefaultRoute:
+    default: '172.16.48.1'
+    description: default route for the storage_mgmt network
+    type: string
   StorageMgmtInterfaceRoutes:
     default: []
     description: >
       Routes for the storage_mgmt network traffic.
+      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
+      Unless the default is changed, the parameter is automatically resolved
+      from the subnet host_routes attribute.
+    type: json
+  StorageMgmtLeaf1IpSubnet:
+    default: ''
+    description: IP address/subnet on the storage_mgmt1 network
+    type: string
+  StorageMgmtLeaf1NetworkVlanID:
+    default: 132
+    description: Vlan ID for the storage_mgmt1 network traffic.
+    type: number
+  StorageMgmtLeaf1InterfaceDefaultRoute:
+    default: '172.16.49.1'
+    description: default route for the storage_mgmt1 network
+    type: string
+  StorageMgmtLeaf1InterfaceRoutes:
+    default: []
+    description: >
+      Routes for the storage_mgmt1 network traffic.
       JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
       Unless the default is changed, the parameter is automatically resolved
       from the subnet host_routes attribute.
@@ -55,13 +103,37 @@ parameters:
     description: IP address/subnet on the internal_api network
     type: string
   InternalApiNetworkVlanID:
-    default: 20
+    default: 134
     description: Vlan ID for the internal_api network traffic.
     type: number
+  InternalApiInterfaceDefaultRoute:
+    default: '172.16.32.1'
+    description: default route for the internal_api network
+    type: string
   InternalApiInterfaceRoutes:
     default: []
     description: >
       Routes for the internal_api network traffic.
+      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
+      Unless the default is changed, the parameter is automatically resolved
+      from the subnet host_routes attribute.
+    type: json
+  InternalApiLeaf1IpSubnet:
+    default: ''
+    description: IP address/subnet on the internal_api1 network
+    type: string
+  InternalApiLeaf1NetworkVlanID:
+    default: 134
+    description: Vlan ID for the internal_api1 network traffic.
+    type: number
+  InternalApiLeaf1InterfaceDefaultRoute:
+    default: '172.16.33.1'
+    description: default route for the internal_api1 network
+    type: string
+  InternalApiLeaf1InterfaceRoutes:
+    default: []
+    description: >
+      Routes for the internal_api1 network traffic.
       JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
       Unless the default is changed, the parameter is automatically resolved
       from the subnet host_routes attribute.
@@ -71,13 +143,37 @@ parameters:
     description: IP address/subnet on the tenant network
     type: string
   TenantNetworkVlanID:
-    default: 50
+    default: 133
     description: Vlan ID for the tenant network traffic.
     type: number
+  TenantInterfaceDefaultRoute:
+    default: '172.16.0.1'
+    description: default route for the tenant network
+    type: string
   TenantInterfaceRoutes:
     default: []
     description: >
       Routes for the tenant network traffic.
+      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
+      Unless the default is changed, the parameter is automatically resolved
+      from the subnet host_routes attribute.
+    type: json
+  TenantLeaf1IpSubnet:
+    default: ''
+    description: IP address/subnet on the tenant1 network
+    type: string
+  TenantLeaf1NetworkVlanID:
+    default: 133
+    description: Vlan ID for the tenant1 network traffic.
+    type: number
+  TenantLeaf1InterfaceDefaultRoute:
+    default: '172.16.1.1'
+    description: default route for the tenant1 network
+    type: string
+  TenantLeaf1InterfaceRoutes:
+    default: []
+    description: >
+      Routes for the tenant1 network traffic.
       JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
       Unless the default is changed, the parameter is automatically resolved
       from the subnet host_routes attribute.
@@ -91,7 +187,7 @@ parameters:
     description: Vlan ID for the external network traffic.
     type: number
   ExternalInterfaceDefaultRoute:
-    default: '10.0.0.1'
+    default: '10.9.88.254'
     description: default route for the external network
     type: string
   ExternalInterfaceRoutes:
@@ -130,6 +226,57 @@ parameters:
     description: The IP address of the EC2 metadata server. (The parameter
       is automatically resolved from the ctlplane subnet's host_routes attribute.)
     type: string
+
+  # Manual Addition
+  InternalApiNetCidr:
+    description: Cidr for the internal_api network.
+    type: string
+  TenantNetCidr:
+    description: Cidr for the tenant network.
+    type: string
+  StorageNetCidr:
+    description: Cidr for the storage network.
+    type: string
+  StorageMgmtNetCidr:
+    description: Cidr for the storage_mgmt network.
+    type: string
+  InternalApiLeaf1NetCidr:
+    description: Cidr for the internal_api1 network.
+    type: string
+  TenantLeaf1NetCidr:
+    description: Cidr for the tenant1 network.
+    type: string
+  StorageLeaf1NetCidr:
+    description: Cidr for the storage1 network.
+    type: string
+  StorageMgmtLeaf1NetCidr:
+    description: Cidr for the storage_mgmt1 network.
+    type: string
+  ControlPlaneLeaf1SubnetCidr:
+    default: ''
+    description: >
+      The subnet CIDR of the control plane network. (The parameter is
+      automatically resolved from the ctlplane subnet's cidr attribute.)
+    type: string
+  ControlPlaneLeaf1DefaultRoute:
+    default: ''
+    description: The default route of the control plane network. (The parameter
+      is automatically resolved from the ctlplane subnet's gateway_ip attribute.)
+    type: string
+  Leaf1EC2MetadataIp:
+    default: ''
+    description: The IP address of the EC2 metadata server. (The parameter
+      is automatically resolved from the ctlplane subnet's host_routes attribute.)
+    type: string
+  StorageSupernet:
+    type: string
+  StorageMgmtSupernet:
+    type: string
+  InternalApiSupernet:
+    type: string
+  TenantSupernet:
+    type: string
+
 resources:
   OsNetConfigImpl:
     type: OS::Heat::SoftwareConfig
@@ -157,7 +304,7 @@ resources:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
                     get_param: EC2MetadataIp
-                - ip_netmask: 0.0.0.0/0
+                - ip_netmask: 192.168.10.0/24
                   next_hop:
                     get_param: ControlPlaneDefaultRoute
                   default: true
@@ -182,6 +329,11 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
+                routes:
+                - ip_netmask:
+                    get_param: InternalApiSupernet
+                  next_hop:
+                    get_param: InternalApiInterfaceDefaultRoute
               - type: vlan
                 vlan_id:
                   get_param: TenantNetworkVlanID
@@ -189,6 +341,11 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
+                routes:
+                - ip_netmask:
+                    get_param: TenantSupernet
+                  next_hop:
+                    get_param: TenantInterfaceDefaultRoute
               - type: vlan
                 vlan_id:
                   get_param: StorageNetworkVlanID
@@ -196,6 +353,11 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
+                routes:
+                - ip_netmask:
+                    get_param: StorageSupernet
+                  next_hop:
+                    get_param: StorageInterfaceDefaultRoute
               - type: vlan
                 vlan_id:
                   get_param: StorageMgmtNetworkVlanID
@@ -203,6 +365,11 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageMgmtIpSubnet
+                routes:
+                - ip_netmask:
+                    get_param: StorageMgmtSupernet
+                  next_hop:
+                    get_param: StorageMgmtInterfaceDefaultRoute
               - type: ovs_bridge
                 name: br-link
                 use_dhcp: false
