@@ -304,7 +304,7 @@ resources:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
                     get_param: EC2MetadataIp
-                - ip_netmask: 192.168.10.0/24
+                - ip_netmask: 192.168.0.0/16
                   next_hop:
                     get_param: ControlPlaneDefaultRoute
                   default: true
