@@ -123,7 +123,7 @@
 - name: Tenant
   vip: false  # Tenant networks do not use VIPs
   name_lower: tenant
-  vlan: 103
+  vlan: 107
   ip_subnet: '172.20.0.0/24'
   gateway_ip: '172.20.0.1'
   routes: [{'destination':'172.20.0.0/20', 'nexthop':'172.20.0.1'}]
@@ -132,7 +132,7 @@
 - name: TenantLeaf1
   vip: false  # Tenant networks do not use VIPs
   name_lower: tenant1
-  vlan: 103
+  vlan: 107
   ip_subnet: '172.20.1.0/24'
   gateway_ip: '172.20.1.1'
   routes: [{'destination':'172.20.0.0/20', 'nexthop':'172.20.1.1'}]

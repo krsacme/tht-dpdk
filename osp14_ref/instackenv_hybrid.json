@@ -1,0 +1,22 @@
+{
+   "nodes": [
+     {
+        "name": "computeovsdpdk-0",
+        "pm_addr": "10.9.87.84",
+        "ports": [
+            {
+              "address": "00:0A:f7:e4:01:a9",
+              "physical_network": "leaf1"
+            }
+        ],
+        "arch": "x86_64",
+        "pm_type": "pxe_ipmitool",
+        "pm_user": "root",
+        "pm_password": "calvin",
+        "cpu": "1",
+        "memory": "4096",
+        "disk": "40",
+        "resource_class": "computeovsdpdk"
+     }
+  ]
+}

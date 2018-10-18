@@ -18,7 +18,6 @@ openstack overcloud deploy $PARAMS \
     -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
     -e ~/osp14_ref/environment.yaml \
     -e ~/osp14_ref/network-environment.yaml \
-    -e ~/osp14_ref/docker-images.yaml \
     -e ~/osp14_ref/routed-environment.yaml \
-    -e ~/osp14_ref/ml2-ovs-dpdk-env.yaml
-
+    -e ~/osp14_ref/ml2-ovs-dpdk-env.yaml \
+    -e ~/containers-prepare-parameter.yaml

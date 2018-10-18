@@ -7,8 +7,7 @@ parameter_defaults:
   DnsServers: ['10.11.5.19']
   NeutronExternalNetworkBridge: "''"
 
-  NeutronNetworkVLANRanges: "dpdknet:107:111"
-  NeutronBridgeMappings: "dpdknet:br-link"
-  NeutronFlatNetworks: "datacentre"
+  NeutronNetworkVLANRanges: ""
+  NeutronBridgeMappings: ""
   NeutronNetworkType: ['vxlan']
   NeutronTunnelTypes: "vxlan"

@@ -330,18 +330,6 @@ resources:
                     get_param: InternalApiInterfaceDefaultRoute
               - type: vlan
                 vlan_id:
-                  get_param: TenantNetworkVlanID
-                device: eth1
-                addresses:
-                - ip_netmask:
-                    get_param: TenantIpSubnet
-                routes:
-                - ip_netmask:
-                    get_param: TenantSupernet
-                  next_hop:
-                    get_param: TenantInterfaceDefaultRoute
-              - type: vlan
-                vlan_id:
                   get_param: StorageNetworkVlanID
                 device: eth1
                 addresses:
@@ -353,8 +341,22 @@ resources:
                   next_hop:
                     get_param: StorageInterfaceDefaultRoute
               - type: ovs_bridge
-                name: br-link
+                name: br-tenant
                 use_dhcp: false
+                addresses:
+                - ip_netmask:
+                    get_param: TenantIpSubnet
+                ovs_extra:
+                  - str_replace:
+                      template: set port br-tenant tag=_VLAN_TAG_
+                      params:
+                        _VLAN_TAG_:
+                          get_param: TenantNetworkVlanID
+                routes:
+                - ip_netmask:
+                    get_param: TenantSupernet
+                  next_hop:
+                    get_param: TenantInterfaceDefaultRoute
                 members:
                 - type: interface
                   name: eth2
