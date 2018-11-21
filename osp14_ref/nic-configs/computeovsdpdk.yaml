@@ -268,14 +268,6 @@ parameters:
     description: The IP address of the EC2 metadata server. (The parameter
       is automatically resolved from the ctlplane subnet's host_routes attribute.)
     type: string
-  StorageSupernet:
-    type: string
-  StorageMgmtSupernet:
-    type: string
-  InternalApiSupernet:
-    type: string
-  TenantSupernet:
-    type: string
 
 resources:
   OsNetConfigImpl:
@@ -299,67 +291,49 @@ resources:
                     list_join:
                     - /
                     - - get_param: ControlPlaneIp
-                      - get_param: ControlPlaneLeaf1SubnetCidr
+                      - get_param: ControlPlaneSubnetCidr
                 routes:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
-                    get_param: Leaf1EC2MetadataIp
-                # External network of controller is
-                # 192.168.10.200/29, ping tests validates External
-                # network too.
-                - ip_netmask: 192.168.0.0/16
+                    get_param: EC2MetadataIp
+                - ip_netmask: 192.168.10.0/24
                   next_hop:
-                    get_param: ControlPlaneLeaf1DefaultRoute
-              # External DHCP interface in the remote compute
+                    get_param: ControlPlaneDefaultRoute
+                  default: true
               - type: interface
                 name: em3
                 use_dhcp: true
-                defroute: true
+                defroute: false
               - type: interface
                 name: p3p1
                 use_dhcp: false
                 defroute: false
               - type: vlan
                 vlan_id:
-                  get_param: InternalApiLeaf1NetworkVlanID
+                  get_param: InternalApiNetworkVlanID
                 device: p3p1
                 addresses:
                 - ip_netmask:
-                    get_param: InternalApiLeaf1IpSubnet
-                routes:
-                - ip_netmask:
-                    get_param: InternalApiSupernet
-                  next_hop:
-                    get_param: InternalApiLeaf1InterfaceDefaultRoute
+                    get_param: InternalApiIpSubnet
               - type: vlan
                 vlan_id:
-                  get_param: StorageLeaf1NetworkVlanID
+                  get_param: StorageNetworkVlanID
                 device: p3p1
                 addresses:
                 - ip_netmask:
-                    get_param: StorageLeaf1IpSubnet
-                routes:
-                - ip_netmask:
-                    get_param: StorageSupernet
-                  next_hop:
-                    get_param: StorageLeaf1InterfaceDefaultRoute
+                    get_param: StorageIpSubnet
               - type: ovs_user_bridge
                 name: br-tenant
                 use_dhcp: false
                 addresses:
                 - ip_netmask:
-                    get_param: TenantLeaf1IpSubnet
+                    get_param: TenantIpSubnet
                 ovs_extra:
                   - str_replace:
                       template: set port br-tenant tag=_VLAN_TAG_
                       params:
                         _VLAN_TAG_:
                           get_param: TenantNetworkVlanID
-                routes:
-                - ip_netmask:
-                    get_param: TenantSupernet
-                  next_hop:
-                    get_param: TenantLeaf1InterfaceDefaultRoute
                 members:
                 - type: ovs_dpdk_port
                   name: dpdk-tenant-port

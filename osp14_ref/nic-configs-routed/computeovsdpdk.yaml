@@ -268,6 +268,14 @@ parameters:
     description: The IP address of the EC2 metadata server. (The parameter
       is automatically resolved from the ctlplane subnet's host_routes attribute.)
     type: string
+  StorageSupernet:
+    type: string
+  StorageMgmtSupernet:
+    type: string
+  InternalApiSupernet:
+    type: string
+  TenantSupernet:
+    type: string
 
 resources:
   OsNetConfigImpl:
@@ -282,7 +290,7 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: eth0
+                name: em4
                 use_dhcp: false
                 dns_servers:
                   get_param: DnsServers
@@ -291,56 +299,76 @@ resources:
                     list_join:
                     - /
                     - - get_param: ControlPlaneIp
-                      - get_param: ControlPlaneSubnetCidr
+                      - get_param: ControlPlaneLeaf1SubnetCidr
                 routes:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
-                    get_param: EC2MetadataIp
-                - ip_netmask: 0.0.0.0/0
+                    get_param: Leaf1EC2MetadataIp
+                # External network of controller is
+                # 192.168.10.200/29, ping tests validates External
+                # network too.
+                - ip_netmask: 192.168.0.0/16
                   next_hop:
-                    get_param: ControlPlaneDefaultRoute
-                  default: true
+                    get_param: ControlPlaneLeaf1DefaultRoute
+              # External DHCP interface in the remote compute
               - type: interface
-                name: eth3
-                use_dhcp: false
-                defroute: false
+                name: em3
+                use_dhcp: true
+                defroute: true
               - type: interface
-                name: eth1
+                name: p3p1
                 use_dhcp: false
                 defroute: false
               - type: vlan
                 vlan_id:
-                  get_param: InternalApiNetworkVlanID
-                device: eth1
+                  get_param: InternalApiLeaf1NetworkVlanID
+                device: p3p1
                 addresses:
                 - ip_netmask:
-                    get_param: InternalApiIpSubnet
+                    get_param: InternalApiLeaf1IpSubnet
+                routes:
+                - ip_netmask:
+                    get_param: InternalApiSupernet
+                  next_hop:
+                    get_param: InternalApiLeaf1InterfaceDefaultRoute
               - type: vlan
                 vlan_id:
-                  get_param: StorageNetworkVlanID
-                device: eth1
+                  get_param: StorageLeaf1NetworkVlanID
+                device: p3p1
                 addresses:
                 - ip_netmask:
-                    get_param: StorageIpSubnet
-              - type: ovs_bridge
+                    get_param: StorageLeaf1IpSubnet
+                routes:
+                - ip_netmask:
+                    get_param: StorageSupernet
+                  next_hop:
+                    get_param: StorageLeaf1InterfaceDefaultRoute
+              - type: ovs_user_bridge
                 name: br-tenant
                 use_dhcp: false
                 addresses:
                 - ip_netmask:
-                    get_param: TenantIpSubnet
+                    get_param: TenantLeaf1IpSubnet
                 ovs_extra:
                   - str_replace:
                       template: set port br-tenant tag=_VLAN_TAG_
                       params:
                         _VLAN_TAG_:
                           get_param: TenantNetworkVlanID
+                routes:
+                - ip_netmask:
+                    get_param: TenantSupernet
+                  next_hop:
+                    get_param: TenantLeaf1InterfaceDefaultRoute
                 members:
-                - type: interface
-                  name: eth2
+                - type: ovs_dpdk_port
+                  name: dpdk-tenant-port
+                  members:
+                  - type: interface
+                    name: p3p2
 
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
     value:
       get_resource: OsNetConfigImpl
-

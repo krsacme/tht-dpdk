@@ -1,3 +1,8 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdk::Net::SoftwareConfig: nic-configs-routed/computeovsdpdk.yaml
+  OS::TripleO::Compute::Net::SoftwareConfig: nic-configs-routed/compute.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs-routed/controller.yaml
+
 parameter_defaults:
   ControlPlaneSubnet: leaf0
   ControllerControlPlaneSubnet: leaf0

@@ -187,7 +187,7 @@ parameters:
     description: Vlan ID for the external network traffic.
     type: number
   ExternalInterfaceDefaultRoute:
-    default: '10.9.88.254'
+    default: '172.30.0.1'
     description: default route for the external network
     type: string
   ExternalInterfaceRoutes:
@@ -268,14 +268,6 @@ parameters:
     description: The IP address of the EC2 metadata server. (The parameter
       is automatically resolved from the ctlplane subnet's host_routes attribute.)
     type: string
-  StorageSupernet:
-    type: string
-  StorageMgmtSupernet:
-    type: string
-  InternalApiSupernet:
-    type: string
-  TenantSupernet:
-    type: string
 
 resources:
   OsNetConfigImpl:
@@ -308,16 +300,24 @@ resources:
                   next_hop:
                     get_param: ControlPlaneDefaultRoute
                   default: true
-              - type: interface
-                name: eth3
+              - type: ovs_bridge
+                name: bridge_name
+                dns_servers:
+                  get_param: DnsServers
                 use_dhcp: false
                 addresses:
                 - ip_netmask:
                     get_param: ExternalIpSubnet
                 routes:
-                - default: false
-                  next_hop:
-                    get_param: ExternalInterfaceDefaultRoute
+                  list_concat_unique:
+                    - get_param: ExternalInterfaceRoutes
+                    - - default: true
+                        next_hop:
+                          get_param: ExternalInterfaceDefaultRoute
+                members:
+                - type: interface
+                  name: eth3
+                  primary: true
               - type: interface
                 name: eth1
                 use_dhcp: false
@@ -329,11 +329,6 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
-                routes:
-                - ip_netmask:
-                    get_param: InternalApiSupernet
-                  next_hop:
-                    get_param: InternalApiInterfaceDefaultRoute
               - type: vlan
                 vlan_id:
                   get_param: StorageNetworkVlanID
@@ -341,11 +336,6 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-                routes:
-                - ip_netmask:
-                    get_param: StorageSupernet
-                  next_hop:
-                    get_param: StorageInterfaceDefaultRoute
               - type: vlan
                 vlan_id:
                   get_param: StorageMgmtNetworkVlanID
@@ -353,11 +343,6 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageMgmtIpSubnet
-                routes:
-                - ip_netmask:
-                    get_param: StorageMgmtSupernet
-                  next_hop:
-                    get_param: StorageMgmtInterfaceDefaultRoute
               - type: ovs_bridge
                 name: br-tenant
                 use_dhcp: false
@@ -370,11 +355,6 @@ resources:
                       params:
                         _VLAN_TAG_:
                           get_param: TenantNetworkVlanID
-                routes:
-                - ip_netmask:
-                    get_param: TenantSupernet
-                  next_hop:
-                    get_param: TenantInterfaceDefaultRoute
                 members:
                 - type: interface
                   name: eth2

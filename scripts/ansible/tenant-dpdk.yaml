@@ -2,11 +2,22 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    rhel_image_path: "/home/stack/rhel-server-7.5-x86_64-kvm.qcow2"
-    public_key_file: "/home/stack/.ssh/id_rsa.pub"
+    rhel_image_path: "~/rhel-server-7.5-x86_64-kvm.qcow2"
+    public_key_file: "~/.ssh/id_rsa.pub"
   tasks:
+    - name: "Get the external subnet from the undercloud"
+      os_subnet_facts:
+        cloud: undercloud
+        name: external
+      register: uc_external_subnet
+
+    - debug:
+        msg: "External Subnet is not available in undercloud"
+      when: uc_external_subnet.ansible_facts.
+
     - name: "Get the existing flavors list"
       os_flavor_facts:
+        cloud: overcloud
       register: flavors_list
 
     - set_fact:
@@ -23,6 +34,7 @@
     - name: "Create RHEL image"
       os_image:
         name: rhel
+        cloud: overcloud
         filename: "{{ rhel_image_path }}"
 
     - name: "Create a keypair"
@@ -30,6 +42,7 @@
         state: present
         name: stack_user_key
         public_key_file: "{{ public_key_file }}"
+        cloud: overcloud
 
     - name: "Create flavor with hugepages"
       os_nova_flavor:
@@ -41,6 +54,7 @@
           "hw:mem_page_size": large
           "hw:emulator_threads_policy": isolate
           "hw:cpu_policy": dedicated
+        cloud: overcloud
 
     - name: "Create Neutron Public Network"
       os_network:
@@ -48,6 +62,7 @@
         provider_network_type: flat
         provider_physical_network: datacentre
         external: yes
+        cloud: overcloud
 
     - name: "Create Subnet for Neutron Public Network"
       os_subnet:
@@ -56,16 +71,19 @@
         cidr: 192.168.10.200/29
         dns_nameservers:
           - 8.8.8.8
+        cloud: overcloud
 
     - name: "Create Tenant Network"
       os_network:
         name: tenant1
+        cloud: overcloud
 
     - name: "Create Subnet for Tenant Network"
       os_subnet:
         name: tenant1
         network_name: tenant1
         cidr: 192.1.1.0/24
+        cloud: overcloud
 
     - name: "Create Router for Tenant Network"
       os_router:
@@ -74,6 +92,7 @@
         interfaces:
           - net: tenant1
             subnet: tenant1
+        cloud: overcloud
 
     - name: "Create a guest VM"
       os_server:
@@ -82,3 +101,4 @@
         network: tenant1
         image: rhel
         key_name: stack_user_key
+        cloud: overcloud

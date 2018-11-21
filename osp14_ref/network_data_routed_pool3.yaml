@@ -141,9 +141,9 @@
 - name: External
   vip: true
   name_lower: external
-  ip_subnet: '192.168.10.200/29'
-  allocation_pools: [{'start': '192.168.10.201', 'end': '192.168.10.206'}]
-  gateway_ip: '192.168.10.1'
+  ip_subnet: '172.30.0.0/24'
+  allocation_pools: [{'start': '172.30.0.201', 'end': '172.30.0.206'}]
+  gateway_ip: '172.30.0.1'
 - name: Management
   # Management network is enabled by default for backwards-compatibility, but
   # is not included in any roles by default. Add to role definitions to use.

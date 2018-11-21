@@ -5,9 +5,18 @@ resource_registry:
 
 parameter_defaults:
   DnsServers: ['10.11.5.19']
-  NeutronExternalNetworkBridge: "''"
+  #NeutronExternalNetworkBridge: "''"
 
-  NeutronNetworkVLANRanges: ""
-  NeutronBridgeMappings: ""
-  NeutronNetworkType: ['vxlan']
-  NeutronTunnelTypes: "vxlan"
+  #NeutronNetworkVLANRanges: ""
+  #NeutronBridgeMappings: ""
+  #NeutronNetworkType: ['vxlan']
+  #NeutronTunnelTypes: "vxlan"
+
+  ControlPlaneDefaultRoute: "192.168.10.1"
+  ControlPlaneSubnetCidr: "24"
+  EC2MetadataIp: "192.168.10.1"
+
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkControlPlaneSubnet: leaf0
