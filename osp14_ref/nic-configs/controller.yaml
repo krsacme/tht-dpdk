@@ -309,11 +309,9 @@ resources:
                 - ip_netmask:
                     get_param: ExternalIpSubnet
                 routes:
-                  list_concat_unique:
-                    - get_param: ExternalInterfaceRoutes
-                    - - default: true
-                        next_hop:
-                          get_param: ExternalInterfaceDefaultRoute
+                - default: true
+                  next_hop:
+                    get_param: ExternalInterfaceDefaultRoute
                 members:
                 - type: interface
                   name: eth3
