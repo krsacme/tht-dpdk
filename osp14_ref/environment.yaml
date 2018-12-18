@@ -7,7 +7,3 @@ parameter_defaults:
   #TimeZone: Kolkata
   SshServerOptions:
     UseDns: 'no'
-
-  # neutron/auth_url in nova.conf is set to ctlplane, override to internal_api
-  ServiceNetMap:
-    KeystoneAdminApiNetwork: internal_api

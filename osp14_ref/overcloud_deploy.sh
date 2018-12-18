@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [[ ! -f 'roles_data.yaml' ]]; then
-  openstack overcloud roles generate -o ~/roles_data.yaml Controller Compute ComputeOvsDpdk
-fi
-
 PARAMS="$*"
 
 openstack overcloud deploy $PARAMS \
