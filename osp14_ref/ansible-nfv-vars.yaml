@@ -16,6 +16,8 @@ networks:
     port_type: normal
     network_type: flat
 
+floating_ip: false
+
 test-networks:
   - name: 'data1'
     physical_network: 'tenant'
@@ -141,6 +143,8 @@ tests-setup:
 
 # The variable provided within the Jenkins job
 #tempest_config:
+
+#tempest_extra_vars: 'v3_endpoint_type=public'
 
 tempest_tests:
   - nfv_tempest_plugin.tests.scenario.test_nfv_basic.TestNfvBasic.test_numa0_provider_network
