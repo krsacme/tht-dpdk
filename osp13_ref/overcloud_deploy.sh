@@ -14,5 +14,3 @@ openstack overcloud deploy --templates \
     -e ~/osp13_ref/network-environment.yaml \
     -e ~/osp13_ref/docker-images.yaml \
     -e ~/osp13_ref/ml2-ovs-dpdk-env.yaml
-
-
