@@ -25,6 +25,7 @@ def main(file):
                                 ' --port ' + node['pm_port'] +
                                 ' --username ' + node['pm_user'] +
                                 ' --password ' + node['pm_password'])
+                host_cmd.append('vbmc start ' + node[name])
                 uc_cmd.append('openstack baremetal node set ' +
                               node['name'] + ' --driver ' + node['pm_type'] +
                               ' --driver-info ipmi_address=' + node['pm_addr'] +
