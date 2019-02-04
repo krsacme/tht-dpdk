@@ -139,17 +139,17 @@ resources:
                 -
                   ip_netmask: {get_param: StorageMgmtIpSubnet}
             -
-              type: vlan
-              device: eth1
-              vlan_id: {get_param: TenantNetworkVlanID}
+              type: ovs_user_bridge
+              name: br-tenant
+              use_dhcp: false
               addresses:
                 -
                   ip_netmask: {get_param: TenantIpSubnet}
-
-            -
-              type: ovs_bridge
-              name: br-link
-              use_dhcp: false
+              ovs_extra:
+                - str_replace:
+                    template: set port br-tenant tag=_VLAN_TAG_
+                    params:
+                        _VLAN_TAG_: {get_param: TenantNetworkVlanID}
               members:
                 -
                   type: interface
