@@ -33,7 +33,7 @@ parameter_defaults:
   StorageMgmtAllocationPools: [{'start': '10.120.83.20', 'end': '10.120.83.200'}]
   TenantAllocationPools: [{'start': '10.120.84.20', 'end': '10.120.84.200'}]
 
-  ControllerCount: 1
+  ControllerCount: 3
   ComputeOvsDpdkCount: 1
   OvercloudControlFlavor: controller
   OvercloudComputeOvsDpdkFlavor: computeovsdpdk
@@ -44,29 +44,12 @@ parameter_defaults:
   NeutronBridgeMappings: 'datacentre:br-ex,tenant:br-tenant'
   NeutronNetworkVLANRanges: "tenant:225:226"
 
-  NeutronDpdkMemoryChannels: "4"
-
-  NeutronDatapathType: "netdev"
-  NeutronDpdkDriverType: "vfio-pci"
-  NovaReservedHostMemory: 4096
-  NovaSchedulerDefaultFilters: "RamFilter,ComputeFilter,AvailabilityZoneFilter,ComputeCapabilitiesFilter,ImagePropertiesFilter,PciPassthroughFilter,NUMATopologyFilter"
-
-
   ComputeOvsDpdkParameters:
     IsolCpusList: 2-23,26-47
     KernelArgs: default_hugepagesz=1GB hugepagesz=1G hugepages=126 intel_iommu=on iommu=pt isolcpus=2-23,26-47
     OvsDpdkCoreList: 0,1,24,25
     OvsDpdkSocketMemory: 2048,1024
     OvsPmdCoreList: 7,16,31,40
+    NovaVcpuPinSet: 2-6,8-15,17-23,26-30,32-39,41-47
 
-  NovaVcpuPinSet: 2-6,8-15,17-23,26-30,32-39,41-47
-  NeutronVhostuserSocketDir: '/var/lib/vhost_sockets'
-
-  # Not used, but required
-  NeutronDpdkCoreList: "'0'"
-  NeutronDpdkMemoryChannels: "4"
-
-  NovaComputeExtraConfig:
-    nova::compute::libvirt::rx_queue_size: '"1024"'
-    nova::compute::libvirt::tx_queue_size: '"1024"'
   NtpServer: "clock.redhat.com"
