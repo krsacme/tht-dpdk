@@ -12,11 +12,11 @@ parameter_defaults:
   DnsServers: ['10.11.5.19']
   EC2MetadataIp: "192.168.24.1"
 
-  ExternalAllocationPools: [{'start': '10.9.88.200', 'end': '10.9.88.211'}]
-  ExternalNetCidr: "10.9.88.0/24"
+  ExternalAllocationPools: [{'start': '172.30.0.200', 'end': '172.30.0.211'}]
+  ExternalNetCidr: "172.30.0.0/24"
   #ExternalNetworkVlanID: 135
-  NeutronExternalNetworkBridge: "''"
-  ExternalInterfaceDefaultRoute: "10.9.88.254"
+  NeutronExternalNetworkBridge: "'br-ex'"
+  ExternalInterfaceDefaultRoute: "172.30.0.1"
 
   InternalApiNetCidr: 10.120.81.0/24
   StorageNetCidr: 10.120.82.0/24
