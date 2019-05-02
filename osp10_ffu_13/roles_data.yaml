@@ -112,6 +112,7 @@
     - OS::TripleO::Services::Collectd
     - OS::TripleO::Services::Rhsm
     - OS::TripleO::Services::RsyslogSidecar
+    - OS::TripleO::Services::Clustercheck
 
 - name: ComputeOvsDpdk
   CountDefault: 1
