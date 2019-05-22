@@ -1,0 +1,19 @@
+resource_registry:
+  OS::TripleO::ComputeSriovMellanox::NodeUserData: /usr/share/openstack-tripleo-heat-templates/firstboot/os-net-config-mappings.yaml
+
+parameter_defaults:
+  NetConfigDataLookup:
+    node1:
+      dmiString: "system-uuid"
+      id: "4c4c4544-004c-4410-8037-b1c04f535032"
+      nic2: em2
+      nic3: p5p1
+      nic4: p5p2
+      nic5: p5p3
+      nic6: p5p4
+      nic7: p7p1
+      nic8: p7p2
+      nic9: p7p3
+      nic10: p7p4
+      nic11: p4p1
+      nic12: p4p2

@@ -1,0 +1,174 @@
+
+# Tags
+setup_os_env: true
+user: false
+net_port: true
+flavor: true
+network: true
+image: true
+instance: true
+aggregate: true
+resources_output: true
+overcloud_name: overcloud
+
+connection_user: cloud_user
+dut_group: dpdk_dut
+
+# User creation
+users:
+  - name: admin
+    pass: ptBVnUnHR8AMNsy7E6MmeT6VA
+    project: admin
+    domain: default
+    role: admin
+    quota:
+      - cores: 40
+
+# Network creation
+networks:
+  - name: 'public'
+    physical_network: 'dpdk-mgmt'
+    segmentation_id: '398'
+    allocation_pool_start: '10.35.141.35'
+    allocation_pool_end: '10.35.141.45'
+    cidr: '10.35.141.46/28'
+    enable_dhcp: true
+    gateway_ip: '10.35.141.46'
+    network_type: vlan
+    external: true
+    shared: true
+    router_name: router
+
+  - name: 'management_net'
+    allocation_pool_start: '10.10.130.10'
+    allocation_pool_end: '10.10.130.200'
+    cidr: '10.10.130.0/24'
+    enable_dhcp: true
+    gateway_ip: '10.10.130.254'
+    network_type: vxlan
+    external: false
+    router_name: router
+
+  #- name: 'sriov_net_3'
+  #  physical_network: sriov-3
+  #  segmentation_id: '32'
+  #  allocation_pool_start: '80.0.0.100'
+  #  allocation_pool_end: '80.0.0.200'
+  #  cidr: '80.0.0.0/24'
+  #  enable_dhcp: false
+  #  gateway_ip: '80.0.0.254'
+  #  network_type: vlan
+
+  - name: 'sriov_net_4'
+    physical_network: sriov-4
+    segmentation_id: '550'
+    allocation_pool_start: '90.0.0.100'
+    allocation_pool_end: '90.0.0.200'
+    cidr: '90.0.0.0/24'
+    enable_dhcp: false
+    gateway_ip: '90.0.0.254'
+    network_type: vlan
+
+dns_nameservers:
+  - 10.46.0.31
+  - 8.8.8.8
+
+# Aggregate group creation
+aggregate_groups:
+  - name: TREX_AG
+    hosts:
+      - computemellanox-0.localdomain
+    metadata:
+      - flavor=trex_ag
+
+  - name: DUT_AG
+    hosts:
+      - computemellanox-0.localdomain
+    metadata:
+      - flavor=dut_ag
+
+# Flavor creation
+flavors:
+  - name: perf_numa_0_trex_low
+    ram: 8192
+    disk: 20
+    vcpus: 8
+    extra_specs:
+      - "hw:mem_page_size": "1GB"
+        "hw:cpu_policy": "dedicated"
+        "hw:emulator_thread_policy": "share"
+
+  - name: perf_numa_0_sriov_dut_low
+    ram: 8192
+    disk: 20
+    vcpus: 8
+    extra_specs:
+      - "hw:mem_page_size": "1GB"
+        "hw:cpu_policy": "dedicated"
+        "hw:emulator_thread_policy": "share"
+
+images:
+  - name: trex_testpmd
+    url: http://file.tlv.redhat.com/~vkhitrin/rhel-guest-image-7.6-210.x86_64.qcow2
+
+# Keypair creation for the ssh keyless access
+keypair_name: test_keypair
+resources_output_file: /home/stack/resources_output_file.yml
+
+# Allow ICPM and SSH access to instances
+security_groups:
+  - name: test_secgroup
+    rules:
+      - protocol: icmp
+        port_range_min: -1
+        port_range_max: -1
+        remote_ip_prefix: 0.0.0.0/0
+      - protocol: tcp
+        port_range_min: 22
+        port_range_max: 22
+        remote_ip_prefix: 0.0.0.0/0
+
+# Instances creation
+instances:
+  - name: trex
+    groups: trex
+    flavor:  perf_numa_0_trex_low
+    image: trex_testpmd_new
+    key_name: "{{ keypair_name }}"
+    sec_groups: test_secgroup
+    config_drive: false
+    floating_ip:
+      ext_net: public
+      int_net: management_net
+    nics: net-name=management_net,port-name=sriov_net_3_port1,port-name=sriov_net_4_port2
+    net_ports:
+      - name: sriov_net_3_port1
+        network: sriov_net_3
+        port_security: false
+        type: direct
+      - name: sriov_net_4_port2
+        network: sriov_net_4
+        port_security: false
+        type: direct
+
+  - name: testpmd-sriov-vf-dut
+    groups: vm_groups
+    flavor: perf_numa_0_sriov_dut_low
+    image: trex_testpmd_new
+    key_name: "{{ keypair_name }}"
+    sec_groups: test_secgroup
+    config_drive: false
+    floating_ip:
+      ext_net: public
+      int_net: management_net
+    nics: net-name=management_net,port-name=sriov_net_3_port3,port-name=sriov_net_4_port4
+    net_ports:
+      - name: sriov_net_3_port3
+        network: sriov_net_3
+        port_security: false
+        type: direct
+      - name: sriov_net_4_port4
+        network: sriov_net_4
+        port_security: false
+        type: direct
+
