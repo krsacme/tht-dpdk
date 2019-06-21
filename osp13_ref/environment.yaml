@@ -1,0 +1,32 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdksriov.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+
+parameter_defaults:
+  NtpServer: "clock.redhat.com"
+  SshServerOptions:
+    UseDns: 'no'
+
+  ControlPlaneDefaultRoute: "192.168.50.1"
+  ControlPlaneSubnetCidr: "24"
+  DnsServers: ['10.11.5.19']
+  EC2MetadataIp: "192.168.50.1"
+
+  NeutronExternalNetworkBridge: "'br-ex'"
+
+  ControllerCount: 1
+  OvercloudControllerFlavor: controller
+  ComputeOvsDpdkCount: 1
+  OvercloudComputeOvsDpdkSriovFlavor: computeovsdpdk
+
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkControlPlaneSubnet: leaf0
+  ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
+
+  NeutronBridgeMappings: "datacentre:br-ex,data1:br-link0,data2:br-link1"
+  NeutronFlatNetworks: "datacentre"
+  NeutronNetworkVLANRanges: "data1:501:600,data2:501:600"
+  NeutronNetworkType: ['vxlan', 'vlan']
+  NeutronTunnelTypes: "vxlan"
