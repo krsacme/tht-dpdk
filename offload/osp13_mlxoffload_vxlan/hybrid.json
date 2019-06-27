@@ -1,0 +1,32 @@
+{
+    "nodes":[
+        {
+            "mac":[
+                "20:04:0f:eb:c2:39" 
+            ],
+            "name":"computesriov-0",
+            "cpu":"40",
+            "memory":"125000",
+            "disk":"100",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"root",
+            "pm_password":"calvin",
+            "pm_addr":"10.35.78.203"
+        },
+        {
+            "mac":[
+                "20:04:0f:eb:b6:05"
+            ],
+            "name":"computeovsdpdksriov-0",
+            "cpu":"40",
+            "memory":"125000",
+            "disk":"100",
+            "arch":"x86_64",
+            "pm_type":"pxe_ipmitool",
+            "pm_user":"root",
+            "pm_password":"calvin",
+            "pm_addr":"10.35.78.204"
+        }
+    ]
+}

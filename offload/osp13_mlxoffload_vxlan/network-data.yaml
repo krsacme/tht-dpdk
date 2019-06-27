@@ -1,0 +1,32 @@
+- name: InternalApi
+  name_lower: internal_api
+  vip: true
+  vlan: 100
+  ip_subnet: '10.10.100.0/24'
+  allocation_pools: [{'start': '10.10.100.100', 'end': '10.10.100.200'}]
+- name: Tenant
+  vip: false  # Tenant network does not use VIPs
+  name_lower: tenant
+  vlan: 101
+  ip_subnet: '10.10.101.0/24'
+  allocation_pools: [{'start': '10.10.101.100', 'end': '10.10.101.200'}]
+- name: Storage
+  name_lower: storage
+  vip: true
+  vlan: 102
+  ip_subnet: '10.10.102.0/24'
+  allocation_pools: [{'start': '10.10.102.100', 'end': '10.10.102.200'}]
+- name: StorageMgmt
+  name_lower: storage_mgmt
+  vip: true
+  vlan: 103
+  ip_subnet: '10.10.103.0/24'
+  allocation_pools: [{'start': '10.10.103.100', 'end': '10.10.103.200'}]
+- name: External
+  vip: true
+  name_lower: external
+  vlan: 104
+  ip_subnet: '10.10.104.0/24'
+  # Need to find a way to make it be not the default gateway
+  gateway_ip: '10.10.104.10'
+  allocation_pools: [{'start': '10.10.104.100', 'end': '10.10.104.200'}]

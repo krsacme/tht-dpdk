@@ -1,35 +1,15 @@
 resource_registry:
+  # Specify the relative/absolute path to the config files you want to use for override the default.
   OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdksriov.yaml
   OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
   OS::TripleO::ComputeSriovMellanox::Net::SoftwareConfig: nic-configs/computesriovmellanox.yaml
   OS::TripleO::Services::NeutronSriovHostConfig: OS::Heat::None
 
 parameter_defaults:
-  # Customize all these values to match the local environment
-  InternalApiNetCidr: 10.10.146.0/24
-  TenantNetCidr: 10.10.147.0/24
-  StorageNetCidr: 10.10.148.0/24
-  StorageMgmtNetCidr: 10.10.149.0/24
-  ExternalNetCidr: 10.35.141.94/28
-  # CIDR subnet mask length for provisioning network
-  ControlPlaneSubnetCidr: '24'
-  InternalApiAllocationPools: [{'start': '10.10.146.100', 'end': '10.10.146.200'}]
-  TenantAllocationPools: [{'start': '10.10.147.100', 'end': '10.10.147.200'}]
-  StorageAllocationPools: [{'start': '10.10.148.100', 'end': '10.10.148.200'}]
-  StorageMgmtAllocationPools: [{'start': '10.10.149.100', 'end': '10.10.149.200'}]
-  # Use an External allocation pool which will leave room for floating IPs
-  ExternalAllocationPools: [{'start': '10.35.141.86', 'end': '10.35.141.90'}]
-  # Set to the router gateway on the external network
-  ExternalInterfaceDefaultRoute: 10.35.141.94
   # Gateway router for the provisioning network (or Undercloud IP)
   ControlPlaneDefaultRoute: 192.0.30.1
   # Generally the IP of the Undercloud
   EC2MetadataIp: 192.0.30.1
-  InternalApiNetworkVlanID: 546
-  TenantNetworkVlanID: 547
-  StorageNetworkVlanID: 548
-  StorageMgmtNetworkVlanID: 549
-  ExternalNetworkVlanID: 401
   # Define the DNS servers (maximum 2) for the overcloud nodes
   DnsServers: ["10.46.0.31","10.46.0.32"]
   # May set to br-ex if using floating IPs only on native VLAN on bridge br-ex
@@ -37,54 +17,63 @@ parameter_defaults:
   # The tunnel type for the tenant network (vxlan or gre). Set to '' to disable tunneling.
   NeutronTunnelTypes: 'vxlan'
   # The tenant network type for Neutron (vlan or vxlan).
-  #NeutronNetworkType: 'geneve'
   NeutronNetworkType: 'vxlan'
   # The OVS logical->physical bridge mappings to use.
-  NeutronBridgeMappings: 'dpdk-mgmt:br-link0,sriov-4:br-link2'
+  NeutronBridgeMappings: 'dpdk-mgmt:br-link0,sriov-3:br-link1,sriov-4:br-link2'
   # The Neutron ML2 and OpenVSwitch vlan mapping range to support.
-  NeutronNetworkVLANRanges: 'dpdk-mgmt:398:398,sriov-4:550:550'
+  NeutronNetworkVLANRanges: 'dpdk-mgmt:140:140,sriov-1:110:110,sriov-3:120:120,sriov-4:130:130'
+
   # Nova flavor to use.
   OvercloudControllerFlavor: controller
-  OvercloudComputeOvsDpdkSriovFlavor: computeovsdpdksriov
   OvercloudComputeSriovMellanoxFlavor: computesriov
-  # Number of nodes to deploy.
-  ControllerCount: 1
-  ComputeOvsDpdkSriovCount: 1
+  OvercloudComputeOvsDpdkSriovFlavor: computeovsdpdksriov
+  #Number of nodes to deploy.
+  ControllerCount: 3
+  ComputeOvsDpdkSriovCount: 1 
   ComputeSriovMellanoxCount: 1
   # NTP server configuration.
   NtpServer: clock.redhat.com
   # MTU global configuration
   NeutronGlobalPhysnetMtu: 9000
   # Configure the classname of the firewall driver to use for implementing security groups.
-  NeutronOVSFirewallDriver: openvswitch
+  # Offload will not work with openvswitch sg
+  #NeutronOVSFirewallDriver: openvswitch
   SshServerOptions:
     UseDns: 'no'
+  # Enable log level DEBUG for supported components
+  Debug: True
 
   ControllerHostnameFormat: 'controller-%index%'
-  ComputeOvsDpdkSriovHostnameFormat: 'compute-%index%'
-  ComputeSriovMellanoxHostnameFormat: 'computemellanox-%index%'
-
-  # Collectd server that will gather information from overcloud deployment - Service Assurance
-  CollectdServer: 192.0.30.1
-  CollectdConnectionType: "network"
+  ControllerSchedulerHints:
+    'capabilities:node': 'controller-%index%'
+  ComputeOvsDpdkSriovHostnameFormat: 'computeovsdpdksriov-%index%'
+  ComputeOvsDpdkSriovSchedulerHints:
+    'capabilities:node': 'computeovsdpdksriov-%index%'
+  ComputeSriovMellanoxHostnameFormat: 'computesriov-%index%'
+  ComputeSriovMellanoxSchedulerHints:
+    'capabilities:node': 'computesriov-%index%'
 
   ##########################
   # OVS DPDK configuration #
   ##########################
   ComputeOvsDpdkSriovParameters:
-    OvsEnableDpdk: true
-    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=32 iommu=pt intel_iommu=on isolcpus=2-19,22-39"
+    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 iommu=pt intel_iommu=on isolcpus=2-19,22-39"
     TunedProfileName: "cpu-partitioning"
     IsolCpusList: "2-19,22-39"
     NovaVcpuPinSet: ['4-19,24-39']
-    NovaReservedHostMemory: 4096
+    NovaReservedHostMemory: 2048
     OvsDpdkSocketMemory: "3072,1024"
     OvsDpdkMemoryChannels: "4"
     OvsDpdkCoreList: "0,20,1,21"
-    OvsPmdCoreList: "2,22,3,23"
     NovaComputeCpuSharedSet: [0,20,1,21]
+    NeutronPhysicalDevMappings: ["sriov-3:p4p4"]
+    OvsPmdCoreList: "2,22,3,23"
     NovaLibvirtRxQueueSize: 1024
     NovaLibvirtTxQueueSize: 1024
+    NovaPCIPassthrough:
+      - devname: "p4p4"
+        trusted: "true"
+        physical_network: "sriov-3"
 
   ################################
   # SRIOV Mellanox Config        #
@@ -99,11 +88,34 @@ parameter_defaults:
     NovaComputeCpuSharedSet: [0,20,1,21]
     NovaLibvirtRxQueueSize: 1024
     NovaLibvirtTxQueueSize: 1024
-
-  NovaPCIPassthrough:
-    - devname: "p4p2"
+    NovaPCIPassthrough:
+    - devname: "p5p1"
       trusted: "true"
-      physical_network: "sriov-4" 
+      physical_network: null
+    - devname: "p5p2"
+      trusted: "true"
+      physical_network: "sriov-4"
 
-  NeutronPhysicalDevMappings: "sriov-4:p4p2"
-  #NeutronSriovNumVFs: "p7p3:5,p7p4:5,p5p1:5,p5p2:5"
+  # TODO(skramaja): Figure it if this is DCN specific
+  ComputeSriovMellanoxExtraConfig:
+    nova::vncproxy::host: "%{hiera('internal_api')}"
+    neutron::agents::ml2::ovs::local_ip: "%{hiera('tenant')}"
+
+  ############################
+  #  Scheduler configuration #
+  ############################
+  NovaSchedulerAvailableFilters:
+    - "nova.scheduler.filters.all_filters"
+    - "nova.scheduler.filters.pci_passthrough_filter.PciPassthroughFilter"
+  NovaSchedulerDefaultFilters:
+    - "RetryFilter"
+    - "AvailabilityZoneFilter"
+    - "RamFilter"
+    - "ComputeFilter"
+    - "ComputeCapabilitiesFilter"
+    - "ImagePropertiesFilter"
+    - "ServerGroupAntiAffinityFilter"
+    - "ServerGroupAffinityFilter"
+    - "PciPassthroughFilter"
+    - "NUMATopologyFilter"
+    - "AggregateInstanceExtraSpecsFilter"

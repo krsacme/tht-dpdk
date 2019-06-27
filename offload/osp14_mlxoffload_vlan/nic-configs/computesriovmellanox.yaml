@@ -212,7 +212,21 @@ resources:
                       get_param: TenantIpSubnet
 
               - type: ovs_bridge
-                name: br-link2
+                name: br-sriov1
+                mtu: 9000
+                use_dhcp: false
+                members:
+                  -
+                    type: sriov_pf
+                    name: nic11
+                    numvfs: 3
+                    promisc: true
+                    use_dhcp: false
+                    defroute: false
+                    link_mode: switchdev
+
+              - type: ovs_bridge
+                name: br-sriov2
                 mtu: 9000
                 use_dhcp: false
                 members:

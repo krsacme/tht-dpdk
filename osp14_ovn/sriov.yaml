@@ -1,0 +1,12 @@
+parameter_defaults:
+  ComputeSriovParameters:
+    NeutronPhysicalDevMappings: "sriov1:p5p1,sriov2:p5p2"
+    NovaPCIPassthrough:
+      - devname: "p5p1"
+        physical_network: "sriov1"
+      - devname: "p5p2"
+        physical_network: "sriov2"
+    NeutronSriovNumVFs:
+      - p5p1:5
+      - p5p2:5
+

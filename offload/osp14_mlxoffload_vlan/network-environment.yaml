@@ -1,0 +1,110 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdksriov.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::ComputeSriovMellanox::Net::SoftwareConfig: nic-configs/computesriovmellanox.yaml
+  OS::TripleO::Services::NeutronSriovHostConfig: OS::Heat::None
+
+parameter_defaults:
+  # Customize all these values to match the local environment
+  InternalApiNetCidr: 10.10.146.0/24
+  TenantNetCidr: 10.10.147.0/24
+  StorageNetCidr: 10.10.148.0/24
+  StorageMgmtNetCidr: 10.10.149.0/24
+  ExternalNetCidr: 10.35.141.94/28
+  # CIDR subnet mask length for provisioning network
+  ControlPlaneSubnetCidr: '24'
+  InternalApiAllocationPools: [{'start': '10.10.146.100', 'end': '10.10.146.200'}]
+  TenantAllocationPools: [{'start': '10.10.147.100', 'end': '10.10.147.200'}]
+  StorageAllocationPools: [{'start': '10.10.148.100', 'end': '10.10.148.200'}]
+  StorageMgmtAllocationPools: [{'start': '10.10.149.100', 'end': '10.10.149.200'}]
+  # Use an External allocation pool which will leave room for floating IPs
+  ExternalAllocationPools: [{'start': '10.35.141.86', 'end': '10.35.141.90'}]
+  # Set to the router gateway on the external network
+  ExternalInterfaceDefaultRoute: 10.35.141.94
+  # Gateway router for the provisioning network (or Undercloud IP)
+  ControlPlaneDefaultRoute: 192.0.30.1
+  # Generally the IP of the Undercloud
+  EC2MetadataIp: 192.0.30.1
+  InternalApiNetworkVlanID: 546
+  TenantNetworkVlanID: 547
+  StorageNetworkVlanID: 548
+  StorageMgmtNetworkVlanID: 549
+  ExternalNetworkVlanID: 401
+  # Define the DNS servers (maximum 2) for the overcloud nodes
+  DnsServers: ["10.46.0.31","10.46.0.32"]
+  # May set to br-ex if using floating IPs only on native VLAN on bridge br-ex
+  NeutronExternalNetworkBridge: "''"
+  # The tunnel type for the tenant network (vxlan or gre). Set to '' to disable tunneling.
+  NeutronTunnelTypes: 'vxlan'
+  # The tenant network type for Neutron (vlan or vxlan).
+  #NeutronNetworkType: 'geneve'
+  NeutronNetworkType: 'vxlan'
+  # The OVS logical->physical bridge mappings to use.
+  NeutronBridgeMappings: 'dpdk-mgmt:br-link0,sriov-3:br-sriov1,sriov-4:br-sriov2'
+  # The Neutron ML2 and OpenVSwitch vlan mapping range to support.
+  NeutronNetworkVLANRanges: 'dpdk-mgmt:398:398,sriov-3:550:551,sriov-4:551:551'
+  # Nova flavor to use.
+  OvercloudControllerFlavor: controller
+  OvercloudComputeOvsDpdkSriovFlavor: computeovsdpdksriov
+  OvercloudComputeSriovMellanoxFlavor: computesriov
+  # Number of nodes to deploy.
+  ControllerCount: 1
+  ComputeOvsDpdkSriovCount: 1
+  ComputeSriovMellanoxCount: 1
+  # NTP server configuration.
+  NtpServer: clock.redhat.com
+  # MTU global configuration
+  NeutronGlobalPhysnetMtu: 9000
+  # Configure the classname of the firewall driver to use for implementing security groups.
+  NeutronOVSFirewallDriver: openvswitch
+  SshServerOptions:
+    UseDns: 'no'
+
+  ControllerHostnameFormat: 'controller-%index%'
+  ComputeOvsDpdkSriovHostnameFormat: 'compute-%index%'
+  ComputeSriovMellanoxHostnameFormat: 'computemellanox-%index%'
+
+  # Collectd server that will gather information from overcloud deployment - Service Assurance
+  CollectdServer: 192.0.30.1
+  CollectdConnectionType: "network"
+
+  ##########################
+  # OVS DPDK configuration #
+  ##########################
+  ComputeOvsDpdkSriovParameters:
+    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=32 iommu=pt intel_iommu=on isolcpus=2-19,22-39"
+    IsolCpusList: "2-19,22-39"
+    NovaVcpuPinSet: ['4-19','24-39']
+    NovaReservedHostMemory: 4096
+    OvsDpdkSocketMemory: "3072,1024"
+    OvsDpdkMemoryChannels: "4"
+    OvsDpdkCoreList: "0,20,1,21"
+    OvsPmdCoreList: "2,22,3,23"
+    NovaComputeCpuSharedSet: [0,20,1,21]
+    NeutronPhysicalDevMappings: ["sriov-3:p7p3","sriov-4:p7p4"]
+    NovaPCIPassthrough:
+      - devname: "p7p3"
+        trusted: "true"
+        physical_network: "sriov-3"
+      - devname: "p7p4"
+        trusted: "true"
+        physical_network: "sriov-4"
+
+  ################################
+  # SRIOV Mellanox Config        #
+  ################################
+  ComputeSriovMellanoxParameters:
+    OvsHwOffload: true
+    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=32 iommu=pt intel_iommu=on isolcpus=2-19,22-39"
+    IsolCpusList: "2-19,22-39"
+    NovaVcpuPinSet: ['4-19','24-39']
+    NovaReservedHostMemory: 4096
+    NovaComputeCpuSharedSet: [0,20,1,21]
+    NovaPCIPassthrough:
+      - devname: "p4p1"
+        trusted: "true"
+        physical_network: "sriov-3"
+      - devname: "p4p2"
+        trusted: "true"
+        physical_network: "sriov-4" 
+

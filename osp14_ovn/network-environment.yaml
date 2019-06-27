@@ -6,9 +6,9 @@ resource_registry:
 parameter_defaults:
   DnsServers: ['10.11.5.19']
 
-  ControlPlaneDefaultRoute: "192.168.50.1"
+  ControlPlaneDefaultRoute: "192.168.10.1"
   ControlPlaneSubnetCidr: "24"
-  EC2MetadataIp: "192.168.50.1"
+  EC2MetadataIp: "192.168.10.1"
 
   ControlPlaneSubnet: leaf0
   ControllerControlPlaneSubnet: leaf0
@@ -16,7 +16,12 @@ parameter_defaults:
   ComputeOvsDpdkControlPlaneSubnet: leaf0
 
   NeutronExternalNetworkBridge: "br-ex"
-  NeutronTunnelTypes: 'vxlan'
-  NeutronNetworkType: ['vxlan', 'vlan']
+  NeutronTunnelTypes: 'geneve'
+  NeutronNetworkType: ['geneve', 'vlan']
   NeutronBridgeMappings: 'datacentre:br-ex,tenant:br-tenant'
-  NeutronNetworkVLANRanges: 'tenant:551:560'
+  NeutronNetworkVLANRanges: 'tenant:225:226'
+
+  InternalApiNetworkVlanID: 221
+  StorageNetworkVlanID: 222
+  StorageMgmtNetworkVlanID: 223
+  TenantNetworkVlanID: 224

@@ -49,19 +49,19 @@ networks:
     external: false
     router_name: router
 
-  #- name: 'sriov_net_3'
-  #  physical_network: sriov-3
-  #  segmentation_id: '32'
-  #  allocation_pool_start: '80.0.0.100'
-  #  allocation_pool_end: '80.0.0.200'
-  #  cidr: '80.0.0.0/24'
-  #  enable_dhcp: false
-  #  gateway_ip: '80.0.0.254'
-  #  network_type: vlan
+  - name: 'sriov_net_3'
+    physical_network: sriov-3
+    segmentation_id: '550'
+    allocation_pool_start: '80.0.0.100'
+    allocation_pool_end: '80.0.0.200'
+    cidr: '80.0.0.0/24'
+    enable_dhcp: false
+    gateway_ip: '80.0.0.254'
+    network_type: vlan
 
   - name: 'sriov_net_4'
     physical_network: sriov-4
-    segmentation_id: '550'
+    segmentation_id: '551'
     allocation_pool_start: '90.0.0.100'
     allocation_pool_end: '90.0.0.200'
     cidr: '90.0.0.0/24'
@@ -77,7 +77,7 @@ dns_nameservers:
 aggregate_groups:
   - name: TREX_AG
     hosts:
-      - computemellanox-0.localdomain
+      - compute-0.localdomain
     metadata:
       - flavor=trex_ag
 
@@ -97,6 +97,7 @@ flavors:
       - "hw:mem_page_size": "1GB"
         "hw:cpu_policy": "dedicated"
         "hw:emulator_thread_policy": "share"
+        "aggregate_instance_extra_specs:flavor": "trex_ag"
 
   - name: perf_numa_0_sriov_dut_low
     ram: 8192
@@ -106,6 +107,16 @@ flavors:
       - "hw:mem_page_size": "1GB"
         "hw:cpu_policy": "dedicated"
         "hw:emulator_thread_policy": "share"
+        "aggregate_instance_extra_specs:flavor": "dut_ag"
+  - name: perf_numa_0_sriov_dut_low_2
+    ram: 8192
+    disk: 20
+    vcpus: 2
+    extra_specs:
+      - "hw:mem_page_size": "1GB"
+        "hw:cpu_policy": "dedicated"
+        "hw:emulator_thread_policy": "share"
+        "aggregate_instance_extra_specs:flavor": "dut_ag"
 
 images:
   - name: trex_testpmd
@@ -137,16 +148,17 @@ instances:
     key_name: "{{ keypair_name }}"
     sec_groups: test_secgroup
     config_drive: false
+    offload: false
     floating_ip:
       ext_net: public
       int_net: management_net
-    nics: net-name=management_net,port-name=sriov_net_3_port1,port-name=sriov_net_4_port2
+    nics: net-name=management_net,port-name=sriov_3_port1_legacy,port-name=sriov_4_port2_legacy
     net_ports:
-      - name: sriov_net_3_port1
+      - name: sriov_3_port1_legacy
         network: sriov_net_3
         port_security: false
         type: direct
-      - name: sriov_net_4_port2
+      - name: sriov_4_port2_legacy
         network: sriov_net_4
         port_security: false
         type: direct
@@ -158,16 +170,39 @@ instances:
     key_name: "{{ keypair_name }}"
     sec_groups: test_secgroup
     config_drive: false
+    offload: true
     floating_ip:
       ext_net: public
       int_net: management_net
-    nics: net-name=management_net,port-name=sriov_net_3_port3,port-name=sriov_net_4_port4
+    nics: net-name=management_net,port-name=sriov_3_port3_switchdev,port-name=sriov_4_port4_switchdev
     net_ports:
-      - name: sriov_net_3_port3
+      - name: sriov_3_port3_switchdev
         network: sriov_net_3
         port_security: false
         type: direct
-      - name: sriov_net_4_port4
+      - name: sriov_4_port4_switchdev
+        network: sriov_net_4
+        port_security: false
+        type: direct
+
+  - name: testpmd-sriov-vf-dut-2
+    groups: vm_groups
+    flavor: perf_numa_0_sriov_dut_low_2
+    image: trex_testpmd_new
+    key_name: "{{ keypair_name }}"
+    sec_groups: test_secgroup
+    config_drive: false
+    offload: true
+    floating_ip:
+      ext_net: public
+      int_net: management_net
+    nics: net-name=management_net,port-name=sriov_3_port5_switchdev,port-name=sriov_4_port6_switchdev
+    net_ports:
+      - name: sriov_3_port5_switchdev
+        network: sriov_net_3
+        port_security: false
+        type: direct
+      - name: sriov_4_port6_switchdev
         network: sriov_net_4
         port_security: false
         type: direct

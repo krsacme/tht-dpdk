@@ -4,6 +4,7 @@
   vars:
     rhel_image_path: "/home/stack/rhel-server-7.5-x86_64-kvm.qcow2"
     public_key_file: "/home/stack/.ssh/id_rsa.pub"
+    ov_access_nw: "172.50.0"
   tasks:
     - name: "Get the external subnet from the undercloud"
       os_subnets_facts:
@@ -65,9 +66,9 @@
       os_subnet:
         name: access_subnet
         network_name: access
-        cidr: 172.30.0.112/28
-        allocation_pool_start: 172.30.0.114
-        allocation_pool_end: 172.30.0.125
+        cidr: "{{ ov_access_nw }}.112/28"
+        allocation_pool_start: "{{ ov_access_nw }}.114"
+        allocation_pool_end: "{{ ov_access_nw }}.125"
         dns_nameservers:
           - 8.8.8.8
         cloud: overcloud
@@ -101,3 +102,10 @@
         image: rhel
         key_name: stack_user_key
         cloud: overcloud
+
+    - name: "Create and associate a floating ip with instance"
+      os_floating_ip:
+        cloud: overcloud
+        server: tenant1
+        nat_destination: tenant1
+        wait: true
