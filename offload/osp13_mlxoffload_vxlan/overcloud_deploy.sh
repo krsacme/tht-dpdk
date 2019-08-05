@@ -4,10 +4,10 @@ PARAMS="$*"
 USER_THT='/home/stack/ospd-13-vxlan-dpdk-sriov-ctlplane-dataplane-bonding-hybrid'
 DEFAULT_THT='/usr/share/openstack-tripleo-heat-templates'
 
-openstack overcloud deploy $PARAMS\
+openstack overcloud deploy $PARAMS \
   --templates \
   -r $USER_THT/roles_data.yaml \
-  -n $USER_THT/network-data.yaml \
+  -n $USER_THT/network_data.yaml \
   -e $DEFAULT_THT/environments/network-environment.yaml \
   -e $DEFAULT_THT/environments/network-isolation.yaml \
   -e $DEFAULT_THT/environments/host-config-and-reboot.yaml \

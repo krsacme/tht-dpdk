@@ -19,9 +19,9 @@ parameter_defaults:
   # The tenant network type for Neutron (vlan or vxlan).
   NeutronNetworkType: 'vxlan'
   # The OVS logical->physical bridge mappings to use.
-  NeutronBridgeMappings: 'dpdk-mgmt:br-link0,sriov-3:br-link1,sriov-4:br-link2'
+  NeutronBridgeMappings: 'dpdk-mgmt:br-link0'
   # The Neutron ML2 and OpenVSwitch vlan mapping range to support.
-  NeutronNetworkVLANRanges: 'dpdk-mgmt:140:140,sriov-1:110:110,sriov-3:120:120,sriov-4:130:130'
+  NeutronNetworkVLANRanges: 'dpdk-mgmt:140:140'
 
   # Nova flavor to use.
   OvercloudControllerFlavor: controller
@@ -66,14 +66,9 @@ parameter_defaults:
     OvsDpdkMemoryChannels: "4"
     OvsDpdkCoreList: "0,20,1,21"
     NovaComputeCpuSharedSet: [0,20,1,21]
-    NeutronPhysicalDevMappings: ["sriov-3:p4p4"]
     OvsPmdCoreList: "2,22,3,23"
     NovaLibvirtRxQueueSize: 1024
     NovaLibvirtTxQueueSize: 1024
-    NovaPCIPassthrough:
-      - devname: "p4p4"
-        trusted: "true"
-        physical_network: "sriov-3"
 
   ################################
   # SRIOV Mellanox Config        #
@@ -95,11 +90,6 @@ parameter_defaults:
     - devname: "p5p2"
       trusted: "true"
       physical_network: "sriov-4"
-
-  # TODO(skramaja): Figure it if this is DCN specific
-  ComputeSriovMellanoxExtraConfig:
-    nova::vncproxy::host: "%{hiera('internal_api')}"
-    neutron::agents::ml2::ovs::local_ip: "%{hiera('tenant')}"
 
   ############################
   #  Scheduler configuration #

@@ -142,22 +142,39 @@ resources:
                   name: nic4
                   mtu: 9000
 
-              - type: ovs_bridge
-                name: br-link1
-                mtu: 9000
-                use_dhcp: false
+#              - type: ovs_bridge
+#                name: br-link1
+#                mtu: 9000
+#                use_dhcp: false
+#                members:
+
+              - type: linux_bond
+                name: bond-pf
+                bonding_options: "mode=balance-xor miimon=100"
+                members:
+                - type: sriov_pf
+                  name: p5p1
+                  numvfs: 3
+                  primary: true
+                  promisc: true
+                  use_dhcp: false
+                  defroute: false
+                  link_mode: switchdev
+                - type: sriov_pf
+                  name: p5p2
+                  numvfs: 3
+                  promisc: true
+                  use_dhcp: false
+                  defroute: false
+                  link_mode: switchdev
+
+              - type: vlan
+                vlan_id:
+                  get_param: TenantNetworkVlanID
+                device: bond-pf
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
-                members:
-                  -
-                    type: sriov_pf
-                    name: nic7
-                    numvfs: 3
-                    promisc: true
-                    use_dhcp: false
-                    defroute: false
-                    link_mode: switchdev
 
 #              - type: sriov_pf
 #                name: p5p1
@@ -170,20 +187,20 @@ resources:
 #                defroute: false
 #                link_mode: switchdev
 
-              - type: ovs_bridge
-                name: br-link2
-                mtu: 9000
-                use_dhcp: false
-                members:
-                  -
-                    type: sriov_pf
-                    name: nic8
-                    numvfs: 3
-                    promisc: true
-                    use_dhcp: false
-                    defroute: false
-                    link_mode: switchdev
-
+#              - type: ovs_bridge
+#                name: br-link2
+#                mtu: 9000
+#                use_dhcp: false
+#                members:
+#                  -
+#                    type: sriov_pf
+#                    name: nic8
+#                    numvfs: 3
+#                    promisc: true
+#                    use_dhcp: false
+#                    defroute: false
+#                    link_mode: switchdev
+#
 
 outputs:
   OS::stack_id:
