@@ -133,63 +133,73 @@ resources:
                 - ip_netmask:
                     get_param: StorageIpSubnet
 
-              - type: ovs_bridge
-                name: br-link0
-                use_dhcp: false
-                members:
-                - type: ovs_bond
-                  name: bond0
-                  members:
-                    - type: interface
-                      name: nic4
-                    - type: interface
-                      name: nic5
-                - type: vlan
-                  vlan_id:
-                    get_param: TenantNetworkVlanID
-                  mtu: 9000
-                  addresses:
-                  - ip_netmask:
-                      get_param: TenantIpSubnet
-
-
-#              - type: ovs_user_bridge
+#              - type: ovs_bridge
 #                name: br-link0
+#                mtu: 9000
 #                use_dhcp: false
-#                ovs_extra:
-#                  - str_replace:
-#                      template: set port br-link0 tag=_VLAN_TAG_
-#                      params:
-#                        _VLAN_TAG_:
-#                           get_param: TenantNetworkVlanID
-#                addresses:
-#                  - ip_netmask:
-#                      get_param: TenantIpSubnet
 #                members:
-#                  - type: ovs_dpdk_bond
-#                    name: dpdkbond0
-#                    mtu: 9000
-#                    rx_queue: 2
-#                    members:
-#                      - type: ovs_dpdk_port
-#                        name: dpdk0
-#                        members:
-#                          - type: interface
-#                            name: nic4
-#                      - type: ovs_dpdk_port
-#                        name: dpdk1
-#                        members:
-#                          - type: interface
-#                            name: nic5
-              
-              - type: sriov_pf
-                name: p4p4
-                numvfs: 4
+#                - type: interface
+#                  name: nic4
+#                  mtu: 9000
+
+              - type: ovs_bridge
+                name: br-offload
                 mtu: 9000
                 use_dhcp: false
-                defroute: false
-                nm_controlled: true
-                hotplug: true
+                members:
+                - type: linux_bond
+                  name: bond-pf
+                  bonding_options: "mode=active-backup miimon=100"
+                  members:
+                  - type: sriov_pf
+                    name: p5p1
+                    numvfs: 3
+                    primary: true
+                    promisc: true
+                    use_dhcp: false
+                    defroute: false
+                    link_mode: switchdev
+                  - type: sriov_pf
+                    name: p5p2
+                    numvfs: 3
+                    promisc: true
+                    use_dhcp: false
+                    defroute: false
+                    link_mode: switchdev
+
+              - type: vlan
+                vlan_id:
+                  get_param: TenantNetworkVlanID
+                device: bond-pf
+                addresses:
+                - ip_netmask:
+                    get_param: TenantIpSubnet
+
+#              - type: sriov_pf
+#                name: p5p1
+#                numvfs: 3
+#                addresses:
+#                - ip_netmask:
+#                    get_param: TenantIpSubnet
+#                promisc: true
+#                use_dhcp: false
+#                defroute: false
+#                link_mode: switchdev
+
+#              - type: ovs_bridge
+#                name: br-link2
+#                mtu: 9000
+#                use_dhcp: false
+#                members:
+#                  -
+#                    type: sriov_pf
+#                    name: nic8
+#                    numvfs: 3
+#                    promisc: true
+#                    use_dhcp: false
+#                    defroute: false
+#                    link_mode: switchdev
+#
 
 outputs:
   OS::stack_id:

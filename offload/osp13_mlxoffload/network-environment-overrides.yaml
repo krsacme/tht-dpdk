@@ -19,9 +19,9 @@ parameter_defaults:
   # The tenant network type for Neutron (vlan or vxlan).
   NeutronNetworkType: 'vxlan'
   # The OVS logical->physical bridge mappings to use.
-  NeutronBridgeMappings: 'dpdk-mgmt:br-link0'
+  NeutronBridgeMappings: 'sriov-4:br-offload'
   # The Neutron ML2 and OpenVSwitch vlan mapping range to support.
-  NeutronNetworkVLANRanges: 'dpdk-mgmt:140:140'
+  NeutronNetworkVLANRanges: 'sriov-4:130:130'
 
   # Nova flavor to use.
   OvercloudControllerFlavor: controller
@@ -69,6 +69,10 @@ parameter_defaults:
     OvsPmdCoreList: "2,22,3,23"
     NovaLibvirtRxQueueSize: 1024
     NovaLibvirtTxQueueSize: 1024
+    NovaPCIPassthrough:
+    - devname: "p4p2"
+      trusted: "true"
+      physical_network: "sriov-4"
 
   ################################
   # SRIOV Mellanox Config        #
