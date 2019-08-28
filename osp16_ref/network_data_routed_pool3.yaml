@@ -1,0 +1,72 @@
+- name: Storage
+  vip: true
+  vlan: 501
+  name_lower: storage
+  ip_subnet: '152.20.16.0/24'
+  gateway_ip: '152.20.16.1'
+  routes: [{'destination':'152.20.16.0/20', 'nexthop':'152.20.16.1'}]
+  allocation_pools: [{'start': '152.20.16.4', 'end': '152.20.16.250'}]
+- name: StorageLeaf1
+  vip: false
+  vlan: 511
+  name_lower: storage1
+  ip_subnet: '152.20.17.0/24'
+  gateway_ip: '152.20.17.1'
+  routes: [{'destination':'152.20.16.0/20', 'nexthop':'152.20.17.1'}]
+  allocation_pools: [{'start': '152.20.17.4', 'end': '152.20.17.250'}]
+- name: StorageMgmt
+  name_lower: storage_mgmt
+  vip: true
+  vlan: 502
+  ip_subnet: '152.20.48.0/24'
+  gateway_ip: '152.20.48.1'
+  routes: [{'destination':'152.20.48.0/20', 'nexthop':'152.20.48.1'}]
+  allocation_pools: [{'start': '152.20.48.4', 'end': '152.20.48.250'}]
+- name: StorageMgmtLeaf1
+  name_lower: storage_mgmt1
+  vip: false
+  vlan: 512
+  ip_subnet: '152.20.49.0/24'
+  gateway_ip: '152.20.49.1'
+  routes: [{'destination':'152.20.48.0/20', 'nexthop':'152.20.49.1'}]
+  allocation_pools: [{'start': '152.20.49.4', 'end': '152.20.49.250'}]
+- name: InternalApi
+  name_lower: internal_api
+  vip: true
+  vlan: 504
+  ip_subnet: '152.20.32.0/24'
+  gateway_ip: '152.20.32.1'
+  routes: [{'destination':'152.20.32.0/20', 'nexthop':'152.20.32.1'}]
+  allocation_pools: [{'start': '152.20.32.4', 'end': '152.20.32.250'}]
+- name: InternalApiLeaf1
+  name_lower: internal_api1
+  vip: false
+  vlan: 514
+  ip_subnet: '152.20.33.0/24'
+  gateway_ip: '152.20.33.1'
+  routes: [{'destination':'152.20.32.0/20', 'nexthop':'152.20.33.1'}]
+  allocation_pools: [{'start': '152.20.33.4', 'end': '152.20.33.250'}]
+- name: Tenant
+  vip: false  # Tenant networks do not use VIPs
+  name_lower: tenant
+  vlan: 505
+  ip_subnet: '152.20.0.0/24'
+  gateway_ip: '152.20.0.1'
+  routes: [{'destination':'152.20.0.0/20', 'nexthop':'152.20.0.1'}]
+  allocation_pools: [{'start': '152.20.0.4', 'end': '152.20.0.250'}]
+  # Note that tenant tunneling is only compatible with IPv4 addressing at this time.
+- name: TenantLeaf1
+  vip: false  # Tenant networks do not use VIPs
+  name_lower: tenant1
+  vlan: 515
+  ip_subnet: '152.20.1.0/24'
+  gateway_ip: '152.20.1.1'
+  routes: [{'destination':'152.20.0.0/20', 'nexthop':'152.20.1.1'}]
+  allocation_pools: [{'start': '152.20.1.4', 'end': '152.20.1.250'}]
+  # Note that tenant tunneling is only compatible with IPv4 addressing at this time.
+- name: External
+  vip: true
+  name_lower: external
+  ip_subnet: '172.50.0.0/24'
+  allocation_pools: [{'start': '172.50.0.201', 'end': '172.50.0.206'}]
+  gateway_ip: '172.50.0.1'

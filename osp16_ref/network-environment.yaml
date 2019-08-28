@@ -1,0 +1,20 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+
+parameter_defaults:
+  DnsServers: ['10.11.5.19']
+
+  ControlPlaneDefaultRoute: "192.168.50.1"
+  ControlPlaneSubnetCidr: "24"
+
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
+
+  NeutronExternalNetworkBridge: "br-ex"
+  NeutronTunnelTypes: 'vxlan'
+  NeutronNetworkType: ['vxlan', 'vlan']
+  NeutronBridgeMappings: 'datacentre:br-ex,tenant:br-tenant'
+  NeutronNetworkVLANRanges: 'tenant:551:560'

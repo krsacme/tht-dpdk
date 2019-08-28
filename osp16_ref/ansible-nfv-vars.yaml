@@ -1,0 +1,164 @@
+---
+
+# External Network which will be created by ansible-nfv's role
+# 'post_install/openstack_tasks'.
+networks:
+  - name: 'access'
+    physical_network: 'datacentre'
+    allocation_pool_start: '172.30.0.113'
+    allocation_pool_end: '172.30.0.125'
+    cidr: 172.30.0.112/28
+    enable_dhcp: true
+    gateway_ip: '172.30.0.1'
+    external: true
+    shared: true
+    router_name: router1
+    port_type: normal
+    network_type: flat
+
+floating_ip: false
+
+test-networks:
+  - name: 'data1'
+    physical_network: 'tenant'
+    allocation_pool_start: '10.10.135.100'
+    allocation_pool_end: '10.10.135.200'
+    cidr: '10.10.135.0/24'
+    enable_dhcp: true
+    gateway_ip: '10.10.135.254'
+    network_type: vxlan
+    ip_version: 4
+    sec_groups: true
+    port_type: normal
+    mgmt: true
+    tag: external
+    dns_nameservers:
+      - 10.46.0.31
+      - 8.8.8.8
+  - name: 'data2'
+    physical_network: 'tenant'
+    allocation_pool_start: '10.10.136.100'
+    allocation_pool_end: '10.10.136.200'
+    cidr: '10.10.136.0/24'
+    enable_dhcp: true
+    gateway_ip: '10.10.136.254'
+    network_type: vxlan
+    ip_version: 4
+    sec_groups: true
+    port_type: normal
+
+dns_nameservers:
+  - 10.46.0.31
+  - 8.8.8.8
+
+flavors:
+  - name: m1.medium.huge_pages_cpu_pinning_numa_node-0
+    ram: 2048
+    disk: 20
+    vcpus: 2
+    extra_specs:
+     - "hw:mem_page_size": "1GB"
+       "hw:numa_mem.0": "2048"
+       "hw:numa_mempolicy": "strict"
+       "hw:numa_cpus.0": "0,1"
+       "hw:cpu_policy": "dedicated"
+       "hw:emulator_threads_policy": "isolate"
+
+  - name: m1.medium.huge_pages_cpu_pinning_numa_node-1
+    ram: 2048
+    disk: 20
+    vcpus: 2
+    extra_specs:
+     - "hw:mem_page_size": "1GB"
+       "hw:numa_mem.1": "2048"
+       "hw:numa_mempolicy": "strict"
+       "hw:numa_cpus.1": "0,1"
+       "hw:cpu_policy": "dedicated"
+       "hw:emulator_threads_policy": "isolate"
+
+  - name: m1.medium.huge_pages_cpu_pinning_numa_node-mix
+    ram: 2048
+    disk: 20
+    vcpus: 2
+    extra_specs:
+     - "hw:numa_nodes": "2"
+       "hw:mem_page_size": "1GB"
+       "hw:numa_mem.0": "1024"
+       "hw:numa_mem.1": "1024"
+       "hw:numa_mempolicy": "strict"
+       "hw:numa_cpus.0": "0"
+       "hw:numa_cpus.1": "1"
+       "hw:cpu_policy": "dedicated"
+       "hw:emulator_threads_policy": "isolate"
+
+images:
+- name: rhel7.5
+  url: http://download-node-02.eng.bos.redhat.com/brewroot/packages/rhel-guest-image/7.5/180/images/rhel-guest-image-7.5-180.x86_64.qcow2
+
+image_ssh_user: cloud-user
+tempest_flavor_name: m1.medium.huge_pages_cpu_pinning_numa_node-0
+floating_ip: false
+
+tests-setup:
+ - name: numa0
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-0
+   router: true
+
+ - name: numa1
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-1
+   router: true
+
+ - name: numamix
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-mix
+   router: true
+
+ - name: check-multiqueue-func
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-0
+   router: true
+
+ - name: check-compute-packages
+   package-names:
+     - tuned-2.10.0-6.el7.noarch
+     - tuned-profiles-cpu-partitioning-2.10.0-6.el7.noarch
+     - openvswitch-2.9.0-56.el7fdp.noarch
+   service-names:
+     - tuned
+     - openvswitch
+   tuned-profile: cpu-partitioning
+   availability-zone: normal
+
+ - name: test-ping-mtu
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-0
+   router: true
+   mtu: 8921
+
+ - name: multicast
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-0
+   router: true
+
+ - name: test_live_migration_basic
+   flavor: m1.medium.huge_pages_cpu_pinning_numa_node-0
+   router: true
+
+
+# The variable provided within the Jenkins job
+#tempest_config:
+
+#tempest_extra_vars: 'v3_endpoint_type=public'
+
+tempest_tests:
+  - nfv_tempest_plugin.tests.scenario.test_nfv_basic.TestNfvBasic.test_numa0_provider_network
+  - nfv_tempest_plugin.tests.scenario.test_nfv_basic.TestNfvBasic.test_numamix_provider_network
+  - nfv_tempest_plugin.tests.scenario.test_nfv_basic.TestNfvBasic.test_packages_compute
+  - nfv_tempest_plugin.tests.scenario.test_nfv_basic.TestNfvBasic.test_mtu_ping_test
+  - nfv_tempest_plugin.tests.scenario.test_nfv_dpdk_usecases.TestDpdkScenarios.test_min_queues_functionality
+  - nfv_tempest_plugin.tests.scenario.test_nfv_dpdk_usecases.TestDpdkScenarios.test_equal_queues_functionality
+  - nfv_tempest_plugin.tests.scenario.test_nfv_dpdk_usecases.TestDpdkScenarios.test_max_queues_functionality
+  - nfv_tempest_plugin.tests.scenario.test_nfv_dpdk_usecases.TestDpdkScenarios.test_odd_queues_functionality
+  - nfv_tempest_plugin.tests.scenario.test_nfv_dpdk_usecases.TestDpdkScenarios.test_multicast
+  - nfv_tempest_plugin.tests.scenario.test_nfv_dpdk_usecases.TestDpdkScenarios.test_live_migration_block
+  - neutron_tempest_plugin.scenario.test_trunk.TrunkTest.test_subport_connectivity
+  - neutron_tempest_plugin.scenario.test_trunk.TrunkTest.test_trunk_subport_lifecycle
+
+  # Disable the test because the failure is known and fix will not be available in the near feature.
+  # - nfv_tempest_plugin.tests.scenario.test_nfv_basic.TestNfvBasic.test_numa1_provider_network

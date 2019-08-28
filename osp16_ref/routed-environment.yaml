@@ -1,0 +1,22 @@
+parameter_defaults:
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
+
+  #ControlPlaneLeaf1DefaultRoute: "192.168.11.1"
+  #ControlPlaneLeaf1SubnetCidr: "24"
+
+  ## Figure out a way to set the correct routes for controller's ControlPlane
+  ## for additional subnet
+  #ControlPlaneSubnetCidrFull: "192.168.10.0/24"
+  #ControlPlaneLeaf1SubnetCidrFull: "192.168.11.0/24"
+
+  #TenantSupernet: 172.20.0.0/20
+  #StorageSupernet: 172.20.16.0/20
+  #InternalApiSupernet: 172.20.32.0/20
+  #StorageMgmtSupernet: 172.20.48.0/20
+
+  ComputeOvsDpdkExtraConfig:
+    nova::vncproxy::host: "%{hiera('internal_api1')}"
+    neutron::agents::ml2::ovs::local_ip: "%{hiera('tenant1')}"
