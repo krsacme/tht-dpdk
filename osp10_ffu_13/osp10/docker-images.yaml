@@ -1,0 +1,79 @@
+# Generated with the following on 2019-02-22T09:37:59.936456
+#
+#   openstack overcloud container image prepare --namespace=rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13 --env-file=/home/stack/ospd-10-vxlan-dpdk-sriov-ctlplane-dataplane-bonding-hybrid/docker-images.yaml -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-ovs-dpdk.yaml -e /usr/share/openstack-tripleo-heat-templates/environments/neutron-sriov.yaml -e /usr/share/openstack-tripleo-heat-templates/environments/ovs-dpdk-permissions.yaml -e /home/stack/ospd-10-vxlan-dpdk-sriov-ctlplane-dataplane-bonding-hybrid/api-policies.yaml -e /home/stack/ospd-10-vxlan-dpdk-sriov-ctlplane-dataplane-bonding-hybrid/os-net-config-mappings.yaml -e /home/stack/ospd-10-vxlan-dpdk-sriov-ctlplane-dataplane-bonding-hybrid/network-environment.yaml --prefix=openstack- --tag=2019-02-14.3 --set ceph_namespace=brew-pulp-docker01.web.prod.ext.phx2.redhat.com:8888 --set ceph_image=rhceph --set ceph_tag=3-18
+#
+
+parameter_defaults:
+  DockerAodhApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-aodh-api:2019-02-14.3
+  DockerAodhConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-aodh-api:2019-02-14.3
+  DockerAodhEvaluatorImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-aodh-evaluator:2019-02-14.3
+  DockerAodhListenerImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-aodh-listener:2019-02-14.3
+  DockerAodhNotifierImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-aodh-notifier:2019-02-14.3
+  DockerCeilometerCentralImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-ceilometer-central:2019-02-14.3
+  DockerCeilometerComputeImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-ceilometer-compute:2019-02-14.3
+  DockerCeilometerConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-ceilometer-central:2019-02-14.3
+  DockerCeilometerNotificationImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-ceilometer-notification:2019-02-14.3
+  DockerCinderApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-cinder-api:2019-02-14.3
+  DockerCinderConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-cinder-api:2019-02-14.3
+  DockerCinderSchedulerImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-cinder-scheduler:2019-02-14.3
+  DockerCinderVolumeImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-cinder-volume:2019-02-14.3
+  DockerClustercheckConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-mariadb:2019-02-14.3
+  DockerClustercheckImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-mariadb:2019-02-14.3
+  DockerCrondConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-cron:2019-02-14.3
+  DockerCrondImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-cron:2019-02-14.3
+  DockerGlanceApiConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-glance-api:2019-02-14.3
+  DockerGlanceApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-glance-api:2019-02-14.3
+  DockerGnocchiApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-gnocchi-api:2019-02-14.3
+  DockerGnocchiConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-gnocchi-api:2019-02-14.3
+  DockerGnocchiMetricdImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-gnocchi-metricd:2019-02-14.3
+  DockerGnocchiStatsdImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-gnocchi-statsd:2019-02-14.3
+  DockerHAProxyConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-haproxy:2019-02-14.3
+  DockerHAProxyImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-haproxy:2019-02-14.3
+  DockerHeatApiCfnConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-heat-api-cfn:2019-02-14.3
+  DockerHeatApiCfnImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-heat-api-cfn:2019-02-14.3
+  DockerHeatApiConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-heat-api:2019-02-14.3
+  DockerHeatApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-heat-api:2019-02-14.3
+  DockerHeatConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-heat-api:2019-02-14.3
+  DockerHeatEngineImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-heat-engine:2019-02-14.3
+  DockerHorizonConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-horizon:2019-02-14.3
+  DockerHorizonImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-horizon:2019-02-14.3
+  DockerInsecureRegistryAddress:
+  - rhos-qe-mirror-tlv.usersys.redhat.com:5000
+  DockerIscsidConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-iscsid:2019-02-14.3
+  DockerIscsidImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-iscsid:2019-02-14.3
+  DockerKeystoneConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-keystone:2019-02-14.3
+  DockerKeystoneImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-keystone:2019-02-14.3
+  DockerMemcachedConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-memcached:2019-02-14.3
+  DockerMemcachedImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-memcached:2019-02-14.3
+  DockerMysqlClientConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-mariadb:2019-02-14.3
+  DockerMysqlConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-mariadb:2019-02-14.3
+  DockerMysqlImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-mariadb:2019-02-14.3
+  DockerNeutronApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-neutron-server:2019-02-14.3
+  DockerNeutronConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-neutron-server:2019-02-14.3
+  DockerNeutronDHCPImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-neutron-dhcp-agent:2019-02-14.3
+  DockerNeutronL3AgentImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-neutron-l3-agent:2019-02-14.3
+  DockerNeutronMetadataImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-neutron-metadata-agent:2019-02-14.3
+  DockerNovaApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-api:2019-02-14.3
+  DockerNovaComputeImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-compute:2019-02-14.3
+  DockerNovaConductorImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-conductor:2019-02-14.3
+  DockerNovaConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-api:2019-02-14.3
+  DockerNovaConsoleauthImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-consoleauth:2019-02-14.3
+  DockerNovaLibvirtConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-compute:2019-02-14.3
+  DockerNovaLibvirtImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-libvirt:2019-02-14.3
+  DockerNovaMetadataImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-api:2019-02-14.3
+  DockerNovaPlacementConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-placement-api:2019-02-14.3
+  DockerNovaPlacementImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-placement-api:2019-02-14.3
+  DockerNovaSchedulerImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-scheduler:2019-02-14.3
+  DockerNovaVncProxyImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-nova-novncproxy:2019-02-14.3
+  DockerOpenvswitchImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-neutron-openvswitch-agent:2019-02-14.3
+  DockerPankoApiImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-panko-api:2019-02-14.3
+  DockerPankoConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-panko-api:2019-02-14.3
+  DockerRabbitmqConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-rabbitmq:2019-02-14.3
+  DockerRabbitmqImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-rabbitmq:2019-02-14.3
+  DockerRedisConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-redis:2019-02-14.3
+  DockerRedisImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-redis:2019-02-14.3
+  DockerSwiftAccountImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-swift-account:2019-02-14.3
+  DockerSwiftConfigImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-swift-proxy-server:2019-02-14.3
+  DockerSwiftContainerImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-swift-container:2019-02-14.3
+  DockerSwiftObjectImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-swift-object:2019-02-14.3
+  DockerSwiftProxyImage: rhos-qe-mirror-tlv.usersys.redhat.com:5000/rhosp13/openstack-swift-proxy-server:2019-02-14.3

@@ -2,7 +2,7 @@ resource_registry:
   # Specify the relative/absolute path to the config files you want to use for override the default.
   OS::TripleO::Compute::Net::SoftwareConfig: nic-configs/compute.yaml
   OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
-  OS::TripleO::Services::ComputeNeutronOvsAgent: /usr/share/openstack-tripleo-heat-templates/docker/services/neutron-ovs-dpdk-agent.yaml
+  OS::TripleO::NodeUserData: first-boot.yaml
 
 parameter_defaults:
   # Customize all these values to match the local environment
@@ -63,11 +63,11 @@ parameter_defaults:
   ## NeutronDpdkCoreList and NeutronDpdkMemoryChannels are REQUIRED settings.
   ## Attempting to deploy DPDK without appropriate values will cause deployment to fail or lead to unstable deployments.
   # List of cores to be used for DPDK Poll Mode Driver
-  NeutronDpdkCoreList: "2,22,3,23"
+  NeutronDpdkCoreList: "'2,22,3,23'"
   # Number of memory channels to be used for DPDK
   NeutronDpdkMemoryChannels: "4"
   # NeutronDpdkSocketMemory
-  NeutronDpdkSocketMemory: "3072,1024"
+  NeutronDpdkSocketMemory: "'3072,1024'"
   # NeutronDpdkDriverType
   NeutronDpdkDriverType: "vfio-pci"
   # The vhost-user socket directory for OVS
@@ -89,7 +89,7 @@ parameter_defaults:
   # The given args will be appended to the tuned cpu-partitioning profile.
   HostIsolatedCoreList: "2-19,22-39"
   # List of logical cores to be used by ovs-dpdk processess (dpdk-lcore-mask)
-  HostCpusList: "0,20,1,21"
+  HostCpusList: "'0,20,1,21'"
   # Uncomment and remove the config below once the following BZ is closed
   # https://bugzilla.redhat.com/show_bug.cgi?id=1623554
   # NovaLibvirtRxQueueSize: 1024
@@ -97,9 +97,6 @@ parameter_defaults:
   NovaComputeExtraConfig:
     nova::compute::libvirt::rx_queue_size: '"1024"'
     nova::compute::libvirt::tx_queue_size: '"1024"'
-  
-  ComputeParameters:
-    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 iommu=pt intel_iommu=on"
 
   # Allow PCI passthrough for SR-IOV (necessary for OSP10)
   # In order to allow SR-IOV Virtual Functions in NFV-QE TLV lab, use '8086:154c'
@@ -121,5 +118,3 @@ parameter_defaults:
 
   SshServerOptions:
     UseDns: 'no'
-  VhostuserSocketGroup: "hugetlbfs"
-

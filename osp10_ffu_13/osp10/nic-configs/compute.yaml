@@ -1,6 +1,6 @@
 heat_template_version: queens
 description: >
-  Software Config to drive os-net-config to configure VLANs for the controller role.
+  Software Config to drive os-net-config to configure VLANs for the compute role.
 parameters:
   ControlPlaneIp:
     default: ''
@@ -14,34 +14,18 @@ parameters:
     default: ''
     description: IP address/subnet on the internal API network
     type: string
-  StorageIpSubnet:
+  TenantIpSubnet:
     default: ''
-    description: IP address/subnet on the storage network
-    type: string
-  StorageMgmtIpSubnet:
-    default: ''
-    description: IP address/subnet on the storage mgmt network
+    description: IP address/subnet on the tenant network
     type: string
   StorageNetworkVlanID:
     default: 30
     description: Vlan ID for the storage network traffic.
     type: number
-  StorageMgmtNetworkVlanID:
-    default: 40
-    description: Vlan ID for the storage mgmt network traffic.
-    type: number
-  TenantIpSubnet:
-    default: ''
-    description: IP address/subnet on the tenant network
-    type: string
   ManagementIpSubnet: # Only populated when including environments/network-management.yaml
     default: ''
     description: IP address/subnet on the management network
     type: string
-  ExternalNetworkVlanID:
-    default: ''
-    description: Vlan ID for the external network traffic.
-    type: number
   InternalApiNetworkVlanID:
     default: ''
     description: Vlan ID for the internal_api network traffic.
@@ -54,9 +38,13 @@ parameters:
     default: 23
     description: Vlan ID for the management network traffic.
     type: number
-  ExternalInterfaceDefaultRoute:
+  StorageIpSubnet:
     default: ''
-    description: default route for the external network
+    description: IP address/subnet on the storage network
+    type: string
+  StorageMgmtIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage mgmt network
     type: string
   ControlPlaneSubnetCidr: # Override this via parameter_defaults
     default: '24'
@@ -71,6 +59,10 @@ parameters:
     type: comma_delimited_list
   EC2MetadataIp: # Override this via parameter_defaults
     description: The IP address of the EC2 metadata server.
+    type: string
+  ExternalInterfaceDefaultRoute:
+    default: ''
+    description: default route for the external network
     type: string
 resources:
   OsNetConfigImpl:
@@ -87,6 +79,10 @@ resources:
               - type: interface
                 name: nic1
                 use_dhcp: false
+                defroute: false
+              - type: interface
+                name: nic2
+                use_dhcp: false
                 addresses:
                 - ip_netmask:
                     list_join:
@@ -97,6 +93,9 @@ resources:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
                     get_param: EC2MetadataIp
+                - default: true
+                  next_hop:
+                    get_param: ControlPlaneDefaultRoute
               - type: linux_bond
                 name: bond_api
                 bonding_options: mode=active-backup
@@ -105,8 +104,10 @@ resources:
                   get_param: DnsServers
                 members:
                 - type: interface
-                  name: nic2
-                  use_dhcp: false
+                  name: nic3
+                  primary: true
+                - type: interface
+                  name: nic4
               - type: vlan
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
@@ -121,39 +122,52 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-              - type: vlan
-                vlan_id:
-                  get_param: StorageMgmtNetworkVlanID
-                device: bond_api
-                addresses:
-                - ip_netmask:
-                    get_param: StorageMgmtIpSubnet
-              - type: vlan
-                vlan_id:
-                  get_param: ExternalNetworkVlanID
-                device: bond_api
-                addresses:
-                - ip_netmask:
-                    get_param: ExternalIpSubnet
-                routes:
-                - default: true
-                  next_hop:
-                    get_param: ExternalInterfaceDefaultRoute
-              - type: ovs_bridge
+              - type: ovs_user_bridge
                 name: br-link0
                 use_dhcp: false
-                mtu: 9000
+                ovs_extra:
+                - str_replace:
+                    template: set port br-link0 tag=_VLAN_TAG_
+                    params:
+                      _VLAN_TAG_:
+                        get_param: TenantNetworkVlanID
+                addresses:
+                - ip_netmask:
+                    get_param: TenantIpSubnet
                 members:
-                - type: interface
-                  name: nic3
+                - type: ovs_dpdk_bond
+                  name: dpdkbond0
                   mtu: 9000
-                - type: vlan
-                  vlan_id:
-                    get_param: TenantNetworkVlanID
-                  mtu: 9000
-                  addresses:
-                  - ip_netmask:
-                      get_param: TenantIpSubnet
+                  ovs_extra:
+                  - set interface dpdk0 mtu_request=$MTU
+                  - set interface dpdk1 mtu_request=$MTU
+                  - set interface dpdk0 options:n_rxq=2
+                  - set interface dpdk1 options:n_rxq=2
+                  members:
+                  - type: ovs_dpdk_port
+                    name: dpdk0
+                    members:
+                    - type: interface
+                      name: nic7
+                  - type: ovs_dpdk_port
+                    name: dpdk1
+                    members:
+                    - type: interface
+                      name: nic8
+              - type: interface
+                name: p7p3
+                mtu: 9000
+                use_dhcp: false
+                defroute: false
+                nm_controlled: true
+                hotplug: true
+              - type: interface
+                name: p7p4
+                mtu: 9000
+                use_dhcp: false
+                defroute: false
+                nm_controlled: true
+                hotplug: true
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.

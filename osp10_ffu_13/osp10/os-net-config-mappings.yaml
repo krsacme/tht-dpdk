@@ -1,0 +1,19 @@
+# The os-net-config-mapping is used for downstream testing.
+resource_registry:
+  OS::TripleO::Compute::NodeUserData: /usr/share/openstack-tripleo-heat-templates/firstboot/os-net-config-mappings.yaml
+
+parameter_defaults:
+  NetConfigDataLookup:
+    computeovsdpdksriovgroup:
+      dmiString: "system-product-name"
+      id: "PowerEdge R730"
+      nic1: em1
+      nic2: em2
+      nic3: p4p1
+      nic4: p4p2
+      nic5: p4p3
+      nic6: p4p4
+      nic7: p7p1
+      nic8: p7p2
+      nic9: p7p3
+      nic10: p7p4

@@ -1,6 +1,6 @@
 heat_template_version: queens
 description: >
-  Software Config to drive os-net-config to configure VLANs for the compute role.
+  Software Config to drive os-net-config to configure VLANs for the controller role.
 parameters:
   ControlPlaneIp:
     default: ''
@@ -22,6 +22,14 @@ parameters:
     default: ''
     description: IP address/subnet on the storage mgmt network
     type: string
+  StorageNetworkVlanID:
+    default: 30
+    description: Vlan ID for the storage network traffic.
+    type: number
+  StorageMgmtNetworkVlanID:
+    default: 40
+    description: Vlan ID for the storage mgmt network traffic.
+    type: number
   TenantIpSubnet:
     default: ''
     description: IP address/subnet on the tenant network
@@ -30,22 +38,26 @@ parameters:
     default: ''
     description: IP address/subnet on the management network
     type: string
+  ExternalNetworkVlanID:
+    default: ''
+    description: Vlan ID for the external network traffic.
+    type: number
   InternalApiNetworkVlanID:
-    default: 20
+    default: ''
     description: Vlan ID for the internal_api network traffic.
     type: number
-  StorageNetworkVlanID:
-    default: 30
-    description: Vlan ID for the storage network traffic.
-    type: number
   TenantNetworkVlanID:
-    default: 50
+    default: ''
     description: Vlan ID for the tenant network traffic.
     type: number
   ManagementNetworkVlanID:
-    default: 60
+    default: 23
     description: Vlan ID for the management network traffic.
     type: number
+  ExternalInterfaceDefaultRoute:
+    default: ''
+    description: default route for the external network
+    type: string
   ControlPlaneSubnetCidr: # Override this via parameter_defaults
     default: '24'
     description: The subnet CIDR of the control plane network.
@@ -73,10 +85,8 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: em2
+                name: nic1
                 use_dhcp: false
-                dns_servers:
-                  get_param: DnsServers
                 addresses:
                 - ip_netmask:
                     list_join:
@@ -87,49 +97,63 @@ resources:
                 - ip_netmask: 169.254.169.254/32
                   next_hop:
                     get_param: EC2MetadataIp
-                - default: true
-                  next_hop:
-                    get_param: ControlPlaneDefaultRoute
-              - type: interface
-                name: em1
-                use_dhcp: true
-                defroute: false
-              - type: interface
-                name: p5p1
+              - type: linux_bond
+                name: bond_api
+                bonding_options: mode=active-backup
                 use_dhcp: false
-                defroute: false
+                dns_servers:
+                  get_param: DnsServers
+                members:
+                - type: interface
+                  name: nic2
+                  use_dhcp: false
               - type: vlan
-                device: p5p1
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
+                device: bond_api
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
               - type: vlan
-                device: p5p1
                 vlan_id:
                   get_param: StorageNetworkVlanID
+                device: bond_api
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-              - type: ovs_user_bridge
-                name: br-tenant
-                use_dhcp: false
+              - type: vlan
+                vlan_id:
+                  get_param: StorageMgmtNetworkVlanID
+                device: bond_api
                 addresses:
                 - ip_netmask:
-                    get_param: TenantIpSubnet
-                ovs_extra:
-                - str_replace:
-                    template: set port br-tenant tag=_VLAN_TAG_
-                    params:
-                      _VLAN_TAG_:
-                        get_param: TenantNetworkVlanID
+                    get_param: StorageMgmtIpSubnet
+              - type: vlan
+                vlan_id:
+                  get_param: ExternalNetworkVlanID
+                device: bond_api
+                addresses:
+                - ip_netmask:
+                    get_param: ExternalIpSubnet
+                routes:
+                - default: true
+                  next_hop:
+                    get_param: ExternalInterfaceDefaultRoute
+              - type: ovs_bridge
+                name: br-link0
+                use_dhcp: false
+                mtu: 9000
                 members:
-                - type: ovs_dpdk_port
-                  name: dpdk0
-                  members:
-                  - type: interface
-                    name: p5p2
+                - type: interface
+                  name: nic3
+                  mtu: 9000
+                - type: vlan
+                  vlan_id:
+                    get_param: TenantNetworkVlanID
+                  mtu: 9000
+                  addresses:
+                  - ip_netmask:
+                      get_param: TenantIpSubnet
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
