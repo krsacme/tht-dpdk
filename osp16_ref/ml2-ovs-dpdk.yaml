@@ -5,7 +5,7 @@ parameter_defaults:
   ComputeOvsDpdkSriovParameters:
     KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on iommu=pt isolcpus=1-11,12-13"
     IsolCpusList: "1-11,12-13"
-    OvsDpdkSocketMemory: "1024,1024"
+    OvsDpdkSocketMemory: "1024"
     OvsDpdkMemoryChannels: "4"
     NovaReservedHostMemory: 4096
     OvsPmdCoreList: "1,13"

@@ -166,7 +166,7 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: eth0
+                name: nic1
                 use_dhcp: false
                 dns_servers:
                   get_param: DnsServers
@@ -195,30 +195,26 @@ resources:
                           get_param: ExternalInterfaceDefaultRoute
                 members:
                 - type: interface
-                  name: eth3
+                  name: nic4
                   primary: true
-              - type: interface
-                name: eth1
-                use_dhcp: false
-                defroute: false
               - type: vlan
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
-                device: eth1
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: StorageNetworkVlanID
-                device: eth1
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: StorageMgmtNetworkVlanID
-                device: eth1
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: StorageMgmtIpSubnet
@@ -239,7 +235,13 @@ resources:
                     - get_param: TenantInterfaceRoutes
                 members:
                 - type: interface
-                  name: eth2
+                  name: nic3
+              - type: ovs_bridge
+                name: br-sriov
+                use_dhcp: false
+                members:
+                  - type: interface
+                    name: nic2
 
 outputs:
   OS::stack_id:
