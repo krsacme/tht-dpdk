@@ -1,0 +1,12 @@
+parameter_defaults:
+  OvercloudControllerFlavor: "controller"
+  OvercloudComputeFlavor: "compute"
+  OvercloudComputeOvsDpdkFlavor: "computeovsdpdk"
+  OvercloudComputeOvsDpdkSriovFlavor: "computeovsdpdk"
+
+  ControllerCount: 1
+
+  NtpServer: "clock.redhat.com"
+  #TimeZone: Kolkata
+  SshServerOptions:
+    UseDns: 'no'

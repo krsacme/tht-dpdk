@@ -1,0 +1,27 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  # TODO: Find actual fix
+  OS::TripleO::Services::NeutronSriovHostConfig: OS::Heat::None
+
+parameter_defaults:
+  DnsServers: ['10.11.5.19']
+
+  ControlPlaneDefaultRoute: "192.168.50.1"
+  ControlPlaneSubnetCidr: "24"
+
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
+
+  NeutronExternalNetworkBridge: "br-ex"
+  NeutronTunnelTypes: 'geneve'
+  NeutronNetworkType: ['geneve', 'vlan']
+  NeutronBridgeMappings: 'datacentre:br-ex,tenant:br-tenant'
+  #NeutronBridgeMappings: 'datacentre:br-ex,tenant:br-tenant,sriov:br-sriov'
+  NeutronNetworkVLANRanges: 'tenant:551:560,sriov:551:600'
+
+  NovaPCIPassthrough:
+    - vendor_id: "8086"
+      product_id: "6f02"
