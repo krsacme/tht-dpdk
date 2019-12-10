@@ -5,6 +5,7 @@ parameter_defaults:
   OvercloudComputeOvsDpdkSriovFlavor: "computeovsdpdk"
 
   ControllerCount: 1
+  ComputeOvsDpdkSriovCount: 2
 
   NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata

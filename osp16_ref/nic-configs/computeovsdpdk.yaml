@@ -201,31 +201,31 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-              - type: ovs_user_bridge
-                name: br-tenant
-                use_dhcp: false
+              - type: vlan
+                vlan_id:
+                  get_param: TenantNetworkVlanID
+                device: nic4
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
-                ovs_extra:
-                  - str_replace:
-                      template: set port br-tenant tag=_VLAN_TAG_
-                      params:
-                        _VLAN_TAG_:
-                          get_param: TenantNetworkVlanID
-                routes:
-                  get_param: TenantInterfaceRoutes
+              - type: ovs_user_bridge
+                name: br-link0
+                use_dhcp: false
                 members:
                 - type: ovs_dpdk_port
-                  name: dpdk-tenant-port
+                  name: dpdk-link0-port
                   members:
                   - type: interface
                     name: nic2
-              - type: sriov_pf
-                name: nic1
-                numvfs: 10
+              - type: ovs_user_bridge
+                name: br-link1
                 use_dhcp: false
-                defroute: false
+                members:
+                - type: ovs_dpdk_port
+                  name: dpdk-link1-port
+                  members:
+                  - type: interface
+                    name: nic1
 
 outputs:
   OS::stack_id:

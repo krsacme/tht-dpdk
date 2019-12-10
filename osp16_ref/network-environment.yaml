@@ -16,8 +16,8 @@ parameter_defaults:
   NeutronExternalNetworkBridge: "br-ex"
   NeutronTunnelTypes: 'vxlan'
   NeutronNetworkType: ['vxlan', 'vlan']
-  NeutronBridgeMappings: 'datacentre:br-ex,tenant:br-tenant,sriov:br-sriov'
-  NeutronNetworkVLANRanges: 'tenant:551:560,sriov:551:600'
+  NeutronBridgeMappings: 'datacentre:br-ex,data1:br-link0,data2:br-link1'
+  NeutronNetworkVLANRanges: 'data1:502:505,data2:506:510'
 
   NovaPCIPassthrough:
     - vendor_id: "8086"
