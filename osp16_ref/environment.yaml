@@ -3,9 +3,13 @@ parameter_defaults:
   OvercloudComputeFlavor: "compute"
   OvercloudComputeOvsDpdkFlavor: "computeovsdpdk"
   OvercloudComputeOvsDpdkSriovFlavor: "computeovsdpdk"
+  OvercloudComputeSriovFlavor: "computeovsdpdk"
+
+  ContainerOpenvswitchNetcontroldImage: "quay.io/netcontrold/netcontrold-py:1.0.13"
 
   ControllerCount: 1
-  ComputeOvsDpdkSriovCount: 2
+  ComputeOvsDpdkSriovCount: 1
+  ComputeSriovCount: 1
 
   NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata
