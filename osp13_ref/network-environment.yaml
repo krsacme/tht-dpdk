@@ -1,0 +1,33 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::ComputeSriov::Net::SoftwareConfig: nic-configs/computesriov.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+
+parameter_defaults:
+  DnsServers: ['10.11.5.19']
+
+  ControlPlaneDefaultRoute: "192.168.50.1"
+  ControlPlaneSubnetCidr: "24"
+
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
+  ComputeSriovControlPlaneSubnet: leaf0
+
+  NeutronExternalNetworkBridge: "br-ex"
+  NeutronTunnelTypes: 'vxlan'
+  NeutronNetworkType: ['vxlan', 'vlan']
+  NeutronBridgeMappings: 'datacentre:br-ex,dpdk1:br-link1,dpdk2:br-link2'
+  NeutronNetworkVLANRanges: 'dpdk1:502:505,dpdk2:506:510,sriov1:502:505,sriov2:506:510'
+  NeutronFlatNetworks: 'datacentre,dpdk1,dpdk2,sriov1,sriov2'
+  NeutronPhysicalDevMappings: 'sriov1:em1,sriov2:em2'
+
+  NovaPCIPassthrough:
+  - devname: "em1"
+    trusted: "true"
+    physical_network: "sriov1"
+  - devname: "em2"
+    trusted: "true"
+    physical_network: "sriov2"
+

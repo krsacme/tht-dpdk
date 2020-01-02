@@ -116,51 +116,49 @@ resources:
                     get_param: ExternalInterfaceDefaultRoute
                 members:
                 - type: interface
-                  name: eth3
+                  name: nic4
+                  primary: true
               - type: vlan
-                device: eth0
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
               - type: vlan
-                device: eth0
                 vlan_id:
                   get_param: StorageNetworkVlanID
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
               - type: vlan
-                device: eth0
                 vlan_id:
                   get_param: StorageMgmtNetworkVlanID
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: StorageMgmtIpSubnet
               - type: vlan
-                device: eth0
                 vlan_id:
                   get_param: TenantNetworkVlanID
+                device: nic1
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
-              - type: ovs_bridge
-                name: br-link0
-                use_dhcp: false
-                members:
-                - type: interface
-                  name: eth1
-                  use_dhcp: false
-                  primary: true
               - type: ovs_bridge
                 name: br-link1
                 use_dhcp: false
                 members:
                 - type: interface
-                  name: eth2
-                  use_dhcp: false
-                  primary: true
+                  name: nic2
+              - type: ovs_bridge
+                name: br-link2
+                use_dhcp: false
+                members:
+                  - type: interface
+                    name: nic3
+
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
