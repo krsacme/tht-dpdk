@@ -1,0 +1,53 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    router_name: "router1"
+  tasks:
+    - name: Get all VMs
+      os_server_facts:
+        cloud: overcloud
+      register: servers
+    - name: "Delete VMs"
+      os_server:
+        cloud: overcloud
+        name: "{{ item.id }}"
+        state: absent
+      loop: "{{ servers.ansible_facts.openstack_servers }}"
+    - name: Get all Floating Ips
+      shell: "openstack floating ip list -f value -c 'Floating IP Address'"
+      register: floating_ips
+    - name: Delete Floating IPs
+      command: "openstack floating ip delete {{ item }}"
+      loop: "{{ floating_ips.stdout_lines }}"
+    - name: Get Routers
+      os_router:
+        cloud: overcloud
+        name: "{{ router_name }}"
+        state: absent
+    - name: Get ports
+      os_port_facts:
+        cloud: overcloud
+        filters:
+          status: DOWN
+      register: ports
+    - name: Delete Ports
+      os_port:
+        cloud: overcloud
+        name: "{{ item.id }}"
+        state: absent
+      loop: "{{ ports.ansible_facts.openstack_ports }}"
+    - name: Get networks
+      os_networks_facts:
+        cloud: overcloud
+      register: networks
+    - name: Delete Networks
+      os_network:
+        cloud: overcloud
+        name: "{{ item.id }}"
+        state: absent
+      loop: "{{ networks.ansible_facts.openstack_networks }}"
+
+
+

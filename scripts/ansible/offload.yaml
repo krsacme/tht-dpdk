@@ -1,0 +1,115 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    rhel_image_path: "/home/stack/rhel.qcow2"
+    public_key_file: "/home/stack/.ssh/id_rsa.pub"
+  tasks:
+    - name: "Get the external subnet from the undercloud"
+      os_subnets_facts:
+        cloud: undercloud
+        name: external
+      register: uc_external_subnet
+
+    - name: "Get the existing flavors list"
+      os_flavor_facts:
+        cloud: overcloud
+      register: flavors_list
+
+    - set_fact:
+        flavor_name_list: "{{ flavor_name_list | default([]) + [item['name']] }}"
+      with_items: "{{ flavors_list.ansible_facts.openstack_flavors }}"
+
+    - name: "Ensure the environment is using overcloudrc"
+      fail:
+        msg: "Source overcloudrc file instead of stackrc file"
+      when:
+        - flavor_name_list is defined
+        - "'baremetal' in flavor_name_list"
+
+    - name: "Create RHEL image"
+      os_image:
+        name: rhel
+        cloud: overcloud
+        filename: "{{ rhel_image_path }}"
+
+    - name: "Create a keypair"
+      os_keypair:
+        state: present
+        name: stack_user_key
+        public_key_file: "{{ public_key_file }}"
+        cloud: overcloud
+
+    - name: "Create flavor with hugepages"
+      os_nova_flavor:
+        name: "m1.nano"
+        vcpus: 4
+        ram: 4096
+        disk: 40
+        extra_specs:
+          "hw:mem_page_size": large
+          "hw:emulator_threads_policy": share
+          "hw:cpu_policy": dedicated
+        cloud: overcloud
+
+    - name: "Create Neutron Public Network"
+      os_network:
+        name: access
+        provider_network_type: flat
+        provider_physical_network: access
+        external: yes
+        shared: true
+        cloud: overcloud
+
+    - name: "Create Subnet for Neutron Public Network"
+      os_subnet:
+        name: access_subnet
+        network_name: access
+        cidr: "10.35.141.14/28"
+        allocation_pool_start: "10.35.141.1"
+        allocation_pool_end: "10.35.141.13"
+        dns_nameservers:
+          - 8.8.8.8
+        cloud: overcloud
+
+    - name: "Create Tenant Network"
+      os_network:
+        name: tenant1
+        cloud: overcloud
+
+    - name: "Create Subnet for Tenant Network"
+      os_subnet:
+        name: tenant1
+        network_name: tenant1
+        cidr: 192.1.1.0/24
+        cloud: overcloud
+
+    - name: "Create switchdev port"
+      shell: |
+        source /home/stack/overcloudrc;
+        openstack port create --network tenant1 --vnic-type=direct --binding-profile '{"capabilities": ["switchdev"]}' tenant1_port1
+
+    - name: "Create Router for Tenant Network"
+      os_router:
+        name: tenant1_router
+        network: access
+        interfaces:
+          - net: tenant1
+            subnet: tenant1
+        cloud: overcloud
+
+    - name: "Create a guest VM"
+      os_server:
+        name: tenant1
+        flavor: m1.nano
+        nics: "port-name=tenant1_port1"
+        image: rhel
+        key_name: stack_user_key
+        cloud: overcloud
+
+    - name: "Create and associate a floating ip with instance"
+      os_floating_ip:
+        cloud: overcloud
+        server: tenant1
+        nat_destination: tenant1
+        wait: true
