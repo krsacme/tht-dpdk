@@ -6,16 +6,12 @@ resource_registry:
 parameter_defaults:
   DnsServers: ['10.11.5.19']
 
-  ControlPlaneDefaultRoute: "192.168.50.1"
-  ControlPlaneSubnetCidr: "24"
-
   ControlPlaneSubnet: leaf0
   ControllerControlPlaneSubnet: leaf0
   ComputeControlPlaneSubnet: leaf0
   ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
   ComputeSriovControlPlaneSubnet: leaf0
 
-  NeutronExternalNetworkBridge: "br-ex"
   NeutronTunnelTypes: 'vxlan'
   NeutronNetworkType: ['vxlan', 'vlan']
   NeutronBridgeMappings: 'datacentre:br-ex,dpdk1:br-link1,dpdk2:br-link2'
@@ -24,10 +20,10 @@ parameter_defaults:
   NeutronPhysicalDevMappings: 'sriov1:eno1,sriov2:eno2'
 
   NovaPCIPassthrough:
-  - devname: "eno1"
+  - devname: "eno3"
     trusted: "true"
     physical_network: "sriov1"
-  - devname: "eno2"
+  - devname: "eno4"
     trusted: "true"
     physical_network: "sriov2"
 

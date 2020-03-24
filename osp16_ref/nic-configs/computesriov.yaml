@@ -167,7 +167,11 @@ resources:
             $network_config:
               network_config:
               - type: interface
-                name: nic4
+                name: nic1
+                use_dhcp: true
+                defroute: true
+              - type: interface
+                name: nic2
                 use_dhcp: false
                 dns_servers:
                   get_param: DnsServers
@@ -183,37 +187,33 @@ resources:
                     - - default: true
                         next_hop:
                           get_param: ControlPlaneDefaultRoute
-              - type: interface
-                name: nic3
-                use_dhcp: true
-                defroute: true
               - type: vlan
                 vlan_id:
                   get_param: InternalApiNetworkVlanID
-                device: nic4
+                device: nic2
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: StorageNetworkVlanID
-                device: nic4
+                device: nic2
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
               - type: vlan
                 vlan_id:
                   get_param: TenantNetworkVlanID
-                device: nic4
+                device: nic2
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
               - type: sriov_pf
-                name: nic2
+                name: nic3
                 use_dhcp: false
                 numvfs: 5
               - type: sriov_pf
-                name: nic1
+                name: nic4
                 use_dhcp: false
                 numvfs: 5
 

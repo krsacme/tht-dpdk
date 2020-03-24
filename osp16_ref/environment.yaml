@@ -1,9 +1,9 @@
 parameter_defaults:
   OvercloudControllerFlavor: "controller"
   OvercloudComputeFlavor: "compute"
-  OvercloudComputeOvsDpdkFlavor: "computeovsdpdk"
-  OvercloudComputeOvsDpdkSriovFlavor: "computeovsdpdk"
-  OvercloudComputeSriovFlavor: "computeovsdpdk"
+  OvercloudComputeOvsDpdkFlavor: "compute"
+  OvercloudComputeOvsDpdkSriovFlavor: "compute"
+  OvercloudComputeSriovFlavor: "compute"
 
   ContainerOpenvswitchNetcontroldImage: "quay.io/netcontrold/netcontrold-py:1.0.13"
 
