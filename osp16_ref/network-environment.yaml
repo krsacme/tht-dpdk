@@ -1,6 +1,8 @@
 resource_registry:
+  #OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk-nicpartition.yaml
+  #OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller-nicpartition.yaml
+  #OS::TripleO::ComputeSriov::Net::SoftwareConfig: nic-configs/computesriov.yaml
   OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
-  OS::TripleO::ComputeSriov::Net::SoftwareConfig: nic-configs/computesriov.yaml
   OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
 
 parameter_defaults:
@@ -14,10 +16,11 @@ parameter_defaults:
 
   NeutronTunnelTypes: 'vxlan'
   NeutronNetworkType: ['vxlan', 'vlan']
-  NeutronBridgeMappings: 'datacentre:br-ex,dpdk1:br-link1,dpdk2:br-link2'
+  NeutronBridgeMappings: 'datacentre:br-ex,sriov1:br-tenant,dpdk2:br-link2'
   NeutronNetworkVLANRanges: 'dpdk1:502:505,dpdk2:506:510,sriov1:502:505,sriov2:506:510'
   NeutronFlatNetworks: 'datacentre,dpdk1,dpdk2,sriov1,sriov2'
-  NeutronPhysicalDevMappings: 'sriov1:eno1,sriov2:eno2'
+  NeutronPhysicalDevMappings: 'sriov1:eno3,sriov2:eno4'
+  #NeutronPhysicalDevMappings: 'sriov1:ens1f0,sriov2:ens1f1'
 
   NovaPCIPassthrough:
   - devname: "eno3"

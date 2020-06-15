@@ -34,6 +34,6 @@
 - name: External
   vip: true
   name_lower: external
-  ip_subnet: '172.50.0.0/24'
-  allocation_pools: [{'start': '172.50.0.201', 'end': '172.50.0.206'}]
-  gateway_ip: '172.50.0.1'
+  ip_subnet: '172.51.0.0/24'
+  allocation_pools: [{'start': '172.51.0.201', 'end': '172.51.0.206'}]
+  gateway_ip: '172.51.0.1'
