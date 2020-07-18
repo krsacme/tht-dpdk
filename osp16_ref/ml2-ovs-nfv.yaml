@@ -1,7 +1,7 @@
 
 parameter_defaults:
   ComputeOvsDpdkSriovParameters:
-    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on iommu=pt isolcpus=1-11,13-23"
+    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=32 intel_iommu=on iommu=pt isolcpus=1-11.13-23"
     IsolCpusList: "1-11,13-23"
     OvsDpdkSocketMemory: "1024"
     OvsDpdkMemoryChannels: "4"
@@ -12,8 +12,9 @@ parameter_defaults:
     NovaComputeCpuSharedSet: ['0','12']
 
   ComputeSriovParameters:
-    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=64 intel_iommu=on iommu=pt isolcpus=1-11,13-23"
+    OvsHwOffload: True
+    KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=32 intel_iommu=on iommu=pt isolcpus=1-11,13-23"
     IsolCpusList: "1-11,13-23"
     NovaReservedHostMemory: 4096
-    NovaComputeCpuDedicatedSet: ['1-11','13-23']
+    NovaVcpuPinSet: ['1-11','13-23']
     NovaComputeCpuSharedSet: ['0','12']

@@ -1,8 +1,7 @@
 resource_registry:
-  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
-  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk-nicpartition.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller-nicpartition.yaml
 
-  
 parameter_defaults:
   NeutronBridgeMappings: 'datacentre:br-ex,sriov1:br-tenant,dpdk2:br-link2'
   NeutronNetworkVLANRanges: 'dpdk1:502:505,dpdk2:506:510,sriov1:502:505,sriov2:506:510'

@@ -201,36 +201,38 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-              - type: sriov_pf
-                name: nic3
+              - type: ovs_bridge
+                name: br-offload
+                mtu: 9000
                 use_dhcp: false
-                numvfs: 4
-                promisc: true
-              - type: sriov_pf
-                name: nic4
-                use_dhcp: false
-                numvfs: 4
-                promisc: true
-              - type: ovs_user_bridge
-                name: br-tenant
-                use_dhcp: false
+                members:
+                - type: linux_bond
+                  name: bond-pf
+                  bonding_options: "mode=active-backup miimon=100"
+                  members:
+                  - type: sriov_pf
+                    name: ens1f0
+                    numvfs: 3
+                    primary: true
+                    promisc: true
+                    use_dhcp: false
+                    defroute: false
+                    link_mode: switchdev
+                  - type: sriov_pf
+                    name: ens1f1
+                    numvfs: 3
+                    promisc: true
+                    use_dhcp: false
+                    defroute: false
+                    link_mode: switchdev
+
+              - type: vlan
+                vlan_id:
+                  get_param: TenantNetworkVlanID
+                device: bond-pf
                 addresses:
                 - ip_netmask:
                     get_param: TenantIpSubnet
-                ovs_extra:
-                  - str_replace:
-                      template: set port br-tenant tag=_VLAN_TAG_
-                      params:
-                        _VLAN_TAG_:
-                          get_param: TenantNetworkVlanID
-                members:
-                - type: ovs_dpdk_port
-                  name: dpdk-port-nic3
-                  members:
-                  - type: sriov_vf
-                    device: nic3
-                    vfid: 0
-
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
