@@ -1,0 +1,106 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars:
+    rhel_image_path: "/home/stack/rhel-8.2.qcow2"
+    public_key_file: "/home/stack/.ssh/id_rsa.pub"
+    ov_access_nw: "172.51.0"
+  tasks:
+    - name: "Get the external subnet from the undercloud"
+      os_subnets_facts:
+        cloud: undercloud
+        name: external
+      register: uc_external_subnet
+
+    - name: "Get the existing flavors list"
+      os_flavor_facts:
+        cloud: overcloud
+      register: flavors_list
+
+    - set_fact:
+        flavor_name_list: "{{ flavor_name_list | default([]) + [item['name']] }}"
+      with_items: "{{ flavors_list.ansible_facts.openstack_flavors }}"
+
+    - name: "Ensure the environment is using overcloudrc"
+      fail:
+        msg: "Source overcloudrc file instead of stackrc file"
+      when:
+        - flavor_name_list is defined
+        - "'baremetal' in flavor_name_list"
+
+    - name: "Create RHEL image"
+      os_image:
+        name: rhel
+        cloud: overcloud
+        filename: "{{ rhel_image_path }}"
+
+    - name: "Create a keypair"
+      os_keypair:
+        state: present
+        name: stack_user_key
+        public_key_file: "{{ public_key_file }}"
+        cloud: overcloud
+
+    - name: "Create flavor with hugepages"
+      os_nova_flavor:
+        name: "m1.nano"
+        vcpus: 4
+        ram: 4096
+        disk: 40
+        extra_specs:
+          "hw:mem_page_size": large
+          "hw:emulator_threads_policy": isolate
+          "hw:cpu_policy": dedicated
+        cloud: overcloud
+
+    - name: "Create Tenant Network"
+      os_network:
+        name: tenant1
+        cloud: overcloud
+
+    - name: "Create Subnet for Tenant Network"
+      os_subnet:
+        name: tenant1
+        network_name: tenant1
+        cidr: 192.1.1.0/24
+        cloud: overcloud
+
+    - name: create sriov networks
+      os_network:
+        name: sriov1
+        provider_network_type: vlan
+        provider_physical_network: sriov1
+        provider_segmentation_id: 502
+        cloud: overcloud
+      
+    - name: "create sriov subnet"
+      os_subnet:
+        name: sriov1
+        network_name: sriov1
+        cidr: "192.1.2.0/24"
+        cloud: overcloud
+
+    - name: "create sriov port"
+      os_port:
+        name: sriov1
+        network: sriov1
+        vnic_type: direct
+        cloud: overcloud
+
+    - name: "Create a guest VM"
+      os_server:
+        name: tenant1
+        flavor: m1.nano
+        nics:
+          - net-name=tenant1
+          - port-name=sriov1
+        image: rhel
+        key_name: stack_user_key
+        cloud: overcloud
+
+    - name: "Create and associate a floating ip with instance"
+      os_floating_ip:
+        cloud: overcloud
+        server: tenant1
+        nat_destination: tenant1
+        wait: true

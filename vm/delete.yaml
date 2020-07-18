@@ -22,10 +22,13 @@
       command: "openstack floating ip delete {{ item }}"
       loop: "{{ floating_ips.stdout_lines }}"
     - name: Get Routers
+      shell: "source ~/overcloudrc; openstack router list -c Name -f value"
+      register: routers
+    - name: delete routers
       os_router:
-        cloud: overcloud
-        name: "{{ router_name }}"
+        name: "{{ item }}"
         state: absent
+      loop: "{{ routers.stdout_lines }}"
     - name: Get ports
       os_port_facts:
         cloud: overcloud
