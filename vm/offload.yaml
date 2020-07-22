@@ -2,7 +2,7 @@
 - hosts: localhost
   gather_facts: no
   vars:
-    rhel_image_path: "/home/stack/rhel.qcow2"
+    rhel_image_path: "/home/stack/rhel-8.2.qcow2"
     public_key_file: "/home/stack/.ssh/id_rsa.pub"
   tasks:
     - name: "Get the external subnet from the undercloud"
@@ -52,26 +52,6 @@
           "hw:cpu_policy": dedicated
         cloud: overcloud
 
-    - name: "Create Neutron Public Network"
-      os_network:
-        name: access
-        provider_network_type: flat
-        provider_physical_network: access
-        external: yes
-        shared: true
-        cloud: overcloud
-
-    - name: "Create Subnet for Neutron Public Network"
-      os_subnet:
-        name: access_subnet
-        network_name: access
-        cidr: "10.35.141.14/28"
-        allocation_pool_start: "10.35.141.1"
-        allocation_pool_end: "10.35.141.13"
-        dns_nameservers:
-          - 8.8.8.8
-        cloud: overcloud
-
     - name: "Create Tenant Network"
       os_network:
         name: tenant1
@@ -84,32 +64,25 @@
         cidr: 192.1.1.0/24
         cloud: overcloud
 
+    - name: Get hypervisor list
+      shell: openstack hypervisor list -c 'Hypervisor Hostname' -f value
+      register: hypervisor_list
+
     - name: "Create switchdev port"
       shell: |
         source /home/stack/overcloudrc;
-        openstack port create --network tenant1 --vnic-type=direct --binding-profile '{"capabilities": ["switchdev"]}' tenant1_port1
-
-    - name: "Create Router for Tenant Network"
-      os_router:
-        name: tenant1_router
-        network: access
-        interfaces:
-          - net: tenant1
-            subnet: tenant1
-        cloud: overcloud
+        openstack port create --network tenant1 --binding-profile '{"capabilities": ["switchdev"]}' \
+            --vnic-type=direct tenant1_port{{ idx }}
+      loop: "{{ hypervisor_list.stdout_lines }}"
+      loop_control:
+        index_var: idx
 
     - name: "Create a guest VM"
-      os_server:
-        name: tenant1
-        flavor: m1.nano
-        nics: "port-name=tenant1_port1"
-        image: rhel
-        key_name: stack_user_key
-        cloud: overcloud
+      shell: |
+        source /home/stack/overcloudrc;
+        openstack server create --image rhel --flavor m1.nano --port tenant1_port{{ idx }} \
+           --key stack_user_key --hypervisor-hostname {{ item }} tenant{{ idx }}
+      loop: "{{ hypervisor_list.stdout_lines }}"
+      loop_control:
+        index_var: idx
 
-    - name: "Create and associate a floating ip with instance"
-      os_floating_ip:
-        cloud: overcloud
-        server: tenant1
-        nat_destination: tenant1
-        wait: true
