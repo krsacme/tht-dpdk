@@ -3,9 +3,8 @@
 PARAMS="$*"
 USER_THT="$HOME/osp16_ref"
 
-if [[ ! -f 'roles_data.yaml' ]]; then
-	openstack overcloud roles generate -o $HOME/roles_data.yaml Controller ComputeSriov
-fi
+# Always generate roles_data file
+openstack overcloud roles generate -o $HOME/roles_data.yaml Controller ComputeSriov:ComputeSriovOffload
 
 openstack overcloud deploy $PARAMS \
     --templates \

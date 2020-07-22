@@ -6,6 +6,10 @@ parameter_defaults:
   ComputeControlPlaneSubnet: leaf0
   ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
   ComputeSriovControlPlaneSubnet: leaf0
+  ComputeSriovOffloadControlPlaneSubnet: leaf0
+
+  ControllerHostnameFormat: 'controller-%index%'
+  ComputeSriovOffloadHostnameFormat: 'cmpt-offload-%index%'
 
   NeutronTunnelTypes: 'vxlan'
   NeutronNetworkType: ['vxlan', 'vlan']
@@ -15,10 +19,12 @@ parameter_defaults:
   OvercloudComputeOvsDpdkFlavor: "compute"
   OvercloudComputeOvsDpdkSriovFlavor: "compute"
   OvercloudComputeSriovFlavor: "compute"
+  OvercloudComputeSriovOffloadFlavor: "compute"
 
   ControllerCount: 1
   ComputeOvsDpdkSriovCount: 2
   ComputeSriovCount: 2
+  ComputeSriovOffloadCount: 2
 
   NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata
