@@ -54,24 +54,101 @@ parameters:
     default: 60
     description: Vlan ID for the management network traffic.
     type: number
-  ControlPlaneSubnetCidr: # Override this via parameter_defaults
+  ControlPlaneSubnetCidr:
     default: '24'
     description: The subnet CIDR of the control plane network.
     type: string
-  ControlPlaneDefaultRoute: # Override this via parameter_defaults
+  ControlPlaneDefaultRoute:
     description: The default route of the control plane network.
     type: string
   ExternalInterfaceDefaultRoute:
-    default: '10.0.0.1'
+    default: 10.0.0.1
     description: default route for the external network
     type: string
-  DnsServers: # Override this via parameter_defaults
+  DnsServers:
     default: []
-    description: A list of DNS servers (2 max for some implementations) that will be added to resolv.conf.
+    description: >-
+      A list of DNS servers (2 max for some implementations) that will be added to resolv.conf.
     type: comma_delimited_list
-  EC2MetadataIp: # Override this via parameter_defaults
+  EC2MetadataIp:
     description: The IP address of the EC2 metadata server.
     type: string
+  ControlPlaneStaticRoutes:
+    default: []
+    description: >
+      Routes for the ctlplane network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
+    type: json
+  ControlPlaneMtu:
+    default: 1500
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the network. (The parameter is automatically resolved from the ctlplane network's mtu attribute.)
+    type: number
+  StorageMtu:
+    default: 1500
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the Storage network.
+    type: number
+  StorageInterfaceRoutes:
+    default: []
+    description: >
+      Routes for the storage network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
+    type: json
+  StorageMgmtMtu:
+    default: 1500
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the StorageMgmt network.
+    type: number
+  StorageMgmtInterfaceRoutes:
+    default: []
+    description: >
+      Routes for the storage_mgmt network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
+    type: json
+  InternalApiMtu:
+    default: 1500
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the InternalApi network.
+    type: number
+  InternalApiInterfaceRoutes:
+    default: []
+    description: >
+      Routes for the internal_api network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
+    type: json
+  TenantMtu:
+    default: 1500
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the Tenant network.
+    type: number
+  TenantInterfaceRoutes:
+    default: []
+    description: >
+      Routes for the tenant network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
+    type: json
+  ExternalMtu:
+    default: 1500
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the External network.
+    type: number
+  ExternalInterfaceRoutes:
+    default: []
+    description: >
+      Routes for the external network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
+    type: json
+  DnsSearchDomains:
+    default: []
+    description: A list of DNS search domains to be added (in order) to resolv.conf.
+    type: comma_delimited_list
 resources:
   OsNetConfigImpl:
     type: OS::Heat::SoftwareConfig
@@ -155,9 +232,8 @@ resources:
                 name: br-link2
                 use_dhcp: false
                 members:
-                  - type: interface
-                    name: nic3
-
+                - type: interface
+                  name: nic3
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.

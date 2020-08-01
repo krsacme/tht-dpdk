@@ -9,29 +9,27 @@ parameters:
   ControlPlaneSubnetCidr:
     default: ''
     description: >
-      The subnet CIDR of the control plane network. (The parameter is
-      automatically resolved from the ctlplane subnet's cidr attribute.)
+      The subnet CIDR of the control plane network. (The parameter is automatically resolved from the ctlplane subnet's cidr
+      attribute.)
     type: string
   ControlPlaneDefaultRoute:
     default: ''
-    description: The default route of the control plane network. (The parameter
-      is automatically resolved from the ctlplane subnet's gateway_ip attribute.)
+    description: >-
+      The default route of the control plane network. (The parameter is automatically resolved from the ctlplane subnet's
+      gateway_ip attribute.)
     type: string
   ControlPlaneStaticRoutes:
     default: []
     description: >
-      Routes for the ctlplane network traffic.
-      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
-      Unless the default is changed, the parameter is automatically resolved
-      from the subnet host_routes attribute.
+      Routes for the ctlplane network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
     type: json
   ControlPlaneMtu:
     default: 1500
-    description: The maximum transmission unit (MTU) size(in bytes) that is
-      guaranteed to pass through the data path of the segments in the network.
-      (The parameter is automatically resolved from the ctlplane network's mtu attribute.)
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the network. (The parameter is automatically resolved from the ctlplane network's mtu attribute.)
     type: number
-
   StorageIpSubnet:
     default: ''
     description: IP address/subnet on the storage network
@@ -42,17 +40,15 @@ parameters:
     type: number
   StorageMtu:
     default: 1500
-    description: The maximum transmission unit (MTU) size(in bytes) that is
-      guaranteed to pass through the data path of the segments in the
-      Storage network.
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the Storage network.
     type: number
   StorageInterfaceRoutes:
     default: []
     description: >
-      Routes for the storage network traffic.
-      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
-      Unless the default is changed, the parameter is automatically resolved
-      from the subnet host_routes attribute.
+      Routes for the storage network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
     type: json
   StorageMgmtIpSubnet:
     default: ''
@@ -64,17 +60,15 @@ parameters:
     type: number
   StorageMgmtMtu:
     default: 1500
-    description: The maximum transmission unit (MTU) size(in bytes) that is
-      guaranteed to pass through the data path of the segments in the
-      StorageMgmt network.
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the StorageMgmt network.
     type: number
   StorageMgmtInterfaceRoutes:
     default: []
     description: >
-      Routes for the storage_mgmt network traffic.
-      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
-      Unless the default is changed, the parameter is automatically resolved
-      from the subnet host_routes attribute.
+      Routes for the storage_mgmt network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
     type: json
   InternalApiIpSubnet:
     default: ''
@@ -86,17 +80,15 @@ parameters:
     type: number
   InternalApiMtu:
     default: 1500
-    description: The maximum transmission unit (MTU) size(in bytes) that is
-      guaranteed to pass through the data path of the segments in the
-      InternalApi network.
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the InternalApi network.
     type: number
   InternalApiInterfaceRoutes:
     default: []
     description: >
-      Routes for the internal_api network traffic.
-      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
-      Unless the default is changed, the parameter is automatically resolved
-      from the subnet host_routes attribute.
+      Routes for the internal_api network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
     type: json
   TenantIpSubnet:
     default: ''
@@ -108,17 +100,15 @@ parameters:
     type: number
   TenantMtu:
     default: 1500
-    description: The maximum transmission unit (MTU) size(in bytes) that is
-      guaranteed to pass through the data path of the segments in the
-      Tenant network.
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the Tenant network.
     type: number
   TenantInterfaceRoutes:
     default: []
     description: >
-      Routes for the tenant network traffic.
-      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
-      Unless the default is changed, the parameter is automatically resolved
-      from the subnet host_routes attribute.
+      Routes for the tenant network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
     type: json
   ExternalIpSubnet:
     default: ''
@@ -126,9 +116,9 @@ parameters:
     type: string
   ExternalMtu:
     default: 1500
-    description: The maximum transmission unit (MTU) size(in bytes) that is
-      guaranteed to pass through the data path of the segments in the
-      External network.
+    description: >-
+      The maximum transmission unit (MTU) size(in bytes) that is guaranteed to pass through the data path of the segments
+      in the External network.
     type: number
   ExternalInterfaceDefaultRoute:
     default: ''
@@ -137,23 +127,19 @@ parameters:
   ExternalInterfaceRoutes:
     default: []
     description: >
-      Routes for the external network traffic.
-      JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}]
-      Unless the default is changed, the parameter is automatically resolved
-      from the subnet host_routes attribute.
+      Routes for the external network traffic. JSON route e.g. [{'destination':'10.0.0.0/16', 'nexthop':'10.0.0.1'}] Unless
+      the default is changed, the parameter is automatically resolved from the subnet host_routes attribute.
     type: json
-  DnsServers: # Override this via parameter_defaults
+  DnsServers:
     default: []
     description: >
-      DNS servers to use for the Overcloud (2 max for some implementations).
-      If not set the nameservers configured in the ctlplane subnet's
-      dns_nameservers attribute will be used.
+      DNS servers to use for the Overcloud (2 max for some implementations). If not set the nameservers configured in the
+      ctlplane subnet's dns_nameservers attribute will be used.
     type: comma_delimited_list
-  DnsSearchDomains: # Override this via parameter_defaults
+  DnsSearchDomains:
     default: []
     description: A list of DNS search domains to be added (in order) to resolv.conf.
     type: comma_delimited_list
-
 resources:
   OsNetConfigImpl:
     type: OS::Heat::SoftwareConfig
@@ -179,10 +165,10 @@ resources:
                       - get_param: ControlPlaneSubnetCidr
                 routes:
                   list_concat_unique:
-                    - get_param: ControlPlaneStaticRoutes
-                    - - default: true
-                        next_hop:
-                          get_param: ControlPlaneDefaultRoute
+                  - get_param: ControlPlaneStaticRoutes
+                  - - default: true
+                      next_hop:
+                        get_param: ControlPlaneDefaultRoute
               - type: interface
                 name: nic1
                 use_dhcp: true
@@ -201,28 +187,26 @@ resources:
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
-
               - type: ovs_user_bridge
                 name: br-link0
                 use_dhcp: false
                 ovs_extra:
-                  - str_replace:
-                      template: set port br-link0 tag=_VLAN_TAG_
-                      params:
-                        _VLAN_TAG_:
-                           get_param: TenantNetworkVlanID
+                - str_replace:
+                    template: set port br-link0 tag=_VLAN_TAG_
+                    params:
+                      _VLAN_TAG_:
+                        get_param: TenantNetworkVlanID
                 addresses:
-                  - ip_netmask:
-                      get_param: TenantIpSubnet
+                - ip_netmask:
+                    get_param: TenantIpSubnet
                 members:
-                  - type: ovs_dpdk_port
-                    name: dpdkport0
-                    mtu: 9000
-                    rx_queue: 2
-                    members:
-                      - type: interface
-                        name: nic3
-
+                - type: ovs_dpdk_port
+                  name: dpdkport0
+                  mtu: 9000
+                  rx_queue: 2
+                  members:
+                  - type: interface
+                    name: nic3
               - type: sriov_pf
                 name: nic4
                 numvfs: 4
@@ -231,8 +215,7 @@ resources:
                 defroute: false
                 nm_controlled: true
                 hotplug: true
-                promisc: false 
-
+                promisc: false
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.
