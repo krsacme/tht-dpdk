@@ -5,7 +5,7 @@ parameter_defaults:
   OvercloudComputeOvsDpdkSriovFlavor: "compute"
   OvercloudComputeSriovFlavor: "compute"
 
-  ControllerCount: 1
+  ControllerCount: 3
   ComputeOvsDpdkSriovCount: 2
   ComputeSriovCount: 1
 

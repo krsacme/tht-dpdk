@@ -3,9 +3,6 @@
 PARAMS="$*"
 
 if [ ! -d $HOME/images ]; then
-    # OSP13 Derive PCI fix
-    curl -4 https://review.opendev.org/changes/741922/revisions/788d282960cf21c9687e85e721abd236db8699c8/patch?download | base64 -d | sudo patch  -d /usr/share/openstack-tripleo-heat-templates/ -p1
-
     mkdir -p $HOME/images
     pushd $HOME/images
     for i in /usr/share/rhosp-director-images/overcloud-full-latest-13.0.tar /usr/share/rhosp-director-images/ironic-python-agent-latest-13.0.tar; do tar -xvf $i; done
@@ -17,7 +14,8 @@ if [ ! -d $HOME/images ]; then
     popd
 fi
 
-openstack overcloud roles generate -o $HOME/roles_data.yaml Controller ComputeOvsDpdkSriov
+# Always generate roles_data file
+openstack overcloud roles generate -o $HOME/roles_data.yaml Controller ComputeSriov
 
 openstack overcloud deploy $PARAMS \
     --templates \
@@ -26,12 +24,12 @@ openstack overcloud deploy $PARAMS \
     -n $HOME/osp13_ref/network_data.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/services/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/services/neutron-sriov.yaml \
+    -e /usr/share/openstack-tripleo-heat-templates/environments/ovs-hw-offload.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
     -e $HOME/osp13_ref/environment.yaml \
-    -e $HOME/osp13_ref/network-environment.yaml \
-    -e $HOME/osp13_ref/ml2-ovs-dpdk.yaml \
+    -e $HOME/osp13_ref/network-environment-offload.yaml \
+    -e $HOME/osp13_ref/ml2-ovs-nfv.yaml \
     -e $HOME/osp13_ref/docker-images.yaml
 
