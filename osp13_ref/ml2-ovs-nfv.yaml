@@ -1,12 +1,12 @@
 
 parameter_defaults:
   NumDpdkInterfaceRxQueues: 2
-  #NeutronGlobalPhysnetMtu: 2000
+  NeutronGlobalPhysnetMtu: 9000
 
   ComputeOvsDpdkSriovParameters:
     KernelArgs: "default_hugepagesz=1GB hugepagesz=1G hugepages=32 intel_iommu=on iommu=pt isolcpus=1-11,13-23"
     IsolCpusList: "1-11,13-23"
-    OvsDpdkSocketMemory: "1024"
+    OvsDpdkSocketMemory: "4096"
     OvsDpdkMemoryChannels: "4"
     NovaReservedHostMemory: 4096
     OvsPmdCoreList: "1,13"

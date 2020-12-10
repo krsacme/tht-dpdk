@@ -24,12 +24,12 @@ openstack overcloud deploy $PARAMS \
     -n $HOME/osp13_ref/network_data.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/services/neutron-sriov.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/ovs-hw-offload.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
     -e $HOME/osp13_ref/environment.yaml \
     -e $HOME/osp13_ref/network-environment-offload.yaml \
     -e $HOME/osp13_ref/ml2-ovs-nfv.yaml \
     -e $HOME/osp13_ref/docker-images.yaml
 
+# FFU with tripleo_upgrade role requires 'redis' pcs entry else it will fail, so keep telemetry enabled
+#-e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \

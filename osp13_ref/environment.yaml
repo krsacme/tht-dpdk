@@ -7,7 +7,7 @@ parameter_defaults:
 
   ControllerCount: 3
   ComputeOvsDpdkSriovCount: 2
-  ComputeSriovCount: 1
+  ComputeSriovCount: 2
 
   NtpServer: "clock.redhat.com"
   #TimeZone: Kolkata

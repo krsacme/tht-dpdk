@@ -14,6 +14,7 @@ if [ ! -d /home/stack/images ]; then
     popd
 fi
 
+# Always generate roles_data file
 openstack overcloud roles generate -o /home/stack/roles_data.yaml Controller ComputeOvsDpdkSriov
 
 openstack overcloud deploy $PARAMS \
@@ -26,9 +27,10 @@ openstack overcloud deploy $PARAMS \
     -e /usr/share/openstack-tripleo-heat-templates/environments/services/neutron-ovs-dpdk.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/services/neutron-sriov.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
-    -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
     -e /home/stack/osp13_ref/environment.yaml \
     -e /home/stack/osp13_ref/network-environment.yaml \
     -e /home/stack/osp13_ref/ml2-ovs-nfv.yaml \
     -e /home/stack/osp13_ref/docker-images.yaml
 
+# FFU with tripleo_upgrade role requires 'redis' pcs entry else it will fail, so keep telemetry enabled
+#-e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
