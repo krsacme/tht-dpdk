@@ -187,17 +187,15 @@ resources:
                 name: nic1
                 use_dhcp: true
                 defroute: true
-              - type: vlan
-                vlan_id:
-                  get_param: InternalApiNetworkVlanID
-                device: nic2
+              - type: sriov_vf
+                device: nic3
+                vfid: 1
                 addresses:
                 - ip_netmask:
                     get_param: InternalApiIpSubnet
-              - type: vlan
-                vlan_id:
-                  get_param: StorageNetworkVlanID
-                device: nic2
+              - type: sriov_vf
+                device: nic3
+                vfid: 2
                 addresses:
                 - ip_netmask:
                     get_param: StorageIpSubnet
