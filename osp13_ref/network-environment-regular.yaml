@@ -1,0 +1,15 @@
+resource_registry:
+  OS::TripleO::ComputeOvsDpdkSriov::Net::SoftwareConfig: nic-configs/computeovsdpdk.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+
+parameter_defaults:
+  NeutronPhysicalDevMappings: 'sriov1:em3,sriov2:em4'
+
+  NovaPCIPassthrough:
+  - devname: "em3"
+    trusted: "true"
+    physical_network: "sriov1"
+  - devname: "em4"
+    trusted: "true"
+    physical_network: "sriov2"
+

@@ -28,6 +28,7 @@ openstack overcloud deploy $PARAMS \
     -e /usr/share/openstack-tripleo-heat-templates/environments/services/neutron-sriov.yaml \
     -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
     -e /home/stack/osp13_ref/environment.yaml \
+    -e /home/stack/osp13_ref/network-environment.yaml \
     -e /home/stack/osp13_ref/network-environment-nicpart.yaml \
     -e /home/stack/osp13_ref/ml2-ovs-nfv.yaml \
     -e /home/stack/osp13_ref/docker-images.yaml

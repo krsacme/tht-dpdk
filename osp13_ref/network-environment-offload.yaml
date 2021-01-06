@@ -3,18 +3,6 @@ resource_registry:
   OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
 
 parameter_defaults:
-  DnsServers: ['10.11.5.19']
-
-  ControlPlaneDefaultRoute: "192.168.51.1"
-  ControlPlaneSubnetCidr: "24"
-
-  NeutronExternalNetworkBridge: "br-ex"
-  NeutronTunnelTypes: 'vxlan'
-  NeutronNetworkType: ['vxlan', 'vlan']
-  NeutronBridgeMappings: 'datacentre:br-ex,sriov1:br-link1'
-  NeutronNetworkVLANRanges: 'sriov1:502:505'
-  NeutronFlatNetworks: 'datacentre,sriov1'
-
   NovaPCIPassthrough:
   - devname: "p1p1"
     physical_network: "sriov1"
