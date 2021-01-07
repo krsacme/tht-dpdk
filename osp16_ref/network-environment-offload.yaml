@@ -4,10 +4,6 @@ resource_registry:
 
   
 parameter_defaults:
-  NeutronBridgeMappings: 'datacentre:br-ex,sriov1:br-offload'
-  NeutronNetworkVLANRanges: 'sriov1:502:505'
-  NeutronFlatNetworks: 'datacentre,sriov1'
-
   NovaPCIPassthrough:
   - devname: "ens1f0"
     physical_network: "sriov1"

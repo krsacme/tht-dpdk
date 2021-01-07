@@ -18,6 +18,7 @@ openstack overcloud deploy $PARAMS \
     -e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \
     -e $USER_THT/environment.yaml \
     -e $USER_THT/network-environment.yaml \
+    -e $USER_THT/network-environment-regular.yaml \
     -e $USER_THT/ml2-ovs-nfv.yaml \
     -e $HOME/containers-prepare-parameter.yaml
 
