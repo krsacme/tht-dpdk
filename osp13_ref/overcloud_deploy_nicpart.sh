@@ -13,7 +13,7 @@ if [ ! -d /home/stack/images ]; then
     # https://review.opendev.org/c/openstack/os-net-config/+/727634
     mkdir -p mount_image
     guestmount -a overcloud-full.qcow2 -m /dev/sda mount_image
-    sed -i 's/processutils.execute(\*cmd, \*\*kwargs)/processutils.execute(\*cmd, \*\*kwargs, delay_on_retry=True, attempts=10)/' mount_image/usr/lib/python2.7/site-packages/os_net_config/sriov_config.py
+    sed -i 's/processutils.execute(\*cmd, \*\*kwargs)/processutils.execute(\*cmd, delay_on_retry=True, attempts=10, \*\*kwargs)/' mount_image/usr/lib/python2.7/site-packages/os_net_config/sriov_config.py
     guestunmount mount_image
 
     openstack overcloud image upload --image-path /home/stack/images/ --update-existing
