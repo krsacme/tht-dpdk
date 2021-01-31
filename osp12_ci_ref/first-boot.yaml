@@ -1,0 +1,27 @@
+heat_template_version: pike
+
+description: >
+  This is an example showing how you can do firstboot configuration
+  of the nodes via cloud-init.  To enable this, replace the default
+  mapping of OS::TripleO::NodeUserData in ../overcloud_resource_registry*
+
+resources:
+  userdata:
+    type: OS::Heat::MultipartMime
+    properties:
+      parts:
+      - config: {get_resource: disable_selinux}
+
+  # https://bugzilla.redhat.com/show_bug.cgi?id=1448482
+  disable_selinux:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      config: |
+        #!/bin/bash
+        set -x
+        setenforce 0
+        sed -i 's/SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+
+outputs:
+  OS::stack_id:
+    value: {get_resource: userdata}

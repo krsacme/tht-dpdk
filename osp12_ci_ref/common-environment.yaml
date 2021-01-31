@@ -1,0 +1,20 @@
+parameter_defaults:
+  ControllerCount: 1
+  ComputeOvsDpdkCount: 1
+  OvercloudControlFlavor: control
+  OvercloudComputeOvsDpdkFlavor: compute
+
+  #TODO: br-ex needs to be re-looked as nfv ref nic configs does not have br-ex bridge
+
+  # NeutronBridgeMappings translates to neutron::agents::ml2::ovs::bridge_mappings
+  NeutronBridgeMappings: "datacentre:br-ex,dpdknet:br-link"
+  # NeutronFlatNetworks translates to neutron::plugins::ml2::flat_networks
+  NeutronFlatNetworks: "datacentre"
+  # NeutronNetworkVLANRanges translates to neutron::plugins::ml2::network_vlan_ranges
+  NeutronNetworkVLANRanges: "dpdknet:100:103"
+  # NeutronNetworkType translates to neutron::plugins::ml2::tenant_network_types
+  NeutronNetworkType: ['vlan']
+  # NeutronTunnelTypes translates to neutron::agents::ml2::ovs::tunnel_types
+  NeutronTunnelTypes: ""
+
+  #TimeZone: Kolkata
