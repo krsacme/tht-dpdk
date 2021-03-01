@@ -9,6 +9,13 @@ if [ ! -d /home/stack/images ]; then
     sudo yum install libguestfs-tools -y
     export LIBGUESTFS_BACKEND=direct
     virt-customize --root-password password:redhat -a overcloud-full.qcow2
+
+    # https://review.opendev.org/c/openstack/os-net-config/+/727634
+    mkdir -p mount_image
+    guestmount -a overcloud-full.qcow2 -m /dev/sda mount_image
+    sed -i 's/processutils.execute(\*cmd, \*\*kwargs)/processutils.execute(\*cmd, delay_on_retry=True, attempts=10, \*\*kwargs)/' mount_image/usr/lib/python2.7/site-packages/os_net_config/sriov_config.py
+    guestunmount mount_image
+
     openstack overcloud image upload --image-path /home/stack/images/ --update-existing
     for i in $(openstack baremetal node list -c UUID -f value); do openstack overcloud node configure $i; done
     popd
@@ -29,9 +36,7 @@ openstack overcloud deploy $PARAMS \
     -e /usr/share/openstack-tripleo-heat-templates/environments/host-config-and-reboot.yaml \
     -e /home/stack/osp13_ref/environment.yaml \
     -e /home/stack/osp13_ref/network-environment.yaml \
-    -e /home/stack/osp13_ref/network-environment-regular.yaml \
+    -e /home/stack/osp13_ref/network-environment-nicpart.yaml \
     -e /home/stack/osp13_ref/ml2-ovs-nfv.yaml \
     -e /home/stack/osp13_ref/docker-images.yaml
 
-# FFU with tripleo_upgrade role requires 'redis' pcs entry else it will fail, so keep telemetry enabled
-#-e /usr/share/openstack-tripleo-heat-templates/environments/disable-telemetry.yaml \

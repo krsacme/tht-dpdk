@@ -3,13 +3,13 @@ resource_registry:
   OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller-nicpartition.yaml
 
 parameter_defaults:
-  NeutronPhysicalDevMappings: ["sriov1:eno3", "sriov2:eno4"]
+  NeutronPhysicalDevMappings: ["sriov1:em3", "sriov2:em4"]
 
   NovaPCIPassthrough:
-  - devname: "eno3"
+  - devname: "em3"
     trusted: "true"
     physical_network: "sriov1"
-  - devname: "eno4"
+  - devname: "em4"
     trusted: "true"
     physical_network: "sriov2"
 
