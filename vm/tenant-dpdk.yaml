@@ -66,9 +66,10 @@
       os_subnet:
         name: access_subnet
         network_name: access
-        cidr: "{{ ov_access_nw }}.112/28"
+        cidr: "{{ ov_access_nw }}.112/24"
         allocation_pool_start: "{{ ov_access_nw }}.114"
         allocation_pool_end: "{{ ov_access_nw }}.125"
+        gateway_ip: "{{ ov_access_nw }}.1"
         dns_nameservers:
           - 8.8.8.8
         cloud: overcloud
