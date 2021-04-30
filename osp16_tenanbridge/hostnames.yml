@@ -1,0 +1,9 @@
+
+parameter_defaults:
+    CloudDomain: redhat.local
+
+    CephStorageHostnameFormat: 'ceph-%index%'
+    ObjectStorageHostnameFormat: 'swift-%index%'
+    ComputeHostnameFormat: 'compute-%index%'
+    ControllerHostnameFormat: 'controller-%index%'
+

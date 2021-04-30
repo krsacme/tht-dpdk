@@ -1,0 +1,2 @@
+parameter_defaults:
+    NeutronNetworkVLANRanges: dpdk1:105:110,dpdk2:105:110,sriov2:105:110

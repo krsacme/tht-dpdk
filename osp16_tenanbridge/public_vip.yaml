@@ -1,0 +1,2 @@
+parameter_defaults:
+    PublicVirtualFixedIPs: [{'ip_address':'172.16.0.201'}]

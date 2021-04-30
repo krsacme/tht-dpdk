@@ -1,0 +1,14 @@
+resource_registry:
+  OS::TripleO::ComputeSriov::Net::SoftwareConfig: nic-configs/computesriov.yaml
+  OS::TripleO::Controller::Net::SoftwareConfig: nic-configs/controller.yaml
+  OS::TripleO::ControllerSriov::Net::SoftwareConfig: nic-configs/controller.yaml
+
+parameter_defaults:
+  NeutronBridgeMappings: 'datacentre:br-ex,sriov2:br-link2'
+  NeutronFlatNetworks: 'datacentre,sriov2'
+  NeutronPhysicalDevMappings: ["sriov2:eno4"]
+  NovaPCIPassthrough:
+  - devname: "eno4"
+    trusted: "true"
+    physical_network: "sriov2"
+

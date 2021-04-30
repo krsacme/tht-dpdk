@@ -1,0 +1,6 @@
+# NOTE: only NeutronNetworkVLANRanges is required in this file
+# as it will be modified by scripts if deployed on other clusters
+# other entries can be moved to individual network-envirment-<feature> file in future
+parameter_defaults:
+  NeutronNetworkVLANRanges: dpdk1:105:110,dpdk2:105:110,sriov2:105:110
+

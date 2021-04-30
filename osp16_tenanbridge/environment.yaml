@@ -1,0 +1,44 @@
+parameter_defaults:
+  DnsServers: ['10.11.5.19']
+
+  ControlPlaneSubnet: leaf0
+  ControllerControlPlaneSubnet: leaf0
+  ControllerSriovControlPlaneSubnet: leaf0
+  ComputeControlPlaneSubnet: leaf0
+  ComputeOvsDpdkSriovControlPlaneSubnet: leaf0
+  ComputeSriovControlPlaneSubnet: leaf0
+  ComputeSriovOffloadControlPlaneSubnet: leaf0
+
+  ControllerHostnameFormat: 'controller-%index%'
+  ControllerSriovHostnameFormat: 'controller-%index%'
+  ComputeSriovOffloadHostnameFormat: 'cmpt-offload-%index%'
+
+  #NeutronTunnelTypes: 'geneve'
+  #NeutronNetworkType: ['geneve']
+  #NeutronEnableDVR: false
+  #NeutronPluginExtensions: "port_security,qos,segments,trunk,placement"
+  #NeutronSriovAgentExtensions: "qos"
+  NeutronTunnelTypes: 'vxlan'
+  NeutronNetworkType: ['vxlan', 'vlan']
+
+  OvercloudControllerFlavor: "controller"
+  OvercloudControllerSriovFlavor: "controller"
+  OvercloudComputeFlavor: "compute"
+  OvercloudComputeOvsDpdkFlavor: "compute"
+  OvercloudComputeOvsDpdkSriovFlavor: "compute"
+  OvercloudComputeSriovFlavor: "compute"
+  OvercloudComputeSriovOffloadFlavor: "compute"
+
+  ControllerCount: 3
+  ControllerSriovCount: 3
+  ComputeOvsDpdkSriovCount: 2
+  ComputeSriovCount: 2
+  ComputeSriovOffloadCount: 2
+
+  NtpServer: "clock.redhat.com"
+  #TimeZone: Kolkata
+  SshServerOptions:
+    UseDns: 'no'
+    #TenantInterfaceRoutes:
+    #  - test1: 1
+    #    test2: 2
